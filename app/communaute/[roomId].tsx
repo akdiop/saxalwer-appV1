@@ -1,0 +1,634 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+    Alert,
+    Modal,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from 'react-native';
+
+import { COMMUNITY_COLORS, CommunityMessage } from '../../data/community';
+import {
+    getCommunityProfile,
+    getCommunityUserId,
+    joinCommunityRoom,
+    loadRoomMessages,
+    reportMessage,
+    roomById,
+    saveCommunityProfile,
+    sendRoomMessage,
+} from '../../utils/communityApi';
+import { useApp } from '../../context/appcontext';
+import { useSpeak } from '../../hooks/usespeak';
+
+const TEXT = {
+  fr: {
+    roomNotFound: 'Salon introuvable',
+    anonymous: 'Anonyme',
+    visible: 'Visible',
+    messagesCount: 'messages',
+    firstMessage: 'Sois la premiere a partager dans cet espace.',
+    inputPlaceholder: 'Ecris ton message...',
+    send: 'Envoyer',
+    reportTitle: 'Signaler ce message ?',
+    reportDesc:
+      'Ce message sera signale pour moderation. Merci de contribuer a un espace sur.',
+    cancel: 'Annuler',
+    report: 'Signaler',
+    reportDone: 'Message signale',
+    sendDone: 'Message envoye',
+  },
+  wo: {
+    roomNotFound: 'Room bi amul',
+    anonymous: 'Anonyme',
+    visible: 'Visible',
+    messagesCount: 'messages yi',
+    firstMessage: 'Yow mooy nekk ci wax fii.',
+    inputPlaceholder: 'Bind sa baat...',
+    send: 'Yonnee',
+    reportTitle: 'Signale baat bii ?',
+    reportDesc: 'Baat bii dina nu signale. Jerejef ci jappale bereb bu jafe.',
+    cancel: 'Bayyi',
+    report: 'Signale',
+    reportDone: 'Message yi signale nanu',
+    sendDone: 'Message yeesal na',
+  },
+} as const;
+
+export default function CommunityRoomScreen() {
+  const { roomId } = useLocalSearchParams<{ roomId?: string }>();
+  const router = useRouter();
+  const { language, oralMode, userProfile, discreteMode } = useApp();
+  const { speak } = useSpeak();
+
+  const copy = TEXT[language];
+  const selectedRoomId = typeof roomId === 'string' ? roomId : '';
+  const room = roomById(selectedRoomId);
+
+  const [messages, setMessages] = useState<CommunityMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
+  const [communityPseudo, setCommunityPseudo] = useState('');
+  const [userId, setUserId] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const scrollRef = useRef<ScrollView | null>(null);
+
+  const currentDisplayName = useMemo(() => {
+    if (isAnonymous) {
+      return copy.anonymous;
+    }
+
+    const fromProfile = userProfile.name?.trim();
+    return communityPseudo || fromProfile || copy.anonymous;
+  }, [communityPseudo, copy.anonymous, isAnonymous, userProfile.name]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const bootstrap = async () => {
+      const profile = await getCommunityProfile();
+      const fallbackName = userProfile.name?.trim() || 'user';
+      const nextUserId = await getCommunityUserId(fallbackName);
+
+      if (!mounted) {
+        return;
+      }
+
+      setCommunityPseudo(profile.pseudonym || '');
+      setUserId(nextUserId);
+      setIsLoaded(true);
+    };
+
+    bootstrap().catch(() => setIsLoaded(true));
+
+    return () => {
+      mounted = false;
+    };
+  }, [userProfile.name]);
+
+  useEffect(() => {
+    if (!selectedRoomId || !isLoaded) {
+      return;
+    }
+
+    let active = true;
+
+    const syncMessages = async () => {
+      const nextMessages = await loadRoomMessages(selectedRoomId);
+      if (active) {
+        setMessages(nextMessages);
+      }
+    };
+
+    syncMessages().catch(() => undefined);
+
+    const interval = setInterval(() => {
+      syncMessages().catch(() => undefined);
+    }, 5000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [isLoaded, selectedRoomId]);
+
+  useEffect(() => {
+    if (!selectedRoomId || !userId) {
+      return;
+    }
+
+    const nameToJoin = isAnonymous ? copy.anonymous : userProfile.name || copy.anonymous;
+    joinCommunityRoom(selectedRoomId, userId, nameToJoin).catch(() => undefined);
+  }, [copy.anonymous, isAnonymous, selectedRoomId, userId, userProfile.name]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    });
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    const content = newMessage.trim();
+    if (!content || !selectedRoomId || !userId || !room) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const next = await sendRoomMessage({
+        roomId: selectedRoomId,
+        userId,
+        userName: currentDisplayName,
+        text: content,
+        isAnonymous,
+      });
+
+      if (next) {
+        setMessages((prev) => [...prev, next]);
+      }
+
+      setNewMessage('');
+      if (oralMode) {
+        speak(copy.sendDone);
+      }
+    } catch {
+      Alert.alert('SaxalWer', 'Impossible d envoyer le message pour le moment.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReport = async (messageId: string) => {
+    if (!userId) {
+      return;
+    }
+
+    try {
+      await reportMessage(messageId, userId);
+      setReportingMessageId(null);
+      if (oralMode) {
+        speak(copy.reportDone);
+      }
+    } catch {
+      Alert.alert('SaxalWer', 'Impossible de signaler ce message maintenant.');
+    }
+  };
+
+  const handleAnonymousToggle = async () => {
+    const next = !isAnonymous;
+    setIsAnonymous(next);
+
+    const profile = await getCommunityProfile();
+    if (!profile.pseudonym && userProfile.name?.trim()) {
+      const nextProfile = {
+        ...profile,
+        pseudonym: userProfile.name.trim(),
+      };
+      await saveCommunityProfile(nextProfile);
+      setCommunityPseudo(nextProfile.pseudonym);
+    }
+  };
+
+  if (!room) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.notFoundWrap}>
+          <Text style={styles.notFoundText}>{copy.roomNotFound}</Text>
+          <Pressable style={styles.notFoundButton} onPress={() => router.replace('/communaute' as never)}>
+            <Text style={styles.notFoundButtonText}>Retour</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.screen}>
+        <View style={[styles.roomHeader, { backgroundColor: room.color }]}> 
+          <Pressable onPress={() => router.replace('/communaute' as never)} style={styles.headerBackButton}>
+            <Ionicons name="chevron-back" size={18} color={COMMUNITY_COLORS.warmWhite} />
+          </Pressable>
+
+          <Ionicons name={room.iconName} size={22} color={COMMUNITY_COLORS.warmWhite} />
+
+          <View style={styles.roomHeaderTextWrap}>
+            <Text style={styles.roomHeaderTitle}>{language === 'fr' ? room.titleFr : room.titleWo}</Text>
+            <Text style={styles.roomHeaderMeta}>
+              {messages.length} {copy.messagesCount}
+            </Text>
+          </View>
+
+          <Pressable
+            onPress={handleAnonymousToggle}
+            style={[styles.visibilityToggle, isAnonymous && styles.visibilityToggleOn]}
+          >
+            <Ionicons
+              name={isAnonymous ? 'eye-off-outline' : 'eye-outline'}
+              size={13}
+              color={COMMUNITY_COLORS.warmWhite}
+            />
+            <Text style={styles.visibilityToggleText}>{isAnonymous ? copy.anonymous : copy.visible}</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.messagesAreaWrap}>
+          <ScrollView
+            ref={scrollRef}
+            contentContainerStyle={styles.messagesContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {messages.length === 0 ? (
+              <View style={styles.emptyWrap}>
+                <Ionicons name="chatbubble-ellipses-outline" size={48} color={room.color} />
+                <Text style={styles.emptyText}>{copy.firstMessage}</Text>
+              </View>
+            ) : (
+              messages.map((message) => {
+                const isOwn = message.userId === userId;
+
+                return (
+                  <View key={message.id} style={[styles.messageWrap, isOwn && styles.messageWrapOwn]}>
+                    <View
+                      style={[
+                        styles.messageBubble,
+                        isOwn
+                          ? [styles.messageBubbleOwn, { backgroundColor: room.color }]
+                          : styles.messageBubbleOther,
+                      ]}
+                    >
+                      <View style={styles.messageAuthorRow}>
+                        <Text style={[styles.authorText, isOwn && styles.authorTextOwn]}>
+                          {message.isAnonymous ? copy.anonymous : message.userName}
+                        </Text>
+
+                        {!isOwn ? (
+                          <Pressable onPress={() => setReportingMessageId(message.id)} style={styles.reportButton}>
+                            <Ionicons name="flag-outline" size={12} color={COMMUNITY_COLORS.cacao} />
+                          </Pressable>
+                        ) : null}
+                      </View>
+
+                      <Text style={[styles.messageText, isOwn && styles.messageTextOwn]}>{message.text}</Text>
+
+                      <Text style={[styles.timeText, isOwn && styles.timeTextOwn]}>
+                        {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })
+            )}
+          </ScrollView>
+
+          {discreteMode ? <View style={styles.discreteVeil} pointerEvents="none" /> : null}
+        </View>
+
+        <View style={styles.inputArea}>
+          <TextInput
+            value={newMessage}
+            onChangeText={setNewMessage}
+            placeholder={copy.inputPlaceholder}
+            placeholderTextColor="rgba(74,47,39,0.55)"
+            style={styles.input}
+            editable={!loading}
+            onSubmitEditing={handleSendMessage}
+            returnKeyType="send"
+          />
+
+          <Pressable
+            onPress={handleSendMessage}
+            disabled={loading || !newMessage.trim()}
+            style={({ pressed }) => [
+              styles.sendButton,
+              (loading || !newMessage.trim()) && styles.sendButtonDisabled,
+              pressed && styles.sendButtonPressed,
+              { backgroundColor: room.color },
+            ]}
+          >
+            <Ionicons name="send" size={18} color={COMMUNITY_COLORS.warmWhite} />
+          </Pressable>
+        </View>
+
+        <Modal
+          animationType="fade"
+          transparent
+          visible={!!reportingMessageId}
+          onRequestClose={() => setReportingMessageId(null)}
+        >
+          <Pressable style={styles.reportOverlay} onPress={() => setReportingMessageId(null)}>
+            <Pressable style={styles.reportCard} onPress={() => undefined}>
+              <View style={styles.reportHeadRow}>
+                <Ionicons name="alert-circle-outline" size={28} color="#d4183d" />
+                <Text style={styles.reportTitle}>{copy.reportTitle}</Text>
+              </View>
+
+              <Text style={styles.reportDesc}>{copy.reportDesc}</Text>
+
+              <View style={styles.reportActions}>
+                <Pressable onPress={() => setReportingMessageId(null)} style={styles.cancelButton}>
+                  <Text style={styles.cancelButtonText}>{copy.cancel}</Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => {
+                    if (!reportingMessageId) {
+                      return;
+                    }
+                    handleReport(reportingMessageId);
+                  }}
+                  style={styles.reportButtonDanger}
+                >
+                  <Text style={styles.reportButtonDangerText}>{copy.report}</Text>
+                </Pressable>
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+  },
+  screen: {
+    flex: 1,
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+  },
+  notFoundWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  notFoundText: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 17,
+    fontWeight: '700',
+  },
+  notFoundButton: {
+    backgroundColor: COMMUNITY_COLORS.deepGreen,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  notFoundButtonText: {
+    color: COMMUNITY_COLORS.warmWhite,
+    fontWeight: '700',
+  },
+  roomHeader: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  headerBackButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+  },
+  roomHeaderTextWrap: {
+    flex: 1,
+  },
+  roomHeaderTitle: {
+    color: COMMUNITY_COLORS.warmWhite,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  roomHeaderMeta: {
+    marginTop: 2,
+    color: 'rgba(253,250,245,0.9)',
+    fontSize: 11,
+  },
+  visibilityToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.32)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  visibilityToggleOn: {
+    backgroundColor: 'rgba(255,255,255,0.28)',
+  },
+  visibilityToggleText: {
+    color: COMMUNITY_COLORS.warmWhite,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  messagesAreaWrap: {
+    flex: 1,
+    backgroundColor: COMMUNITY_COLORS.beige,
+  },
+  messagesContent: {
+    padding: 14,
+    gap: 10,
+    paddingBottom: 30,
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    paddingVertical: 36,
+  },
+  emptyText: {
+    marginTop: 10,
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  messageWrap: {
+    alignItems: 'flex-start',
+  },
+  messageWrapOwn: {
+    alignItems: 'flex-end',
+  },
+  messageBubble: {
+    maxWidth: '76%',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  messageBubbleOther: {
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+    shadowColor: '#000000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  messageBubbleOwn: {
+    borderTopRightRadius: 4,
+  },
+  messageAuthorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 3,
+  },
+  authorText: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  authorTextOwn: {
+    color: COMMUNITY_COLORS.warmWhite,
+  },
+  reportButton: {
+    paddingHorizontal: 2,
+    paddingVertical: 1,
+  },
+  messageText: {
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 14,
+    lineHeight: 21,
+  },
+  messageTextOwn: {
+    color: COMMUNITY_COLORS.warmWhite,
+  },
+  timeText: {
+    marginTop: 4,
+    color: 'rgba(74,47,39,0.72)',
+    fontSize: 10,
+  },
+  timeTextOwn: {
+    color: 'rgba(253,250,245,0.78)',
+  },
+  discreteVeil: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(253,250,245,0.58)',
+  },
+  inputArea: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(194,106,61,0.16)',
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 2,
+    borderColor: 'rgba(194,106,61,0.2)',
+    borderRadius: 20,
+    backgroundColor: COMMUNITY_COLORS.beige,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 14,
+  },
+  sendButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendButtonDisabled: {
+    opacity: 0.46,
+  },
+  sendButtonPressed: {
+    opacity: 0.84,
+  },
+  reportOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.52)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  reportCard: {
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+    borderRadius: 16,
+    padding: 16,
+    width: '100%',
+    maxWidth: 420,
+  },
+  reportHeadRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  reportTitle: {
+    flex: 1,
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  reportDesc: {
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  reportActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: COMMUNITY_COLORS.sand,
+    borderRadius: 10,
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: COMMUNITY_COLORS.cacao,
+    fontWeight: '700',
+  },
+  reportButtonDanger: {
+    flex: 1,
+    backgroundColor: '#d4183d',
+    borderRadius: 10,
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  reportButtonDangerText: {
+    color: COMMUNITY_COLORS.warmWhite,
+    fontWeight: '700',
+  },
+});

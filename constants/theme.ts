@@ -1,53 +1,160 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+/**
+ * Figma-aligned design tokens for the app.
+ * Kept backward-compatible with existing usage of `Colors.light|dark.{text,background,tint,...}`.
+ */
 
-export const Colors = {
+export type ThemeMode = 'light' | 'dark';
+
+export const Palette = {
+  terracotta: '#C26A3D',
+  cocoa: '#4A2F27',
+  beige: '#E8DCC8',
+  deepGreen: '#0F3D2E',
+  mutedBeige: '#D8CCB8',
+  white: '#FFFFFF',
+} as const;
+
+export const Theme = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    fontSize: 16,
+    radius: 10,
+    background: '#E8DCC8',
+    foreground: '#0F3D2E',
+    card: '#FFFFFF',
+    cardForeground: '#0F3D2E',
+    popover: '#FFFFFF',
+    popoverForeground: '#0F3D2E',
+    primary: '#0F3D2E',
+    primaryForeground: '#E8DCC8',
+    secondary: '#C26A3D',
+    secondaryForeground: '#E8DCC8',
+    muted: '#D8CCB8',
+    mutedForeground: '#4A2F27',
+    accent: '#C26A3D',
+    accentForeground: '#FFFFFF',
+    destructive: '#D4183D',
+    destructiveForeground: '#FFFFFF',
+    border: 'rgba(15, 61, 46, 0.1)',
+    input: 'transparent',
+    inputBackground: '#D8CCB8',
+    switchBackground: '#CBCED4',
+    ring: '#0F3D2E',
+    chart1: '#C26A3D',
+    chart2: '#0F3D2E',
+    chart3: '#D4AF37',
+    chart4: '#4A2F27',
+    chart5: '#7A8C5A',
+    sidebar: '#F5EFE2',
+    sidebarForeground: '#0F3D2E',
+    sidebarPrimary: '#0F3D2E',
+    sidebarPrimaryForeground: '#E8DCC8',
+    sidebarAccent: '#D8CCB8',
+    sidebarAccentForeground: '#4A2F27',
+    sidebarBorder: 'rgba(15, 61, 46, 0.1)',
+    sidebarRing: '#0F3D2E',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
+    fontSize: 16,
+    radius: 10,
+    background: '#171717',
+    foreground: '#F7F7F7',
+    card: '#171717',
+    cardForeground: '#F7F7F7',
+    popover: '#171717',
+    popoverForeground: '#F7F7F7',
+    primary: '#F7F7F7',
+    primaryForeground: '#343434',
+    secondary: '#454545',
+    secondaryForeground: '#F7F7F7',
+    muted: '#454545',
+    mutedForeground: '#B0B0B0',
+    accent: '#454545',
+    accentForeground: '#F7F7F7',
+    destructive: '#8C2D45',
+    destructiveForeground: '#EA6F86',
+    border: '#454545',
+    input: '#454545',
+    inputBackground: '#2B2B2B',
+    switchBackground: '#454545',
+    ring: '#6E6E6E',
+    chart1: '#4F46E5',
+    chart2: '#10B981',
+    chart3: '#F59E0B',
+    chart4: '#D946EF',
+    chart5: '#F97316',
+    sidebar: '#343434',
+    sidebarForeground: '#F7F7F7',
+    sidebarPrimary: '#4F46E5',
+    sidebarPrimaryForeground: '#F7F7F7',
+    sidebarAccent: '#454545',
+    sidebarAccentForeground: '#F7F7F7',
+    sidebarBorder: '#454545',
+    sidebarRing: '#6E6E6E',
+  },
+} as const;
+
+// Backward-compatible names used by hooks/components.
+export const Colors = {
+  light: {
+    text: Theme.light.foreground,
+    background: Theme.light.background,
+    tint: Theme.light.primary,
+    icon: '#687076',
+    tabIconDefault: '#687076',
+    tabIconSelected: Theme.light.primary,
+    card: Theme.light.card,
+    border: Theme.light.border,
+    primary: Theme.light.primary,
+    secondary: Theme.light.secondary,
+    accent: Theme.light.accent,
+    destructive: Theme.light.destructive,
+    muted: Theme.light.muted,
+  },
+  dark: {
+    text: Theme.dark.foreground,
+    background: Theme.dark.background,
+    tint: Theme.dark.primary,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    tabIconSelected: Theme.dark.primary,
+    card: Theme.dark.card,
+    border: Theme.dark.border,
+    primary: Theme.dark.primary,
+    secondary: Theme.dark.secondary,
+    accent: Theme.dark.accent,
+    destructive: Theme.dark.destructive,
+    muted: Theme.dark.muted,
   },
-};
+} as const;
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
+    sans: 'Inter',
+    serif: 'Cormorant Garamond',
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
-    sans: 'normal',
+    sans: 'Inter',
     serif: 'serif',
     rounded: 'normal',
     mono: 'monospace',
   },
   web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
+    sans: "Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    serif: "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
     rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const ThemeMeta = {
+  fontWeightNormal: 400,
+  fontWeightMedium: 500,
+  radiusSm: 6,
+  radiusMd: 8,
+  radiusLg: 10,
+  radiusXl: 14,
+} as const;
