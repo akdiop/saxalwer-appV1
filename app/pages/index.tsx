@@ -129,6 +129,31 @@ export default function IndexScreen() {
           </Text>
         </View>
 
+        <View style={styles.accountCard}>
+          <Text style={styles.accountTitle}>Accéder à mon espace</Text>
+          <Text style={styles.accountText}>
+            Crée un compte pour retrouver ton parcours, ou connecte-toi si tu as déjà commencé.
+          </Text>
+
+          <View style={styles.accountActions}>
+            <Pressable
+              style={({ pressed }) => [styles.accountPrimaryButton, pressed && styles.pressed]}
+              onPress={() => router.push('/signup' as never)}
+              accessibilityRole="button"
+            >
+              <Text style={styles.accountPrimaryButtonText}>Créer un compte</Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [styles.accountSecondaryButton, pressed && styles.pressed]}
+              onPress={() => router.push('/login' as never)}
+              accessibilityRole="button"
+            >
+              <Text style={styles.accountSecondaryButtonText}>Se connecter</Text>
+            </Pressable>
+          </View>
+        </View>
+
         <View style={styles.valuesSection}>
           {VALUE_CARDS.map((item) => (
             <Pressable
@@ -161,6 +186,21 @@ export default function IndexScreen() {
         >
           <Text style={styles.primaryButtonText}>ENTRER DANS L&apos;ESPACE SAXALWER</Text>
         </Pressable>
+
+        <View style={styles.aboutCard}>
+          <Text style={styles.aboutTitle}>À propos de SaxalWér</Text>
+          <Text style={styles.aboutText}>
+            Découvre les principes, l&apos;approche communautaire et la vision qui structurent l&apos;application.
+          </Text>
+
+          <Pressable
+            style={({ pressed }) => [styles.aboutButton, pressed && styles.pressed]}
+            onPress={() => router.push('/about' as never)}
+            accessibilityRole="button"
+          >
+            <Text style={styles.aboutButtonText}>Voir la section À propos</Text>
+          </Pressable>
+        </View>
 
         <Text style={styles.footerText}>Tu merites un espace qui te protege et s&apos;adapte à ta sensibilite</Text>
       </ScrollView>
@@ -314,6 +354,56 @@ const styles = StyleSheet.create({
     color: '#4A2F27',
     textAlign: 'center',
   },
+  accountCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    gap: 14,
+    borderWidth: 1,
+    borderColor: '#1A3C3412',
+  },
+  accountTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: '#1A3C34',
+  },
+  accountText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#4A2F27',
+  },
+  accountActions: {
+    gap: 12,
+  },
+  accountPrimaryButton: {
+    minHeight: 52,
+    borderRadius: 16,
+    backgroundColor: '#A65D40',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+  },
+  accountPrimaryButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#F5F1E6',
+  },
+  accountSecondaryButton: {
+    minHeight: 52,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#1A3C34',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+  },
+  accountSecondaryButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1A3C34',
+  },
   valuesSection: {
     gap: 12,
   },
@@ -371,6 +461,38 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.8,
     textAlign: 'center',
+  },
+  aboutCard: {
+    borderRadius: 22,
+    padding: 20,
+    backgroundColor: '#FFF8F1',
+    borderWidth: 1,
+    borderColor: '#A65D4025',
+    gap: 12,
+  },
+  aboutTitle: {
+    fontSize: 17,
+    lineHeight: 23,
+    fontWeight: '700',
+    color: '#1A3C34',
+  },
+  aboutText: {
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#4A2F27',
+  },
+  aboutButton: {
+    minHeight: 48,
+    borderRadius: 14,
+    backgroundColor: 'rgba(26,60,52,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  aboutButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1A3C34',
   },
   footerText: {
     fontSize: 12,

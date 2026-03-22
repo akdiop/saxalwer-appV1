@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import { ProfileMockProvider, useProfileMock } from '../../context/ProfileMockContext';
+import { useProfileMock } from '../../context/ProfileMockContext';
 
 const BASE = {
   beige: '#F5F1E6',
@@ -323,11 +323,7 @@ function FaithResourcesContent() {
 }
 
 export default function FaithResourcesScreen() {
-  return (
-    <ProfileMockProvider>
-      <FaithResourcesContent />
-    </ProfileMockProvider>
-  );
+  return <FaithResourcesContent />;
 }
 
 const styles = StyleSheet.create({

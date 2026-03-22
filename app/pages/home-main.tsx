@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import HamburgerMenu from '../../components/HamburgerMenu';
-import HorizontalScroll from '../../components/HorizontalScroll';
+import { HorizontalScroll } from '../../components/HorizontalScroll';
 import LifeStagePoster from '../../components/LifeStagePoster';
 import SensitiveContent from '../../components/SensitiveContent';
 import { useApp, type QuickAccessId } from '../../context/appcontext';
@@ -364,7 +364,7 @@ export default function HomeMainScreen() {
             ))}
         </View>
 
-        <Text style={styles.sectionTitle}>Étapes de vie</Text>
+        <Text style={styles.sectionTitle}>Parcours & ressources</Text>
         <HorizontalScroll itemMinWidth={292} gap={14}>
           <Pressable onPress={() => router.push('/parcours' as never)}>
             <LifeStagePoster

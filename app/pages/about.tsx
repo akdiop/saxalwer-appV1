@@ -234,7 +234,7 @@ export default function AboutScreen() {
 
               <View style={[styles.headerActionsRow, isCompact && styles.headerActionsRowCompact]}>
                 <Pressable onPress={() => setLanguage(wo ? 'fr' : 'wo')} style={styles.headerChip}>
-                  <Text style={styles.headerChipText}>{wo ? 'FR' : 'WO'}</Text>
+                  <Text style={styles.headerChipText}>{wo ? 'Français' : 'Wolof'}</Text>
                 </Pressable>
 
                 <Pressable onPress={toggleOralMode} style={styles.headerIconButton}>
@@ -571,7 +571,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     borderRadius: 999,
-    paddingHorizontal: 12,
     paddingVertical: 8,
     paddingHorizontal: 14,
     backgroundColor: 'rgba(255,255,255,0.12)',

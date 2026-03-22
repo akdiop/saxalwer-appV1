@@ -48,7 +48,12 @@ const menuSections = [
     title: "TROUVER DE L'AIDE",
     items: [
       { icon: <Feather name="map-pin" size={22} color={C.copper} />, label: 'Centres de santé', subtitle: 'Centres au Sénégal', route: '/carte' },
-      { icon: <Feather name="stethoscope" size={22} color={C.cocoa} />, label: 'Répertoire médecins', subtitle: 'Annuaire de professionnels', route: '/medecins' },
+      {
+        icon: <MaterialCommunityIcons name="stethoscope" size={22} color={C.cocoa} />,
+        label: 'Répertoire médecins',
+        subtitle: 'Annuaire de professionnels',
+        route: '/medecins',
+      },
     ],
   },
   {

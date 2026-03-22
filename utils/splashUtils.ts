@@ -12,6 +12,6 @@ export function hasSplashBeenShown(): boolean {
   return splashShown;
 }
 
-export function getPostSplashRoute(): '/accueil' {
-  return '/accueil';
+export function getPostSplashRoute(): '/' {
+  return '/';
 }

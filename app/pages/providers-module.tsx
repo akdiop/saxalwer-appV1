@@ -16,7 +16,7 @@ import {
 
 import BackButton from '../../components/BackButton';
 import { colors } from '../../constants/colors';
-import { ProfileMockProvider, useProfileMock } from '../../context/ProfileMockContext';
+import { useProfileMock } from '../../context/ProfileMockContext';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -616,11 +616,7 @@ function ProvidersModuleContent() {
 }
 
 export default function ProvidersModuleScreen() {
-  return (
-    <ProfileMockProvider>
-      <ProvidersModuleContent />
-    </ProfileMockProvider>
-  );
+  return <ProvidersModuleContent />;
 }
 
 const styles = StyleSheet.create({

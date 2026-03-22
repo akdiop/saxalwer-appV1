@@ -144,6 +144,26 @@ export default function CommunityRoomsScreen() {
     return selectedNeeds.join(', ');
   }, [copy.empty, selectedNeeds]);
 
+  const localizedSituation = useMemo(() => {
+    if (!lifeSituation) {
+      return copy.emptyFemale;
+    }
+
+    const labels = {
+      curious: language === 'fr' ? 'Découverte' : 'Xam-xam',
+      cycles: language === 'fr' ? 'Cycle & règles' : 'Cycle ak règle',
+      contraception: language === 'fr' ? 'Contraception' : 'Contraception',
+      pregnant: language === 'fr' ? 'Grossesse' : 'Gàtt',
+      trying: language === 'fr' ? 'Projet de grossesse' : 'Xalaat doom',
+      postpartum: language === 'fr' ? 'Post-partum' : 'Ginnaaw wasin',
+      menopause: language === 'fr' ? 'Ménopause' : 'Ménopause',
+      general: language === 'fr' ? 'Santé générale' : 'Wér gu yëpp',
+      'prefer-not-say': copy.emptyFemale,
+    } as const;
+
+    return labels[lifeSituation] ?? lifeSituation;
+  }, [copy.emptyFemale, language, lifeSituation]);
+
   const suggestedMatches = useMemo<MatchCard[]>(() => {
     const matches: MatchCard[] = [];
 
@@ -212,10 +232,10 @@ export default function CommunityRoomsScreen() {
   const visibleProfileSignals = useMemo(() => {
     return [
       { label: copy.ageLabel, value: selectedAge ?? copy.empty },
-      { label: copy.situationLabel, value: lifeSituation ?? copy.emptyFemale },
+      { label: copy.situationLabel, value: localizedSituation },
       { label: copy.needsLabel, value: needsSummary },
     ];
-  }, [copy.ageLabel, copy.empty, copy.emptyFemale, copy.needsLabel, copy.situationLabel, lifeSituation, needsSummary, selectedAge]);
+  }, [copy.ageLabel, copy.empty, copy.needsLabel, copy.situationLabel, localizedSituation, needsSummary, selectedAge]);
 
   const saveProfile = async () => {
     await saveCommunityProfile(communityProfile);

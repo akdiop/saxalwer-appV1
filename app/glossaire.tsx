@@ -55,7 +55,7 @@ export default function GlossaireScreen() {
     const items = SORTED_TERMS.map((term) => ({
       term,
       entry: GLOSSARY[term],
-    })).filter(({ entry }) => {
+    })).filter(({ term, entry }) => {
       if (activeTheme !== 'all' && entry.category !== activeTheme) {
         return false;
       }

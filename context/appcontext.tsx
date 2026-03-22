@@ -110,6 +110,9 @@ export interface UserProfile {
 	educationLevel: string;
 	hobbies: string[];
 	aboutMe: string;
+	pregnancyStatus: string;
+	pregnancyWeeks: string;
+	pregnancyDueDate: string;
 }
 
 export interface FeedbackEntry {
@@ -274,6 +277,9 @@ const defaultState: AppState = {
 		educationLevel: '',
 		hobbies: [],
 		aboutMe: '',
+		pregnancyStatus: '',
+		pregnancyWeeks: '',
+		pregnancyDueDate: '',
 	},
 	hasSeenWelcome: false,
 	feedbackEntries: [],

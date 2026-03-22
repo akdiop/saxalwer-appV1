@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 
 import { colors } from '../../constants/colors';
-import { ProfileMockProvider, useProfileMock } from '../../context/ProfileMockContext';
+import { useProfileMock } from '../../context/ProfileMockContext';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -103,6 +103,15 @@ const FAITH_OPTIONS: OptionItem[] = [
   { id: 'traditional', fr: 'Religion traditionnelle', wo: 'Degg-degg bu mbokk' },
   { id: 'spiritual', fr: 'Spirituelle (non religieuse)', wo: 'Spirituel' },
   { id: 'none', fr: 'Aucune', wo: 'Amul' },
+  { id: 'prefer-not-say', fr: 'Je prefere ne pas dire', wo: 'Begguma wax' },
+];
+
+const PREGNANCY_STATUS_OPTIONS: OptionItem[] = [
+  { id: '', fr: 'Non precise', wo: 'Binduwul' },
+  { id: 'pregnant', fr: 'Je suis enceinte', wo: 'Dama gatt' },
+  { id: 'not-pregnant', fr: 'Je ne suis pas enceinte', wo: 'Gattuma' },
+  { id: 'trying', fr: 'J essaie de tomber enceinte', wo: 'Dama seet doom' },
+  { id: 'postpartum', fr: 'Je suis en post-partum', wo: 'Maangi ci ginnaaw wasin' },
   { id: 'prefer-not-say', fr: 'Je prefere ne pas dire', wo: 'Begguma wax' },
 ];
 
@@ -208,6 +217,9 @@ function EditProfileContent() {
   const [educationLevel, setEducationLevel] = useState(userProfile.educationLevel || '');
   const [hobbies, setHobbies] = useState(userProfile.hobbies || []);
   const [aboutMe, setAboutMe] = useState(userProfile.aboutMe || '');
+  const [pregnancyStatus, setPregnancyStatus] = useState(userProfile.pregnancyStatus || '');
+  const [pregnancyWeeks, setPregnancyWeeks] = useState(userProfile.pregnancyWeeks || '');
+  const [pregnancyDueDate, setPregnancyDueDate] = useState(userProfile.pregnancyDueDate || '');
   const [hobbyInput, setHobbyInput] = useState('');
   const [saved, setSaved] = useState(false);
 
@@ -223,6 +235,11 @@ function EditProfileContent() {
 
   const infoFaith = useMemo(
     () => FAITH_OPTIONS.map((item) => ({ id: item.id, label: wo ? item.wo : item.fr })),
+    [wo]
+  );
+
+  const infoPregnancyStatus = useMemo(
+    () => PREGNANCY_STATUS_OPTIONS.map((item) => ({ id: item.id, label: wo ? item.wo : item.fr })),
     [wo]
   );
 
@@ -249,6 +266,9 @@ function EditProfileContent() {
       educationLevel,
       hobbies,
       aboutMe,
+      pregnancyStatus,
+      pregnancyWeeks,
+      pregnancyDueDate,
     });
     setSaved(true);
     setTimeout(() => {
@@ -407,6 +427,51 @@ function EditProfileContent() {
               <Text style={styles.labelText}>{wo ? 'Begg am doom' : 'Desir d avoir des enfants'}</Text>
               <SelectField value={desireChildren} options={infoDesire} onChange={setDesireChildren} />
             </View>
+          </View>
+
+          <SectionTitle
+            icon="baby-face-outline"
+            label={wo ? 'Suivi grossesse' : 'Grossesse'}
+            color={colors.terracotta}
+          />
+
+          <View style={styles.fieldsBlock}>
+            <View>
+              <Text style={styles.labelText}>{wo ? 'Sa statut grossesse' : 'Statut de grossesse'}</Text>
+              <SelectField
+                value={pregnancyStatus}
+                options={infoPregnancyStatus}
+                onChange={setPregnancyStatus}
+              />
+            </View>
+
+            {(pregnancyStatus === 'pregnant' || pregnancyStatus === 'postpartum') ? (
+              <View>
+                <Text style={styles.labelText}>
+                  {wo ? 'Nyaata semaine / fan ?' : 'Depuis combien de semaines ?'}
+                </Text>
+                <TextInput
+                  value={pregnancyWeeks}
+                  onChangeText={setPregnancyWeeks}
+                  placeholder={wo ? 'Ex: 18 semaines' : 'Ex: 18 semaines'}
+                  placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
+                  style={styles.input}
+                />
+              </View>
+            ) : null}
+
+            {pregnancyStatus === 'pregnant' ? (
+              <View>
+                <Text style={styles.labelText}>{wo ? 'Bess bu muñ' : 'Date prévue du terme'}</Text>
+                <TextInput
+                  value={pregnancyDueDate}
+                  onChangeText={setPregnancyDueDate}
+                  placeholder={'YYYY-MM-DD'}
+                  placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
+                  style={styles.input}
+                />
+              </View>
+            ) : null}
           </View>
 
           <SectionTitle icon="flower-outline" label={wo ? 'Sa degg-degg' : 'Confession religieuse'} color={'#7A8C5A'} />
@@ -641,11 +706,7 @@ function EditProfileContent() {
 }
 
 export default function EditProfileScreen() {
-  return (
-    <ProfileMockProvider>
-      <EditProfileContent />
-    </ProfileMockProvider>
-  );
+  return <EditProfileContent />;
 }
 
 const styles = StyleSheet.create({

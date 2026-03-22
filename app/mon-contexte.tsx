@@ -613,10 +613,10 @@ export default function MonContexteScreen() {
 						<Text style={styles.secondaryActionText}>{copy.buttons.export}</Text>
 					</Pressable>
 
-					<Pressable onPress={() => router.push('/profil' as never)} style={styles.secondaryActionFull}>
-						<Ionicons name="notifications-outline" size={18} color={BASE.deepGreen} />
-						<Text style={styles.secondaryActionText}>{copy.buttons.notifications}</Text>
-					</Pressable>
+						<Pressable onPress={() => router.push('/notifications' as never)} style={styles.secondaryActionFull}>
+							<Ionicons name="notifications-outline" size={18} color={BASE.deepGreen} />
+							<Text style={styles.secondaryActionText}>{copy.buttons.notifications}</Text>
+						</Pressable>
 				</View>
 			</ScrollView>
 		</SafeAreaView>

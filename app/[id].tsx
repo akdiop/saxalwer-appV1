@@ -215,7 +215,7 @@ export default function ArticleDetailScreen() {
               onPress={() => setLanguage(wo ? 'fr' : 'wo')}
               style={styles.secondaryButton}
             >
-              <Text style={styles.secondaryButtonText}>{wo ? 'FR' : 'WO'}</Text>
+              <Text style={styles.secondaryButtonText}>{wo ? 'Français' : 'Wolof'}</Text>
             </Pressable>
             <Pressable onPress={handleAudioToggle} style={styles.secondaryButton}>
               <Text style={styles.secondaryButtonText}>

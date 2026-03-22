@@ -279,7 +279,7 @@ export default function CalendrierScreen() {
 
             <View style={styles.headerActionsRow}>
               <Pressable onPress={() => setLanguage(wo ? 'fr' : 'wo')} style={styles.headerPill}>
-                <Text style={styles.headerPillText}>{wo ? 'FR' : 'WO'}</Text>
+                <Text style={styles.headerPillText}>{wo ? 'Français' : 'Wolof'}</Text>
               </Pressable>
 
               <Pressable onPress={toggleOralMode} style={styles.headerPillIcon}>

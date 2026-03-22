@@ -27,6 +27,9 @@ type UserProfile = {
   educationLevel: string;
   hobbies: string[];
   aboutMe: string;
+  pregnancyStatus: string;
+  pregnancyWeeks: string;
+  pregnancyDueDate: string;
 };
 
 type ProfileMockState = {
@@ -117,6 +120,9 @@ export function ProfileMockProvider({ children }: { children: ReactNode }) {
     educationLevel: '',
     hobbies: [],
     aboutMe: '',
+    pregnancyStatus: '',
+    pregnancyWeeks: '',
+    pregnancyDueDate: '',
   });
 
   const sensitiveOrientation = {

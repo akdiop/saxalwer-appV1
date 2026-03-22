@@ -145,7 +145,7 @@ export default function TutorialScreen() {
           <Pressable style={styles.primaryCompletionButton} onPress={finishTutorial}>
             <Ionicons name="sparkles-outline" size={16} color={colors.beige} />
             <Text style={styles.primaryCompletionText}>
-              {language === 'wo' ? 'Dem ci kër gi' : 'Aller au tableau de bord'}
+              {language === 'wo' ? 'Tambali sama yoon' : 'Commencer mon parcours'}
             </Text>
           </Pressable>
 
@@ -159,7 +159,7 @@ export default function TutorialScreen() {
             onPress={() => setLanguage(language === 'fr' ? 'wo' : 'fr')}
             style={styles.languagePill}
           >
-            <Text style={styles.languagePillText}>{language.toUpperCase()}</Text>
+            <Text style={styles.languagePillText}>{language === 'fr' ? 'Français' : 'Wolof'}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -224,7 +224,7 @@ export default function TutorialScreen() {
               style={styles.metaPill}
             >
               <Ionicons name="language-outline" size={14} color={colors.deepGreen} />
-              <Text style={styles.metaPillText}>{language.toUpperCase()}</Text>
+              <Text style={styles.metaPillText}>{language === 'fr' ? 'Français' : 'Wolof'}</Text>
             </Pressable>
 
             <Pressable onPress={toggleOralMode} style={styles.metaPillMuted}>

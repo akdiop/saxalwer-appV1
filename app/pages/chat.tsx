@@ -19,7 +19,7 @@ import {
 
 import { LocationFinder } from '../../components/article/LocationFinder';
 import { colors } from '../../constants/colors';
-import { ProfileMockProvider, useProfileMock } from '../../context/ProfileMockContext';
+import { useProfileMock } from '../../context/ProfileMockContext';
 import { ARTICLES } from '../../data/articles';
 
 type ChatMessageKind = 'text' | 'articles' | 'locations' | 'voice-note' | 'image';
@@ -89,7 +89,7 @@ const QUICK_ACTIONS: ChatQuickAction[] = [
 	},
 ];
 
-const ARTICLE_KEYWORDS: Array<{ keywords: string[]; articleIds: number[]; locationTags?: string[] }> = [
+const ARTICLE_KEYWORDS: { keywords: string[]; articleIds: number[]; locationTags?: string[] }[] = [
 	{
 		keywords: ['cycle', 'regle', 'règle', 'irrégulier', 'irregulier', 'ovulation'],
 		articleIds: [1, 6],
@@ -777,11 +777,7 @@ function ChatScreenContent() {
 }
 
 export default function ChatScreen() {
-	return (
-		<ProfileMockProvider>
-			<ChatScreenContent />
-		</ProfileMockProvider>
-	);
+	return <ChatScreenContent />;
 }
 
 const styles = StyleSheet.create({

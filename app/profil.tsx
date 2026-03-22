@@ -20,7 +20,7 @@ import NotificationCategoryCard, {
 import ProfileRowItem from '../components/profile/ProfileRowItem';
 import ProfileStatCard from '../components/profile/ProfileStatCard';
 import { colors } from '../constants/colors';
-import { ProfileMockProvider, useProfileMock } from '../context/ProfileMockContext';
+import { useProfileMock } from '../context/ProfileMockContext';
 import { ARTICLES } from '../data/mockArticles';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -181,8 +181,8 @@ function ProfilContent() {
               <ProfileRowItem
                 icon="language"
                 title="Changer la langue"
-                subtitle="Basculer entre FR et WO"
-                rightText={language.toUpperCase()}
+                subtitle="Basculer entre Français et Wolof"
+                rightText={language === 'fr' ? 'Français' : 'Wolof'}
                 onPress={() => setLanguage(language === 'fr' ? 'wo' : 'fr')}
               />
               <ProfileRowItem
@@ -190,7 +190,7 @@ function ProfilContent() {
                 title="Modifier mon profil"
                 onPress={() => {
                   setMenuOpen(false);
-                  router.push('/profile-selection' as never);
+                  router.push('/edit-profile' as never);
                 }}
               />
               <ProfileRowItem
@@ -203,7 +203,8 @@ function ProfilContent() {
               />
               <ProfileRowItem
                 icon="log-in-outline"
-                title="Créer un compte / connexion"
+                title="Connexion / compte"
+                subtitle="Se connecter ou créer un compte"
                 onPress={() => {
                   setMenuOpen(false);
                   router.push('/login' as never);
@@ -256,6 +257,33 @@ function ProfilContent() {
               />
             </View>
           </View>
+
+          {(selectedGoals.includes('grossesse') || userProfile.pregnancyStatus === 'pregnant') && (
+            <View style={styles.section}>
+              <View style={styles.singleCardWrap}>
+                <ProfileStatCard
+                  icon="medical-outline"
+                  title="Suivi grossesse"
+                  value={
+                    userProfile.pregnancyStatus === 'pregnant'
+                      ? `${userProfile.pregnancyWeeks || '?'} semaines`
+                      : userProfile.pregnancyStatus === 'trying'
+                        ? 'Projet de grossesse'
+                        : userProfile.pregnancyStatus === 'postpartum'
+                          ? 'Post-partum'
+                          : 'À renseigner'
+                  }
+                  subtitle={
+                    userProfile.pregnancyStatus === 'pregnant' && userProfile.pregnancyDueDate
+                      ? `Terme prévu : ${userProfile.pregnancyDueDate}`
+                      : 'Ajoute ton statut et ton terme dans le profil'
+                  }
+                  showEdit
+                  onEditPress={() => router.push('/edit-profile' as never)}
+                />
+              </View>
+            </View>
+          )}
 
           <View style={styles.section}>
             <View style={styles.grid2}>
@@ -504,11 +532,7 @@ function ProfilContent() {
 }
 
 export default function ProfilScreen() {
-  return (
-    <ProfileMockProvider>
-      <ProfilContent />
-    </ProfileMockProvider>
-  );
+  return <ProfilContent />;
 }
 
 const styles = StyleSheet.create({
@@ -662,6 +686,9 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: 14,
     marginTop: 12,
+  },
+  singleCardWrap: {
+    width: '100%',
   },
   sectionBottom: {
     paddingHorizontal: 14,
