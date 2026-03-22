@@ -43,6 +43,16 @@ const TEXT = {
     report: 'Signaler',
     reportDone: 'Message signale',
     sendDone: 'Message envoye',
+    roomGuideTitle: 'Cadre du salon',
+    roomGuideDesc: 'Bienveillance, anonymat au choix et échanges utiles entre femmes concernées.',
+    moderationTitle: 'Modération active',
+    moderationDesc: 'Les messages signalés sont revus pour protéger un espace respectueux et sans pression.',
+    starterTitle: 'Sujets pour commencer',
+    safetyRules: [
+      'Parle depuis ton vécu, sans juger celui des autres',
+      'Ne partage pas d’informations trop identifiantes si tu veux rester discrète',
+      'En cas d’urgence médicale, consulte un professionnel rapidement',
+    ],
   },
   wo: {
     roomNotFound: 'Room bi amul',
@@ -58,8 +68,99 @@ const TEXT = {
     report: 'Signale',
     reportDone: 'Message yi signale nanu',
     sendDone: 'Message yeesal na',
+    roomGuideTitle: 'Yoonu salon bi',
+    roomGuideDesc: 'Yërmandé, anonymat su la neexee ak waxtaan yu jariñ ci diggante jigéen yu concernées.',
+    moderationTitle: 'Modération buy dox',
+    moderationDesc: 'Messages yi ñu signale dañuy leen xool ngir aar bereb bu am respect te amul pression.',
+    starterTitle: 'Sujets ngir tàmbali',
+    safetyRules: [
+      'Waxal li nga dund te bul xaste dundu keneen',
+      'Bul sédd xetu yu la mën a xame bu bëggee des ci sutura',
+      'Su amee urgence médicale, demal tabax bu gaaw',
+    ],
   },
 } as const;
+
+const ROOM_STARTERS: Record<
+  string,
+  {
+    fr: string[];
+    wo: string[];
+  }
+> = {
+  endometriose: {
+    fr: [
+      'Comment gérez-vous les jours de douleur intense ?',
+      'Quels signes vous ont poussées à consulter ?',
+      'Qu’est-ce qui vous aide au quotidien ?',
+    ],
+    wo: [
+      'Naka ngeen di doxale bésu mettit bu tar ?',
+      'Ban signes moo leen tax ngeen dem consultation ?',
+      'Lan moo leen di dimbali ci dund gu bés bu nekk ?',
+    ],
+  },
+  contraception: {
+    fr: [
+      'Quels critères comptent le plus pour choisir une méthode ?',
+      'Comment parler contraception avec un professionnel ?',
+      'Quels effets secondaires avez-vous observés ?',
+    ],
+    wo: [
+      'Ban critères moo leen gën a am solo ci tànnal méthode ?',
+      'Naka ngeen di wax contraception ak professionnel ?',
+      'Ban effets secondaires ngeen gis ?',
+    ],
+  },
+  maternite: {
+    fr: [
+      'Comment vivez-vous votre projet de grossesse ?',
+      'Quels conseils vous ont rassurée au début ?',
+      'Comment vous préparez-vous à la maternité ?',
+    ],
+    wo: [
+      'Naka ngeen di dunde seen projet gàtt ?',
+      'Ban conseils moo leen rassurer ci njàlbéen ?',
+      'Naka ngeen di waajal seen bopp ngir yaay ?',
+    ],
+  },
+  menopause: {
+    fr: [
+      'Quels changements ressentez-vous le plus ?',
+      'Qu’est-ce qui améliore votre sommeil ou votre confort ?',
+      'Comment en parlez-vous autour de vous ?',
+    ],
+    wo: [
+      'Ban soppi ngeen di gën a yëg ?',
+      'Lan moo di gën a yokk sa nelaw walla sa confort ?',
+      'Naka ngay ko di wax ak nit ñi la wër ?',
+    ],
+  },
+  intimite: {
+    fr: [
+      'Comment parler de santé intime sans gêne ?',
+      'Quelles questions aimeriez-vous poser en consultation ?',
+      'Quels sujets restent les plus sensibles pour vous ?',
+    ],
+    wo: [
+      'Naka ngay wax santé intime te amul rus ?',
+      'Ban laaj nga bëgg laaj ci consultation ?',
+      'Ban sujets la gën a yëngu ci yaw ?',
+    ],
+  },
+  soutien: {
+    fr: [
+      'De quoi as-tu besoin en ce moment ?',
+      'Qu’est-ce qui te ferait du bien aujourd’hui ?',
+      'Comment la communauté peut-elle te soutenir ?',
+    ],
+    wo: [
+      'Lan nga soxla ci jamono jii ?',
+      'Lan moo la mën a def baax tey ?',
+      'Naka communauté bi mën laa jappale ?',
+    ],
+  },
+};
 
 export default function CommunityRoomScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
@@ -267,6 +368,53 @@ export default function CommunityRoomScreen() {
             contentContainerStyle={styles.messagesContent}
             showsVerticalScrollIndicator={false}
           >
+            <View style={styles.roomGuideCard}>
+              <View style={styles.roomGuideHeader}>
+                <View style={styles.roomGuideIconWrap}>
+                  <Ionicons name="shield-checkmark-outline" size={16} color={room.color} />
+                </View>
+                <View style={styles.roomGuideTextWrap}>
+                  <Text style={styles.roomGuideTitle}>{copy.roomGuideTitle}</Text>
+                  <Text style={styles.roomGuideDesc}>{copy.roomGuideDesc}</Text>
+                </View>
+              </View>
+
+              <View style={styles.safetyList}>
+                {copy.safetyRules.map((rule) => (
+                  <View key={rule} style={styles.safetyRow}>
+                    <View style={[styles.safetyDot, { backgroundColor: room.color }]} />
+                    <Text style={styles.safetyText}>{rule}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.moderationCard}>
+              <Ionicons name="flag-outline" size={17} color={COMMUNITY_COLORS.terracotta} />
+              <View style={styles.moderationTextWrap}>
+                <Text style={styles.moderationTitle}>{copy.moderationTitle}</Text>
+                <Text style={styles.moderationDesc}>{copy.moderationDesc}</Text>
+              </View>
+            </View>
+
+            <View style={styles.startersSection}>
+              <Text style={styles.startersTitle}>{copy.starterTitle}</Text>
+              <View style={styles.startersWrap}>
+                {(language === 'fr'
+                  ? ROOM_STARTERS[selectedRoomId]?.fr
+                  : ROOM_STARTERS[selectedRoomId]?.wo
+                )?.map((starter) => (
+                  <Pressable
+                    key={starter}
+                    onPress={() => setNewMessage(starter)}
+                    style={styles.starterChip}
+                  >
+                    <Text style={styles.starterChipText}>{starter}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
             {messages.length === 0 ? (
               <View style={styles.emptyWrap}>
                 <Ionicons name="chatbubble-ellipses-outline" size={48} color={room.color} />
@@ -467,6 +615,112 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 10,
     paddingBottom: 30,
+  },
+  roomGuideCard: {
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(194,106,61,0.16)',
+    padding: 14,
+  },
+  roomGuideHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginBottom: 10,
+  },
+  roomGuideIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: 'rgba(15,61,46,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roomGuideTextWrap: {
+    flex: 1,
+  },
+  roomGuideTitle: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 3,
+  },
+  roomGuideDesc: {
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  safetyList: {
+    gap: 8,
+  },
+  safetyRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  safetyDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginTop: 5,
+  },
+  safetyText: {
+    flex: 1,
+    color: 'rgba(74,47,39,0.82)',
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  moderationCard: {
+    backgroundColor: 'rgba(184,112,80,0.08)',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(184,112,80,0.18)',
+    padding: 12,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+  },
+  moderationTextWrap: {
+    flex: 1,
+  },
+  moderationTitle: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  moderationDesc: {
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  startersSection: {
+    marginBottom: 4,
+  },
+  startersTitle: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  startersWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  starterChip: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(194,106,61,0.16)',
+  },
+  starterChipText: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 12,
+    fontWeight: '600',
   },
   emptyWrap: {
     alignItems: 'center',
