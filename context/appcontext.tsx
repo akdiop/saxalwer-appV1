@@ -107,6 +107,9 @@ export interface UserProfile {
 	contraceptionMethod: string;
 	healthConditions: string[];
 	religiousFaith: string;
+	educationLevel: string;
+	hobbies: string[];
+	aboutMe: string;
 }
 
 export interface FeedbackEntry {
@@ -268,6 +271,9 @@ const defaultState: AppState = {
 		contraceptionMethod: '',
 		healthConditions: [],
 		religiousFaith: '',
+		educationLevel: '',
+		hobbies: [],
+		aboutMe: '',
 	},
 	hasSeenWelcome: false,
 	feedbackEntries: [],
@@ -443,7 +449,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 				},
 			}));
 		}
-	}, [state.personalization, isLoaded]);
+	}, [isLoaded, state.discreteMode, state.oralMode, state.personalization]);
 
 	React.useEffect(() => {
 		if (!isLoaded || !state.isOnboarded) {
@@ -602,7 +608,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 				},
 			}));
 		}
-	}, [isLoaded, state.isOnboarded]);
+	}, [
+		isLoaded,
+		state.isOnboarded,
+		state.notificationPreferences,
+		state.sensitiveOrientation?.completedAt,
+	]);
 
 	const setAge = (age: string) => setState((prev) => ({ ...prev, selectedAge: age }));
 	const setNeeds = (needs: string[]) => setState((prev) => ({ ...prev, selectedNeeds: needs }));
@@ -626,7 +637,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		}));
 	};
 
-	const isFavorite = (articleId: number) => state.favorites.includes(articleId);
+	const isFavorite = React.useCallback(
+		(articleId: number) => state.favorites.includes(articleId),
+		[state.favorites]
+	);
 
 	const addCycleNotification = (msg: string, metaphor: string, category: NotifCategory) => {
 		setState((prev) => ({
@@ -849,7 +863,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			updateCycleData,
 			setPersonalization,
 		}),
-		[state, unreadCount]
+		[state, unreadCount, isFavorite]
 	);
 
 	return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

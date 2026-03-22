@@ -255,73 +255,6 @@ function EditProfileContent() {
       router.back();
     }, 600);
   };
-          {/* Section niveau d’études, hobbies, à propos de moi */}
-          <SectionTitle icon="school-outline" label={wo ? 'Niveau d’études' : 'Niveau d’études'} color={colors.deepGreen} />
-          <View style={styles.fieldsBlock}>
-            <View>
-              <Text style={styles.labelText}>{wo ? 'Niveau d’études' : 'Niveau d’études'}</Text>
-              <TextInput
-                value={educationLevel}
-                onChangeText={setEducationLevel}
-                placeholder={wo ? 'Ex: Licence, Bac, etc.' : 'Ex: Licence, Bac, etc.'}
-                placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
-                style={styles.input}
-              />
-            </View>
-          </View>
-
-          <SectionTitle icon="star-outline" label={wo ? 'Hobbies' : 'Hobbies'} color={colors.terracotta} />
-          <View style={styles.fieldsBlock}>
-            <View>
-              <Text style={styles.labelText}>{wo ? 'Ajoute un hobby' : 'Ajoute un hobby'}</Text>
-              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-                <TextInput
-                  value={hobbyInput}
-                  onChangeText={setHobbyInput}
-                  placeholder={wo ? 'Ex: lecture, sport...' : 'Ex: lecture, sport...'}
-                  placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
-                  style={[styles.input, { flex: 1 }]}
-                />
-                <Pressable
-                  style={{ padding: 8, backgroundColor: colors.deepGreen, borderRadius: 8 }}
-                  onPress={() => {
-                    if (hobbyInput.trim() && !hobbies.includes(hobbyInput.trim())) {
-                      setHobbies((prev) => [...prev, hobbyInput.trim()]);
-                      setHobbyInput('');
-                    }
-                  }}
-                >
-                  <MaterialCommunityIcons name="plus" size={18} color={colors.white} />
-                </Pressable>
-              </View>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
-                {hobbies.map((hobby) => (
-                  <View key={hobby} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F7F3ED', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                    <Text style={{ color: colors.deepGreen, fontSize: 13 }}>{hobby}</Text>
-                    <Pressable onPress={() => setHobbies((prev) => prev.filter((h) => h !== hobby))}>
-                      <MaterialCommunityIcons name="close" size={14} color={colors.terracotta} style={{ marginLeft: 4 }} />
-                    </Pressable>
-                  </View>
-                ))}
-              </View>
-            </View>
-          </View>
-
-          <SectionTitle icon="account-details-outline" label={wo ? 'À propos de moi' : 'À propos de moi'} color={colors.copper} />
-          <View style={styles.fieldsBlock}>
-            <View>
-              <Text style={styles.labelText}>{wo ? 'Parle de toi' : 'Parle de toi'}</Text>
-              <TextInput
-                value={aboutMe}
-                onChangeText={setAboutMe}
-                placeholder={wo ? 'Ex: Je suis passionnée de...' : 'Ex: Je suis passionnée de...'}
-                placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
-                style={[styles.input, { minHeight: 60, textAlignVertical: 'top' }]}
-                multiline
-              />
-            </View>
-          </View>
-
   const handlePhotoUpload = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -612,6 +545,72 @@ function EditProfileContent() {
                 ? 'Am walla amul, lepp nebb na. Men nga soppi ko bes bu nekk.'
                 : 'Aucune pression : tu peux modifier ces informations à tout moment. Elles ne sont jamais partagées.'}
             </Text>
+          </View>
+
+          <SectionTitle icon="school-outline" label={wo ? 'Niveau d’études' : 'Niveau d’études'} color={colors.deepGreen} />
+          <View style={styles.fieldsBlock}>
+            <View>
+              <Text style={styles.labelText}>{wo ? 'Niveau d’études' : 'Niveau d’études'}</Text>
+              <TextInput
+                value={educationLevel}
+                onChangeText={setEducationLevel}
+                placeholder={wo ? 'Ex: Licence, Bac, etc.' : 'Ex: Licence, Bac, etc.'}
+                placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
+                style={styles.input}
+              />
+            </View>
+          </View>
+
+          <SectionTitle icon="star-outline" label={wo ? 'Hobbies' : 'Hobbies'} color={colors.terracotta} />
+          <View style={styles.fieldsBlock}>
+            <View>
+              <Text style={styles.labelText}>{wo ? 'Ajoute un hobby' : 'Ajoute un hobby'}</Text>
+              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+                <TextInput
+                  value={hobbyInput}
+                  onChangeText={setHobbyInput}
+                  placeholder={wo ? 'Ex: lecture, sport...' : 'Ex: lecture, sport...'}
+                  placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
+                  style={[styles.input, { flex: 1 }]}
+                />
+                <Pressable
+                  style={{ padding: 8, backgroundColor: colors.deepGreen, borderRadius: 8 }}
+                  onPress={() => {
+                    if (hobbyInput.trim() && !hobbies.includes(hobbyInput.trim())) {
+                      setHobbies((prev) => [...prev, hobbyInput.trim()]);
+                      setHobbyInput('');
+                    }
+                  }}
+                >
+                  <MaterialCommunityIcons name="plus" size={18} color={colors.white} />
+                </Pressable>
+              </View>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
+                {hobbies.map((hobby) => (
+                  <View key={hobby} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F7F3ED', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+                    <Text style={{ color: colors.deepGreen, fontSize: 13 }}>{hobby}</Text>
+                    <Pressable onPress={() => setHobbies((prev) => prev.filter((h) => h !== hobby))}>
+                      <MaterialCommunityIcons name="close" size={14} color={colors.terracotta} style={{ marginLeft: 4 }} />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          <SectionTitle icon="account-details-outline" label={wo ? 'À propos de moi' : 'À propos de moi'} color={colors.copper} />
+          <View style={styles.fieldsBlock}>
+            <View>
+              <Text style={styles.labelText}>{wo ? 'Parle de toi' : 'Parle de toi'}</Text>
+              <TextInput
+                value={aboutMe}
+                onChangeText={setAboutMe}
+                placeholder={wo ? 'Ex: Je suis passionnée de...' : 'Ex: Je suis passionnée de...'}
+                placeholderTextColor={'rgba(74, 47, 39, 0.45)'}
+                style={[styles.input, { minHeight: 60, textAlignVertical: 'top' }]}
+                multiline
+              />
+            </View>
           </View>
 
           <View style={styles.privacyNote}>

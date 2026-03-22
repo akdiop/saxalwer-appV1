@@ -24,6 +24,9 @@ type UserProfile = {
   contraceptionMethod: string;
   healthConditions: string[];
   religiousFaith: string;
+  educationLevel: string;
+  hobbies: string[];
+  aboutMe: string;
 };
 
 type ProfileMockState = {
@@ -64,7 +67,7 @@ type ProfileMockState = {
     key: 'cycle' | 'medication' | 'wellness',
     frequency: NotificationFrequency
   ) => void;
-  cycleNotifications: Array<{ id: string; title: string; time: string }>;
+  cycleNotifications: { id: string; title: string; time: string }[];
   firstName: string;
 };
 
@@ -111,6 +114,9 @@ export function ProfileMockProvider({ children }: { children: ReactNode }) {
     contraceptionMethod: 'pilule',
     healthConditions: ['Anemie legere', 'Cycle irregulier'],
     religiousFaith: '',
+    educationLevel: '',
+    hobbies: [],
+    aboutMe: '',
   });
 
   const sensitiveOrientation = {
