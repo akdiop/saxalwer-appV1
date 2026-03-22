@@ -46,6 +46,27 @@ const TEXT = {
     privacyHint:
       "Ces informations sont facultatives et t'aident à te connecter avec d'autres femmes dans des situations similaires. Tu peux les modifier à tout moment.",
     save: 'Enregistrer',
+    matchingTitle: 'Matching intelligent',
+    matchingDesc:
+      'Découvre des profils et salons proches de ton vécu : âge, situation, besoins et sujets de santé.',
+    matchingWhy: 'Pourquoi on te les suggère',
+    socialSafeTitle: 'Modération active',
+    socialSafeDesc:
+      'Règles claires, signalement rapide et surveillance continue pour protéger les échanges.',
+    moderationItems: [
+      'Signalement simple des messages inappropriés',
+      'Protection de l’anonymat et des données partagées',
+      'Tolérance zéro pour les jugements, insultes et pressions',
+    ],
+    sixRoomsTitle: '6 salons thématiques',
+    sixRoomsDesc:
+      'Endométriose, contraception, maternité, ménopause, intimité et soutien émotionnel.',
+    suggestedForYou: 'Suggestions pour toi',
+    openRoom: 'Ouvrir',
+    similarProfiles: 'Profils similaires',
+    ageLabel: 'Âge',
+    situationLabel: 'Situation',
+    needsLabel: 'Besoins',
   },
   wo: {
     title: 'Bereb bu wax',
@@ -68,8 +89,39 @@ const TEXT = {
     privacyHint:
       'Xetu yi dagnu la jox ngir jappale jigéen yu am waxtu bu mel ni sa yow. Men nga soppi ko kenn wakhtukoy.',
     save: 'Teg',
+    matchingTitle: 'Matching bu am xel',
+    matchingDesc:
+      'Gis profils ak salons yu jege sa dund : at, waxtu, soxla ak sujets wer yi.',
+    matchingWhy: 'Lu tax nu la ko digale',
+    socialSafeTitle: 'Modération buy dox',
+    socialSafeDesc:
+      'Am na yoon yu leer, signalement bu gaaw ak topptoo buy aar waxtaan yi.',
+    moderationItems: [
+      'Signalement bu yomb ci messages yu baaxul',
+      'Aaru anonymat ak xetu yi nga tudd',
+      'Duñu nangu ñaawal, xaste walla pression',
+    ],
+    sixRoomsTitle: '6 salons thématiques',
+    sixRoomsDesc:
+      'Endométriose, contraception, maternité, ménopause, intimité ak soutien émotionnel.',
+    suggestedForYou: 'Li nu la digal',
+    openRoom: 'Ubbi',
+    similarProfiles: 'Profils yu mel ni yaw',
+    ageLabel: 'At',
+    situationLabel: 'Waxtu',
+    needsLabel: 'Soxla',
   },
 } as const;
+
+type MatchCard = {
+  id: string;
+  title: string;
+  subtitle: string;
+  reason: string;
+  roomId: string;
+  color: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
+};
 
 export default function CommunityRoomsScreen() {
   const router = useRouter();
@@ -91,6 +143,79 @@ export default function CommunityRoomsScreen() {
 
     return selectedNeeds.join(', ');
   }, [copy.empty, selectedNeeds]);
+
+  const suggestedMatches = useMemo<MatchCard[]>(() => {
+    const matches: MatchCard[] = [];
+
+    const addMatch = (roomId: string, title: string, subtitle: string, reason: string, color: string, iconName: MatchCard['iconName']) => {
+      if (!matches.some((item) => item.roomId === roomId)) {
+        matches.push({ id: `${roomId}-${matches.length}`, roomId, title, subtitle, reason, color, iconName });
+      }
+    };
+
+    if (lifeSituation === 'trying' || selectedNeeds.some((need) => /grossesse|fertilit|matern/i.test(need))) {
+      addMatch(
+        'maternite',
+        language === 'fr' ? 'Projet maternel' : 'Xalaat ci yaay',
+        language === 'fr' ? 'Échanger avec des femmes en désir ou projet de grossesse.' : 'Waxtaan ak jigéen yu am bëgg-bëgg walla projet gàtt.',
+        language === 'fr' ? 'Basé sur ton intérêt pour la maternité et la fertilité.' : 'Mi ngi aju ci sa soxla maternité ak fertilité.',
+        COMMUNITY_COLORS.gold,
+        'sparkles-outline'
+      );
+    }
+
+    if (lifeSituation === 'menopause' || selectedAge === '50+') {
+      addMatch(
+        'menopause',
+        language === 'fr' ? 'Transitions et ménopause' : 'Jall yi ak ménopause',
+        language === 'fr' ? 'Un espace calme pour parler bouffées, sommeil et confort.' : 'Bereb bu dal ngir wax bouffées, nelaw ak jàmm.',
+        language === 'fr' ? 'Basé sur ta tranche d’âge ou ton étape de vie.' : 'Mi ngi aju ci sa at walla sa étape de vie.',
+        COMMUNITY_COLORS.green2,
+        'leaf-outline'
+      );
+    }
+
+    if (selectedNeeds.some((need) => /douleur|cycle|endom|sympt/i.test(need)) || lifeSituation === 'cycles') {
+      addMatch(
+        'endometriose',
+        language === 'fr' ? "Douleurs et endométriose" : 'Mettit ak endométriose',
+        language === 'fr' ? 'Partager des repères utiles avec des femmes concernées.' : 'Sédd repères yu jariñ ak jigéen yu nekk ci xaalis bi.',
+        language === 'fr' ? 'Basé sur tes besoins liés au cycle ou à la douleur.' : 'Mi ngi aju ci sa soxla yu jëm ci cycle walla mettit.',
+        COMMUNITY_COLORS.terracotta,
+        'heart-outline'
+      );
+    }
+
+    if (selectedNeeds.some((need) => /contracep|planning/i.test(need)) || lifeSituation === 'contraception') {
+      addMatch(
+        'contraception',
+        language === 'fr' ? 'Contraception et choix' : 'Contraception ak tànn',
+        language === 'fr' ? 'Comparer les méthodes avec des retours d’expérience.' : 'Melooy méthodes yi ak dégg seede yu dund.',
+        language === 'fr' ? 'Basé sur ton contexte de contraception.' : 'Mi ngi aju ci sa xaalis contraception.',
+        COMMUNITY_COLORS.deepGreen,
+        'shield-checkmark-outline'
+      );
+    }
+
+    addMatch(
+      'soutien',
+      language === 'fr' ? 'Écoute et soutien' : 'Déglu ak ndimbal',
+      language === 'fr' ? 'Pour trouver un espace doux, anonyme et bienveillant.' : 'Ngir am bereb bu lewet, anonyme te am yërmandé.',
+      language === 'fr' ? 'Toujours utile quand on veut être comprise sans jugement.' : 'Dafa jariñ saa su nekk bu nit bëggee ñu ko dégg te xastewul.',
+      COMMUNITY_COLORS.cacao,
+      'people-outline'
+    );
+
+    return matches.slice(0, 3);
+  }, [language, lifeSituation, selectedAge, selectedNeeds]);
+
+  const visibleProfileSignals = useMemo(() => {
+    return [
+      { label: copy.ageLabel, value: selectedAge ?? copy.empty },
+      { label: copy.situationLabel, value: lifeSituation ?? copy.emptyFemale },
+      { label: copy.needsLabel, value: needsSummary },
+    ];
+  }, [copy.ageLabel, copy.empty, copy.emptyFemale, copy.needsLabel, copy.situationLabel, lifeSituation, needsSummary, selectedAge]);
 
   const saveProfile = async () => {
     await saveCommunityProfile(communityProfile);
@@ -134,6 +259,85 @@ export default function CommunityRoomsScreen() {
             <View style={styles.noticeTextWrap}>
               <Text style={styles.noticeTitle}>{copy.secureTitle}</Text>
               <Text style={styles.noticeDesc}>{copy.secureDesc}</Text>
+            </View>
+          </View>
+
+          <View style={styles.featurePanel}>
+            <View style={styles.featurePanelHeader}>
+              <View style={[styles.featureIconWrap, { backgroundColor: 'rgba(26,60,52,0.10)' }]}>
+                <Ionicons name="grid-outline" size={18} color={COMMUNITY_COLORS.deepGreen} />
+              </View>
+              <View style={styles.featureTextWrap}>
+                <Text style={styles.featureTitle}>{copy.sixRoomsTitle}</Text>
+                <Text style={styles.featureDesc}>{copy.sixRoomsDesc}</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.featurePanel}>
+            <View style={styles.featurePanelHeader}>
+              <View style={[styles.featureIconWrap, { backgroundColor: 'rgba(194,106,61,0.10)' }]}>
+                <Ionicons name="git-network-outline" size={18} color={COMMUNITY_COLORS.copper} />
+              </View>
+              <View style={styles.featureTextWrap}>
+                <Text style={styles.featureTitle}>{copy.matchingTitle}</Text>
+                <Text style={styles.featureDesc}>{copy.matchingDesc}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.matchingSectionTitle}>{copy.suggestedForYou}</Text>
+            <View style={styles.matchCardsWrap}>
+              {suggestedMatches.map((match) => (
+                <Pressable
+                  key={match.id}
+                  onPress={() => router.push(`/communaute/${match.roomId}` as never)}
+                  style={[styles.matchCard, { borderColor: `${match.color}38` }]}
+                >
+                  <View style={[styles.matchIconWrap, { backgroundColor: `${match.color}18` }]}>
+                    <Ionicons name={match.iconName} size={18} color={match.color} />
+                  </View>
+                  <View style={styles.matchBody}>
+                    <Text style={styles.matchTitle}>{match.title}</Text>
+                    <Text style={styles.matchSubtitle}>{match.subtitle}</Text>
+                    <Text style={styles.matchReasonLabel}>{copy.matchingWhy}</Text>
+                    <Text style={styles.matchReason}>{match.reason}</Text>
+                  </View>
+                  <View style={styles.matchActionPill}>
+                    <Text style={styles.matchActionText}>{copy.openRoom}</Text>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+
+            <Text style={styles.matchingSectionTitle}>{copy.similarProfiles}</Text>
+            <View style={styles.profileSignalsRow}>
+              {visibleProfileSignals.map((signal) => (
+                <View key={signal.label} style={styles.signalChip}>
+                  <Text style={styles.signalLabel}>{signal.label}</Text>
+                  <Text style={styles.signalValue}>{signal.value}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.featurePanel}>
+            <View style={styles.featurePanelHeader}>
+              <View style={[styles.featureIconWrap, { backgroundColor: 'rgba(184,112,80,0.10)' }]}>
+                <Ionicons name="shield-checkmark-outline" size={18} color={COMMUNITY_COLORS.terracotta} />
+              </View>
+              <View style={styles.featureTextWrap}>
+                <Text style={styles.featureTitle}>{copy.socialSafeTitle}</Text>
+                <Text style={styles.featureDesc}>{copy.socialSafeDesc}</Text>
+              </View>
+            </View>
+
+            <View style={styles.moderationList}>
+              {copy.moderationItems.map((item) => (
+                <View key={item} style={styles.moderationRow}>
+                  <View style={styles.moderationDot} />
+                  <Text style={styles.moderationText}>{item}</Text>
+                </View>
+              ))}
             </View>
           </View>
 
@@ -367,10 +571,158 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   thematicTitle: {
+    marginTop: 4,
     marginBottom: 12,
     color: COMMUNITY_COLORS.deepGreen,
     fontSize: 17,
     fontWeight: '700',
+  },
+  featurePanel: {
+    backgroundColor: COMMUNITY_COLORS.warmWhite,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(194,106,61,0.12)',
+    padding: 14,
+    marginBottom: 14,
+  },
+  featurePanelHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  featureIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  featureTextWrap: {
+    flex: 1,
+  },
+  featureTitle: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  featureDesc: {
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  matchingSectionTitle: {
+    marginTop: 14,
+    marginBottom: 10,
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  matchCardsWrap: {
+    gap: 10,
+  },
+  matchCard: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 12,
+    backgroundColor: COMMUNITY_COLORS.beige,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+  },
+  matchIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  matchBody: {
+    flex: 1,
+  },
+  matchTitle: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 3,
+  },
+  matchSubtitle: {
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 12,
+    lineHeight: 17,
+    marginBottom: 8,
+  },
+  matchReasonLabel: {
+    color: COMMUNITY_COLORS.copper,
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
+  matchReason: {
+    color: 'rgba(74,47,39,0.78)',
+    fontSize: 11,
+    lineHeight: 16,
+  },
+  matchActionPill: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(15,61,46,0.09)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    alignSelf: 'flex-start',
+  },
+  matchActionText: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  profileSignalsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  signalChip: {
+    minWidth: '30%',
+    flexGrow: 1,
+    borderRadius: 14,
+    backgroundColor: 'rgba(15,61,46,0.06)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  signalLabel: {
+    color: 'rgba(74,47,39,0.62)',
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 3,
+  },
+  signalValue: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  moderationList: {
+    marginTop: 12,
+    gap: 10,
+  },
+  moderationRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  moderationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COMMUNITY_COLORS.terracotta,
+    marginTop: 5,
+  },
+  moderationText: {
+    flex: 1,
+    color: COMMUNITY_COLORS.cacao,
+    fontSize: 12,
+    lineHeight: 18,
   },
   roomsWrap: {
     gap: 12,
