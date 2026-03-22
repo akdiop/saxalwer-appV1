@@ -118,7 +118,7 @@ const FAQ_ITEMS: Record<'fr' | 'wo', FaqCategory[]> = {
       questions: [
         {
           q: 'Comment modifier mon parcours (âge, besoins) ?',
-          a: `Allez dans l'onglet "Parcours" (SamaWér), puis sélectionnez "Changer Mon Parcours". Vous pourrez mettre à jour votre tranche d'âge et vos besoins de santé pour recevoir du contenu adapté.`,
+          a: `Allez dans l'onglet "Parcours", puis sélectionnez "Changer Mon Parcours". Vous pourrez mettre à jour votre tranche d'âge et vos besoins de santé pour recevoir du contenu adapté.`,
         },
         {
           q: "L'assistant IA peut-il remplacer un médecin ?",
@@ -126,7 +126,7 @@ const FAQ_ITEMS: Record<'fr' | 'wo', FaqCategory[]> = {
         },
         {
           q: 'Comment retrouver mes articles favoris ?',
-          a: `Tous vos articles sauvegardés sont accessibles dans l'onglet "Parcours" (SamaWér), section "Mes Favoris". Tapez sur le cœur d'un article pour le sauvegarder.`,
+          a: `Tous vos articles sauvegardés sont accessibles dans l'onglet "Parcours", section "Mes Favoris". Tapez sur le cœur d'un article pour le sauvegarder.`,
         },
         {
           q: 'Le tracker de cycle est-il une méthode de contraception ?',
@@ -258,7 +258,7 @@ const FAQ_ITEMS: Record<'fr' | 'wo', FaqCategory[]> = {
       questions: [
         {
           q: 'Naka laa man a soppi sama parcours (yoon, besoins) ?',
-          a: 'Dem ci onglet "Parcours" (SamaWér), te tànnal "Changer Mon Parcours". Mën nga soppi sa yoon ak sa besoins ngir am contenu bu am solo ak sa boppam.',
+          a: 'Dem ci onglet "Parcours", te tànnal "Changer Mon Parcours". Mën nga soppi sa yoon ak sa besoins ngir am contenu bu am solo ak sa boppam.',
         },
         {
           q: 'Ndax assistant IA bi mn na remplaceewaat médecin ?',
@@ -266,7 +266,7 @@ const FAQ_ITEMS: Record<'fr' | 'wo', FaqCategory[]> = {
         },
         {
           q: 'Naka laa man a gis sama articles favoris ?',
-          a: 'Lépp sa articles yi sauvegardé nekk na ci onglet "Parcours" (SamaWér), section "Mes Favoris". Bët ci cœur bi ci article ngir sauvegarder.',
+          a: 'Lépp sa articles yi sauvegardé nekk na ci onglet "Parcours", section "Mes Favoris". Bët ci cœur bi ci article ngir sauvegarder.',
         },
       ],
     },

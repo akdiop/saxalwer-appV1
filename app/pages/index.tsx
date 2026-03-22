@@ -16,20 +16,23 @@ const VALUE_CARDS = [
   {
     icon: '•',
     title: 'Confidentialité absolue',
+    route: '/about',
   },
   {
     icon: '•',
     title: 'Accompagnement bienveillant',
+    route: '/chat',
   },
   {
     icon: '•',
     title: 'Informations fiables',
+    route: '/bibliotheque',
   },
 ];
 
 export default function IndexScreen() {
   const router = useRouter();
-  const { setConsent, setHasSeenWelcome, setLanguage } = useApp();
+  const { language, setConsent, setHasSeenWelcome, setLanguage } = useApp();
   const [selectedLanguage, setSelectedLanguage] = useState<'FRANCAIS' | 'WOLOF'>('FRANCAIS');
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
@@ -39,6 +42,27 @@ export default function IndexScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.topQuickActions}>
+          <Pressable
+            style={({ pressed }) => [styles.quickLanguageButton, pressed && styles.pressed]}
+            onPress={() => {
+              const nextLanguage = language === 'fr' ? 'wo' : 'fr';
+              setLanguage(nextLanguage);
+              setSelectedLanguage(nextLanguage === 'fr' ? 'FRANCAIS' : 'WOLOF');
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={
+              language === 'fr'
+                ? 'Passer l application en Wolof'
+                : 'Passer l application en Français'
+            }
+          >
+            <Text style={styles.quickLanguageButtonText}>
+              {language === 'fr' ? 'Français' : 'Wolof'}
+            </Text>
+          </Pressable>
+        </View>
+
         <View style={styles.topSection}>
           <Text style={styles.languagePrompt}>
             Choisis la langue dans laquelle tu es la plus à l&apos;aise.
@@ -159,6 +183,7 @@ export default function IndexScreen() {
             <Pressable
               key={item.title}
               style={({ pressed }) => [styles.valueCard, pressed && styles.pressed]}
+              onPress={() => router.push(item.route as never)}
               accessibilityRole="button"
             >
               <View style={styles.valueIconWrap}>
@@ -218,6 +243,22 @@ const styles = StyleSheet.create({
     paddingTop: 22,
     paddingBottom: 40,
     gap: 22,
+  },
+  topQuickActions: {
+    alignItems: 'flex-end',
+  },
+  quickLanguageButton: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#D8CBB7',
+    backgroundColor: '#FFF9F1',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  quickLanguageButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1A3C34',
   },
   topSection: {
     gap: 14,

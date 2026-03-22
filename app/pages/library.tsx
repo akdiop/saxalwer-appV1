@@ -191,10 +191,21 @@ export default function LibraryScreen() {
           </Text>
         </View>
 
+        <View style={styles.disclaimerCard}>
+          <Text style={styles.disclaimerTitle}>
+            {wo ? 'Leeral bu am solo' : 'Contenus en cours de validation'}
+          </Text>
+          <Text style={styles.disclaimerText}>
+            {wo
+              ? 'Jàngale yii ñu ngi leen di yokk te seetaat. Dinañu leen jox validation ak médecins ak professionnels de santé ci kanam.'
+              : 'Les contenus de cette bibliothèque sont encore en cours de développement et seront progressivement relus et validés par des médecins et professionnels de santé.'}
+          </Text>
+        </View>
+
         {!!tagFilter && (
           <View style={styles.tagBanner}>
             <Text style={styles.tagBannerText}>
-              {wo ? 'Filtré ci' : 'Filtré par'} : "{tagFilter}"
+              {wo ? 'Filtré ci' : 'Filtré par'} : &quot;{tagFilter}&quot;
             </Text>
             <Pressable
               onPress={() => {
@@ -356,6 +367,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 20,
     color: 'rgba(74,47,39,0.72)',
+  },
+  disclaimerCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(166,93,64,0.18)',
+    backgroundColor: '#FFF8F1',
+    padding: 16,
+    marginBottom: 14,
+  },
+  disclaimerTitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '800',
+    color: BASE.deepGreen,
+    marginBottom: 6,
+  },
+  disclaimerText: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: 'rgba(74,47,39,0.82)',
   },
   tagBanner: {
     borderRadius: 18,

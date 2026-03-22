@@ -91,7 +91,7 @@ export default function RessourcesPage() {
             <Feather name="book-open" size={18} color={COLORS.deepGreen} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.glossaryTitle}>{wo ? 'Glossaire SSR' : 'Glossaire SSR'}</Text>
+            <Text style={styles.glossaryTitle}>{wo ? 'Glossaire' : 'Glossaire'}</Text>
             <Text style={styles.glossaryText}>
               {wo
                 ? 'Seet waxi santé sexuelle ak reproductive te filtre ko ci theme.'

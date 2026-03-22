@@ -199,7 +199,7 @@ function SelectField({
 
 function EditProfileContent() {
   const router = useRouter();
-  const { userProfile, updateUserProfile, language, discreteMode } = useProfileMock();
+  const { userProfile, updateUserProfile, language } = useProfileMock();
   const wo = language === 'wo';
 
   const [name, setName] = useState(userProfile.name);
@@ -323,7 +323,7 @@ function EditProfileContent() {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.content, discreteMode && styles.discreteBlur]}
+          contentContainerStyle={styles.content}
         >
           <View style={styles.photoSection}>
             <View style={styles.photoFrameWrap}>
@@ -781,9 +781,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 110,
-  },
-  discreteBlur: {
-    opacity: 0.35,
   },
   photoSection: {
     alignItems: 'center',

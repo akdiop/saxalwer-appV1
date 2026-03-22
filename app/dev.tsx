@@ -42,22 +42,22 @@ const routes: RouteItem[] = [
   { path: '/onboarding/age', name: 'Onboarding - Age', icon: 'user', iconSet: 'feather', color: BASE.terracotta, target: '/onboarding/age' },
   { path: '/onboarding/besoins', name: 'Onboarding - Besoins', icon: 'heart', iconSet: 'feather', color: BASE.terracotta, target: '/onboarding/besoins' },
   { path: '/', name: 'Dashboard', icon: 'home', iconSet: 'feather', color: BASE.deepGreen, target: '/' },
-  { path: '/parcours', name: 'Profil (SamaWér)', icon: 'user', iconSet: 'feather', color: BASE.copper, target: '/profil' },
+  { path: '/profil', name: 'Profil', icon: 'user', iconSet: 'feather', color: BASE.copper, target: '/profil' },
   { path: '/chat', name: 'Chatbot Ndeysaan', icon: 'message-square', iconSet: 'feather', color: BASE.terracotta, target: '/chat' },
   { path: '/bibliotheque', name: 'Bibliothèque', icon: 'book-open', iconSet: 'feather', color: BASE.copper, target: '/bibliotheque' },
   { path: '/carte', name: 'Lieux de soin', icon: 'map-pin', iconSet: 'feather', color: BASE.deepGreen, target: '/carte' },
   { path: '/mon-contexte', name: 'Mon Contexte', icon: 'settings', iconSet: 'feather', color: BASE.terracotta, target: '/mon-contexte' },
   { path: '/communaute', name: 'Communauté (Liggéey)', icon: 'users', iconSet: 'feather', color: BASE.copper, target: '/communaute' },
   { path: '/calendrier', name: 'Calendrier', icon: 'calendar', iconSet: 'feather', color: BASE.deepGreen, target: '/calendrier' },
-  { path: '/stats-sante', name: 'Statistiques Santé', icon: 'bar-chart-3', iconSet: 'feather', color: BASE.terracotta, target: '/suivi' },
+  { path: '/suivi', name: 'Statistiques Santé', icon: 'bar-chart-3', iconSet: 'feather', color: BASE.terracotta, target: '/suivi' },
   { path: '/suivi', name: 'Suivi Santé', icon: 'heart', iconSet: 'feather', color: BASE.copper, target: '/suivi' },
   { path: '/urgence', name: 'Urgence', icon: 'alert-circle', iconSet: 'feather', color: BASE.terracotta, target: '/urgence' },
-  { path: '/journal', name: 'Journal Intime', icon: 'book', iconSet: 'feather', color: BASE.copper, target: '/suivi' },
+  { path: '/journal', name: 'Journal Intime', icon: 'book', iconSet: 'feather', color: BASE.copper, target: '/journal' },
   { path: '/medecins', name: 'Médecins', icon: 'user', iconSet: 'feather', color: BASE.deepGreen, target: '/medecins' },
   { path: '/faq', name: 'FAQ', icon: 'help-circle', iconSet: 'feather', color: BASE.terracotta, target: '/faq' },
-  { path: '/a-propos', name: 'À propos', icon: 'file-text', iconSet: 'feather', color: BASE.copper, target: '/a-propos' },
+  { path: '/about', name: 'À propos', icon: 'file-text', iconSet: 'feather', color: BASE.copper, target: '/about' },
   { path: '/orientation', name: 'Orientation', icon: 'target', iconSet: 'feather', color: BASE.deepGreen, target: '/orientation' },
-  { path: '/glossaire', name: 'Glossaire', icon: 'book-open-page-variant-outline', iconSet: 'material', color: BASE.terracotta, target: '/bibliotheque' },
+  { path: '/glossaire', name: 'Glossaire', icon: 'book-open-page-variant-outline', iconSet: 'material', color: BASE.terracotta, target: '/glossaire' },
   { path: '/ressources', name: 'Ressources', icon: 'book-open', iconSet: 'feather', color: BASE.copper, target: '/ressources' },
   { path: '/tutoriel', name: 'Tutoriel', icon: 'help-circle', iconSet: 'feather', color: BASE.deepGreen, target: '/tutoriel' },
   { path: '/notifications', name: 'Notifications', icon: 'alert-circle', iconSet: 'feather', color: BASE.terracotta, target: '/notifications' },
@@ -109,7 +109,6 @@ export default function DevNavigationScreen() {
       // Optionally reload app or navigate to splash
       router.replace('/splash');
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error('Failed to reset onboarding/splash state', e);
     }
   };

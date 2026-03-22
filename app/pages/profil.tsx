@@ -2,6 +2,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   LayoutAnimation,
   Platform,
@@ -21,7 +22,9 @@ import ProfileRowItem from '../../components/profile/ProfileRowItem';
 import ProfileStatCard from '../../components/profile/ProfileStatCard';
 import { colors } from '../../constants/colors';
 import { useProfileMock } from '../../context/ProfileMockContext';
+import { useApp } from '../../context/appcontext';
 import { ARTICLES } from '../../data/mockArticles';
+import { resetSplashShown } from '../../utils/splashUtils';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -50,7 +53,9 @@ function ProfilContent() {
     setNotificationPreferenceFrequency,
     cycleNotifications,
     firstName,
+    resetProfileMockState,
   } = useProfileMock();
+  const { resetAppState } = useApp();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
@@ -112,9 +117,31 @@ function ProfilContent() {
     setter(!current);
   };
 
+  const handleEraseData = () => {
+    Alert.alert(
+      'Effacer toutes les données ?',
+      'Cela supprimera ton profil, ton parcours, tes favoris et tes préférences enregistrées sur cet appareil.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Effacer et quitter',
+          style: 'destructive',
+          onPress: async () => {
+            resetProfileMockState();
+            await resetAppState();
+            resetSplashShown();
+            router.replace('/welcome' as never);
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        {menuOpen && <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)} />}
+
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
@@ -248,12 +275,14 @@ function ProfilContent() {
                 title="Profil santé"
                 value={userProfile.healthConditions[0] || 'General'}
                 subtitle={`${userProfile.healthConditions.length} indicateurs suivis`}
+                onPress={() => router.push('/edit-profile' as never)}
               />
               <ProfileStatCard
                 icon="layers-outline"
                 title="Mon contexte"
                 value={selectedNeeds[0] || 'Non defini'}
                 subtitle={`${selectedNeeds.length} besoins actifs`}
+                onPress={() => router.push('/mon-contexte' as never)}
                 showEdit
                 onEditPress={() => router.push('/mon-contexte' as never)}
               />
@@ -280,6 +309,7 @@ function ProfilContent() {
                       ? `Terme prévu : ${userProfile.pregnancyDueDate}`
                       : 'Ajoute ton statut et ton terme dans le profil'
                   }
+                  onPress={() => router.push('/edit-profile' as never)}
                   showEdit
                   onEditPress={() => router.push('/edit-profile' as never)}
                 />
@@ -294,12 +324,14 @@ function ProfilContent() {
                 title="Statistiques"
                 value="72%"
                 subtitle="Progression hebdomadaire"
+                onPress={() => router.push('/suivi' as never)}
               />
               <ProfileStatCard
                 icon="calendar-outline"
                 title="Calendrier"
                 value="3 rappels"
                 subtitle="Cette semaine"
+                onPress={() => router.push('/calendrier' as never)}
               />
             </View>
           </View>
@@ -332,8 +364,10 @@ function ProfilContent() {
                 </View>
               </View>
 
-              <View style={[styles.switch, discreteMode && styles.switchOn]}>
-                <View style={[styles.switchThumb, discreteMode && styles.switchThumbOn]} />
+              <View style={[styles.discreteStatusPill, discreteMode && styles.discreteStatusPillActive]}>
+                <Text style={[styles.discreteStatusText, discreteMode && styles.discreteStatusTextActive]}>
+                  {discreteMode ? 'Actif' : 'Off'}
+                </Text>
               </View>
             </Pressable>
           </View>
@@ -526,13 +560,12 @@ function ProfilContent() {
           </View>
 
           <View style={styles.sectionBottom}>
-            <Pressable style={styles.dangerBtn}>
+            <Pressable style={styles.dangerBtn} onPress={handleEraseData}>
               <Text style={styles.dangerText}>Effacer mes données et quitter</Text>
             </Pressable>
           </View>
         </ScrollView>
 
-        {menuOpen && <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)} />}
       </View>
     </SafeAreaView>
   );
@@ -777,25 +810,25 @@ const styles = StyleSheet.create({
   discreteDescActive: {
     color: '#FFF7F2',
   },
-  switch: {
-    width: 46,
-    height: 28,
-    borderRadius: 20,
-    backgroundColor: '#D7CEC0',
+  discreteStatusPill: {
+    minWidth: 54,
+    minHeight: 30,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: '#F1E7DB',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
   },
-  switchOn: {
+  discreteStatusPillActive: {
     backgroundColor: '#9B4E34',
   },
-  switchThumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.white,
+  discreteStatusText: {
+    color: colors.cocoa,
+    fontSize: 12,
+    fontWeight: '800',
   },
-  switchThumbOn: {
-    alignSelf: 'flex-end',
+  discreteStatusTextActive: {
+    color: colors.white,
   },
   expandHeaderCard: {
     minHeight: 54,

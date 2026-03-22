@@ -121,6 +121,7 @@ export default function HomeMainScreen() {
     selectedAge,
     lifeSituation,
     language,
+    setLanguage,
     unreadCount,
     quickAccessItems,
     setQuickAccessItems,
@@ -156,8 +157,8 @@ export default function HomeMainScreen() {
       : situationTheme?.greeting.fr ?? 'Bonjour,';
   const greetingSubtitle =
     language === 'wo'
-      ? situationTheme?.subgreeting.wo ?? 'SamaWér ngi fi ngir sa jàmm.'
-      : situationTheme?.subgreeting.fr ?? 'SamaWér est là pour ton équilibre.';
+      ? situationTheme?.subgreeting.wo ?? 'SaxalWér ngi fi ngir sa jàmm.'
+      : situationTheme?.subgreeting.fr ?? 'SaxalWér est là pour ton équilibre.';
 
   const lifeStage = useMemo<'young' | 'pregnant' | 'mature'>(() => {
     if (lifeSituation === 'pregnant' || lifeSituation === 'trying' || lifeSituation === 'postpartum') {
@@ -210,11 +211,27 @@ export default function HomeMainScreen() {
       >
         <View style={styles.headerRow}>
           <View style={styles.logoWrap}>
-            <Text style={styles.logoMain}>Sama</Text>
-            <Text style={styles.logoAccent}>Wer</Text>
+            <Text style={styles.logoMain}>Saxal</Text>
+            <Text style={styles.logoAccent}>Wér</Text>
           </View>
 
           <View style={styles.headerActions}>
+            <Pressable
+              onPress={() => setLanguage(language === 'fr' ? 'wo' : 'fr')}
+              style={({ pressed }) => [styles.languageButton, pressed && styles.headerPressed]}
+              accessibilityRole="button"
+              accessibilityLabel={
+                language === 'fr'
+                  ? 'Passer l application en Wolof'
+                  : "Passer l application en Français"
+              }
+            >
+              <MaterialCommunityIcons name="translate" size={16} color={BASE.deepGreen} />
+              <Text style={styles.languageButtonText}>
+                {language === 'fr' ? 'Français' : 'Wolof'}
+              </Text>
+            </Pressable>
+
             <Pressable
               onPress={() => router.push('/notifications' as never)}
               style={({ pressed }) => [styles.headerIconButton, pressed && styles.headerPressed]}
@@ -366,7 +383,7 @@ export default function HomeMainScreen() {
 
         <Text style={styles.sectionTitle}>Parcours & ressources</Text>
         <HorizontalScroll itemMinWidth={292} gap={14}>
-          <Pressable onPress={() => router.push('/parcours' as never)}>
+          <Pressable onPress={() => router.push('/profil' as never)}>
             <LifeStagePoster
               title="Découvrir mon rythme"
               stage={lifeStage}
@@ -555,6 +572,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  languageButton: {
+    minHeight: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    borderColor: BASE.border,
+    backgroundColor: '#FFF9F1',
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  languageButtonText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: BASE.deepGreen,
   },
   headerIconButton: {
     width: 38,

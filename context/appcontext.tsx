@@ -242,6 +242,7 @@ export interface AppContextType extends AppState {
 	trackGlossaryView: (term: string) => void;
 	updateCycleData: (data: Partial<CycleData>) => void;
 	setPersonalization: (context: PersonalizationContext) => void;
+	resetAppState: () => Promise<void>;
 }
 
 const STORAGE_KEY = 'samawer_state';
@@ -832,6 +833,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		});
 	};
 
+	const resetAppState = React.useCallback(async () => {
+		await AsyncStorage.removeItem(STORAGE_KEY);
+		setState(defaultState);
+	}, []);
+
 	const value = React.useMemo<AppContextType>(
 		() => ({
 			...state,
@@ -868,8 +874,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			trackGlossaryView,
 			updateCycleData,
 			setPersonalization,
+			resetAppState,
 		}),
-		[state, unreadCount, isFavorite]
+		[state, unreadCount, isFavorite, resetAppState]
 	);
 
 	return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -35,6 +35,14 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function capitalizeGlossaryTerm(term: string) {
+  if (!term) {
+    return term;
+  }
+
+  return term.charAt(0).toUpperCase() + term.slice(1);
+}
+
 function buildParts(text: string): MatchPart[] {
   const matches: { start: number; end: number; raw: string; key: string }[] = [];
 
@@ -125,13 +133,13 @@ export function GlossaryText(props: GlossaryTextProps) {
         >
           <Pressable style={styles.overlay} onPress={() => setActiveTerm(null)}>
             <Pressable style={styles.modalCard} onPress={() => undefined}>
-              <View style={styles.modalHeader}>
-                <View>
-                  <Text style={styles.modalEyebrow}>Glossaire</Text>
-                  <Text style={styles.modalTerm}>{activeTerm}</Text>
-                </View>
-                <Pressable onPress={() => setActiveTerm(null)} style={styles.closeButton}>
-                  <Text style={styles.closeButtonText}>×</Text>
+                <View style={styles.modalHeader}>
+                  <View>
+                    <Text style={styles.modalEyebrow}>Glossaire</Text>
+                    <Text style={styles.modalTerm}>{capitalizeGlossaryTerm(activeTerm ?? '')}</Text>
+                  </View>
+                  <Pressable onPress={() => setActiveTerm(null)} style={styles.closeButton}>
+                    <Text style={styles.closeButtonText}>×</Text>
                 </Pressable>
               </View>
 
@@ -147,7 +155,7 @@ export function GlossaryText(props: GlossaryTextProps) {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.term}>{props.term}</Text>
+      <Text style={styles.term}>{capitalizeGlossaryTerm(props.term)}</Text>
       <Text style={styles.definition}>{props.definition}</Text>
     </View>
   );

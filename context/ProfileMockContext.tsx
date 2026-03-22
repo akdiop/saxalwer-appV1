@@ -51,6 +51,7 @@ type ProfileMockState = {
   clearNotifications: () => void;
   userProfile: UserProfile;
   updateUserProfile: (updates: Partial<UserProfile>) => void;
+  resetProfileMockState: () => void;
   sensitiveOrientation: {
     completedAt: string | null;
     level: SensitiveLevel;
@@ -124,6 +125,48 @@ export function ProfileMockProvider({ children }: { children: ReactNode }) {
     pregnancyWeeks: '',
     pregnancyDueDate: '',
   });
+
+  const resetProfileMockState = () => {
+    setLanguage('fr');
+    setSelectedAge(24);
+    setFavorites([
+      ARTICLES[0].id,
+      ARTICLES[2].id,
+    ]);
+    setSelectedNeeds([
+      'Cycle & Regles',
+      'Douleurs & Symptomes',
+    ]);
+    setSelectedGoals(['Bien-etre general']);
+    setDiscreteMode(false);
+    setOralMode(false);
+    setUnreadCount(3);
+    setNotificationPreferences({
+      cycle: { enabled: true, frequency: 'Hebdo' as NotificationFrequency },
+      medication: { enabled: false, frequency: 'Quotidien' as NotificationFrequency },
+      wellness: { enabled: true, frequency: 'Mensuel' as NotificationFrequency },
+    });
+    setUserProfile({
+      name: 'Aida',
+      birthdate: '1999-06-15',
+      location: 'Dakar - Point E',
+      photoUrl: '',
+      personality: 'Calme et curieuse',
+      maritalStatus: 'single',
+      childrenCount: 0,
+      desireChildren: 'maybe',
+      contraceptionActive: true,
+      contraceptionMethod: 'pilule',
+      healthConditions: ['Anemie legere', 'Cycle irregulier'],
+      religiousFaith: '',
+      educationLevel: '',
+      hobbies: [],
+      aboutMe: '',
+      pregnancyStatus: '',
+      pregnancyWeeks: '',
+      pregnancyDueDate: '',
+    });
+  };
 
   const sensitiveOrientation = {
     completedAt: '2026-02-11',
@@ -204,6 +247,7 @@ export function ProfileMockProvider({ children }: { children: ReactNode }) {
         clearNotifications,
         userProfile,
         updateUserProfile,
+        resetProfileMockState,
         sensitiveOrientation,
         notificationPreferences,
         setNotificationPreferenceEnabled,

@@ -80,6 +80,7 @@ export function RootLayout() {
 		isOnboarded,
 		discreteMode,
 		toggleDiscreteMode,
+		toggleOralMode,
 		hasSeenWelcome,
 		hasConsented,
 		hasCompletedTutorial,
@@ -134,6 +135,10 @@ export function RootLayout() {
 				<HamburgerMenu
 					isOpen={menuOpen}
 					onClose={() => setMenuOpen(false)}
+					discreteMode={discreteMode}
+					onToggleDiscrete={toggleDiscreteMode}
+					oralMode={oralMode}
+					onToggleOral={toggleOralMode}
 					onNavigate={(route) => {
 						setMenuOpen(false);
 						router.push(route as never);
@@ -141,7 +146,7 @@ export function RootLayout() {
 				/>
 			) : null}
 
-			{isNavVisible && (
+			{isNavVisible && !menuOpen && (
 				<Pressable
 					style={styles.menuButton}
 					onPress={() => setMenuOpen((prev) => !prev)}

@@ -29,6 +29,79 @@ type GlossaryItem = {
   entry: GlossaryEntry;
 };
 
+type RankedGlossaryItem = GlossaryItem & {
+  score: number;
+};
+
+function capitalizeGlossaryTerm(term: string) {
+  if (!term) {
+    return term;
+  }
+
+  return term.charAt(0).toUpperCase() + term.slice(1);
+}
+
+function normalizeSearchValue(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’`-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function getSearchScore(item: GlossaryItem, query: string) {
+  if (!query) {
+    return 0;
+  }
+
+  const normalizedTerm = normalizeSearchValue(item.term);
+  const normalizedDefinitionFr = normalizeSearchValue(item.entry.fr);
+  const normalizedDefinitionWo = normalizeSearchValue(item.entry.wo);
+  const normalizedCategoryFr = normalizeSearchValue(GLOSSARY_CATEGORIES[item.entry.category].fr);
+  const normalizedCategoryWo = normalizeSearchValue(GLOSSARY_CATEGORIES[item.entry.category].wo);
+  const queryTokens = query.split(' ').filter(Boolean);
+
+  let score = 0;
+
+  if (normalizedTerm === query) {
+    score += 120;
+  } else if (normalizedTerm.startsWith(query)) {
+    score += 90;
+  } else if (normalizedTerm.includes(query)) {
+    score += 70;
+  }
+
+  for (const token of queryTokens) {
+    if (normalizedTerm === token) {
+      score += 48;
+      continue;
+    }
+
+    if (normalizedTerm.startsWith(token)) {
+      score += 28;
+      continue;
+    }
+
+    if (normalizedTerm.includes(token)) {
+      score += 18;
+      continue;
+    }
+
+    if (normalizedDefinitionFr.includes(token) || normalizedDefinitionWo.includes(token)) {
+      score += 8;
+      continue;
+    }
+
+    if (normalizedCategoryFr.includes(token) || normalizedCategoryWo.includes(token)) {
+      score += 5;
+    }
+  }
+
+  return score;
+}
+
 export default function GlossaireScreen() {
   const router = useRouter();
   const { language, oralMode, trackGlossaryView } = useApp();
@@ -50,36 +123,32 @@ export default function GlossaireScreen() {
     [wo]
   );
 
-  const glossaryItems = React.useMemo<GlossaryItem[]>(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+  const glossaryItems = React.useMemo<RankedGlossaryItem[]>(() => {
+    const normalizedQuery = normalizeSearchValue(query);
     const items = SORTED_TERMS.map((term) => ({
       term,
       entry: GLOSSARY[term],
-    })).filter(({ term, entry }) => {
-      if (activeTheme !== 'all' && entry.category !== activeTheme) {
-        return false;
-      }
-
-      if (!normalizedQuery) {
-        return true;
-      }
-
-      const haystack = [
-        entry.fr,
-        entry.wo,
-        entry.category,
-        term,
-      ].join(' ').toLowerCase();
-
-      return haystack.includes(normalizedQuery);
-    });
+    }))
+      .filter(({ entry }) => activeTheme === 'all' || entry.category === activeTheme)
+      .map((item) => ({
+        ...item,
+        score: normalizedQuery ? getSearchScore(item, normalizedQuery) : 0,
+      }))
+      .filter((item) => !normalizedQuery || item.score > 0);
 
     return [...items].sort((a, b) => {
-      const aLabel = wo ? a.term.toLowerCase() : a.term.toLowerCase();
-      const bLabel = wo ? b.term.toLowerCase() : b.term.toLowerCase();
-      return aLabel.localeCompare(bLabel, wo ? 'wo' : 'fr');
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+
+      return a.term.localeCompare(b.term, wo ? 'wo' : 'fr');
     });
   }, [activeTheme, query, wo]);
+
+  const suggestedTerms = React.useMemo(
+    () => (query ? glossaryItems.slice(0, 5) : []),
+    [glossaryItems, query]
+  );
 
   const highlightedThemeLabel =
     activeTheme === 'all'
@@ -98,7 +167,7 @@ export default function GlossaireScreen() {
             <Feather name="chevron-left" size={20} color={COLORS.deepGreen} />
           </Pressable>
           <View style={styles.headerText}>
-            <Text style={styles.title}>{wo ? 'Glossaire SSR' : 'Glossaire SSR'}</Text>
+            <Text style={styles.title}>{wo ? 'Glossaire' : 'Glossaire'}</Text>
             <Text style={styles.subtitle}>
               {wo
                 ? 'Xam-xam ci waxi santé sexuelle ak reproductive'
@@ -133,6 +202,32 @@ export default function GlossaireScreen() {
           />
           {oralMode ? <Feather name="volume-2" size={16} color={COLORS.copper} /> : null}
         </View>
+
+        {suggestedTerms.length > 0 ? (
+          <View style={styles.suggestionsBlock}>
+            <Text style={styles.suggestionsLabel}>
+              {wo ? 'Mën nga doon seet lii' : 'Suggestions les plus proches'}
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.suggestionsRow}
+            >
+              {suggestedTerms.map(({ term }) => (
+                <Pressable
+                  key={term}
+                  onPress={() => {
+                    setQuery(capitalizeGlossaryTerm(term));
+                    trackGlossaryView(term);
+                  }}
+                  style={styles.suggestionChip}
+                >
+                  <Text style={styles.suggestionChipText}>{capitalizeGlossaryTerm(term)}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
 
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>
@@ -186,7 +281,7 @@ export default function GlossaireScreen() {
                 style={styles.card}
               >
                 <View style={styles.cardTop}>
-                  <Text style={styles.cardTerm}>{term}</Text>
+                  <Text style={styles.cardTerm}>{capitalizeGlossaryTerm(term)}</Text>
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>
                       {wo ? GLOSSARY_CATEGORIES[entry.category].wo : GLOSSARY_CATEGORIES[entry.category].fr}
@@ -283,6 +378,32 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   searchInput: { flex: 1, color: COLORS.cocoa, fontSize: 14, padding: 0 },
+  suggestionsBlock: {
+    marginTop: -4,
+    gap: 10,
+  },
+  suggestionsLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: 'rgba(74,47,39,0.72)',
+  },
+  suggestionsRow: {
+    gap: 8,
+    paddingRight: 8,
+  },
+  suggestionChip: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: 'rgba(181,98,42,0.16)',
+  },
+  suggestionChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.deepGreen,
+  },
   summaryCard: {
     backgroundColor: 'rgba(181,98,42,0.08)',
     borderRadius: 22,
