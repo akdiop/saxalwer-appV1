@@ -36,7 +36,7 @@ const VALUE_CARDS = [
 
 export default function IndexScreen() {
   const router = useRouter();
-  const { language, setConsent, setHasSeenWelcome, setLanguage } = useApp();
+  const { setConsent, setHasSeenWelcome, setLanguage } = useApp();
   const [selectedLanguage, setSelectedLanguage] = useState<'FRANCAIS' | 'WOLOF'>('FRANCAIS');
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
@@ -54,25 +54,6 @@ export default function IndexScreen() {
               resizeMode="contain"
             />
           </View>
-
-          <Pressable
-            style={({ pressed }) => [styles.quickLanguageButton, pressed && styles.pressed]}
-            onPress={() => {
-              const nextLanguage = language === 'fr' ? 'wo' : 'fr';
-              setLanguage(nextLanguage);
-              setSelectedLanguage(nextLanguage === 'fr' ? 'FRANCAIS' : 'WOLOF');
-            }}
-            accessibilityRole="button"
-            accessibilityLabel={
-              language === 'fr'
-                ? 'Passer l application en Wolof'
-                : 'Passer l application en Français'
-            }
-          >
-            <Text style={styles.quickLanguageButtonText}>
-              {language === 'fr' ? 'Français' : 'Wolof'}
-            </Text>
-          </Pressable>
         </View>
 
         <View style={styles.topSection}>
@@ -143,7 +124,7 @@ export default function IndexScreen() {
         <View style={styles.privacyCard}>
           <Text style={styles.cardTitle}>Confidentialité et protection des données</Text>
           <Text style={styles.cardText}>
-            Tes informations sont utilisées uniquement pour personnaliser les contenus de l'application. Elles ne sont jamais partagées sans ton consentement.
+            Tes informations sont utilisées uniquement pour personnaliser les contenus de l&apos;application. Elles ne sont jamais partagées sans ton consentement.
           </Text>
 
           <Pressable
@@ -208,6 +189,26 @@ export default function IndexScreen() {
           <Text style={styles.primaryButtonText}>ENTRER DANS L&apos;ESPACE SAXALWER</Text>
         </Pressable>
 
+        <View style={styles.legalLinksRow}>
+          <Pressable
+            style={({ pressed }) => [styles.legalLink, pressed && styles.pressed]}
+            onPress={() => router.push('/legal' as never)}
+            accessibilityRole="button"
+          >
+            <Text style={styles.legalLinkText}>CGU</Text>
+          </Pressable>
+
+          <Text style={styles.legalDivider}>·</Text>
+
+          <Pressable
+            style={({ pressed }) => [styles.legalLink, pressed && styles.pressed]}
+            onPress={() => router.push('/legal' as never)}
+            accessibilityRole="button"
+          >
+            <Text style={styles.legalLinkText}>Confidentialité</Text>
+          </Pressable>
+        </View>
+
         <Text style={styles.footerText}>Tu merites un espace qui te protege et s&apos;adapte à ta sensibilite</Text>
       </ScrollView>
     </SafeAreaView>
@@ -244,19 +245,6 @@ const styles = StyleSheet.create({
   topLogoImage: {
     width: 34,
     height: 34,
-  },
-  quickLanguageButton: {
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#D8CBB7',
-    backgroundColor: '#FFF9F1',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-  },
-  quickLanguageButtonText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#1A3C34',
   },
   topSection: {
     gap: 14,
@@ -297,7 +285,7 @@ const styles = StyleSheet.create({
     height: 144,
     alignSelf: 'center',
     borderRadius: 72,
-    backgroundColor: '#FFFFFF',
+    // backgroundColor removed for melted effect
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#1A3C34',
@@ -500,6 +488,30 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.8,
     textAlign: 'center',
+  },
+  legalLinksRow: {
+    marginTop: -6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  legalLink: {
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+  legalLinkText: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: '#4A2F27',
+    opacity: 0.48,
+    textDecorationLine: 'underline',
+  },
+  legalDivider: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: '#4A2F27',
+    opacity: 0.38,
   },
   aboutCard: {
     borderRadius: 22,

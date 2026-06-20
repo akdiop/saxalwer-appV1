@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Pressable,
   SafeAreaView,
@@ -17,6 +18,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import NoticeCard from '../../components/NoticeCard';
 import { useApp } from '../../context/appcontext';
 import {
   HEALTH_CENTERS,
@@ -24,6 +26,12 @@ import {
   buildNavigationUrl,
   distanceKm,
 } from '../../data/healthcenters';
+import {
+  getSensitiveMapPresets,
+  getSensitiveMapSummary,
+  scoreHealthCenterForSensitiveOrientation,
+  type SensitiveMapPreset,
+} from '../../utils/sensitiveOrientation';
 
 const BASE = {
   deepGreen: '#1A3C34',
@@ -44,7 +52,7 @@ const TYPE_LABELS: Record<string, { fr: string; wo: string; color: string; bg: s
 
 const CENTER_TAGS = [
   'Contraception', 'Grossesse', 'IST', 'Gynécologie', 'Pédiatrie',
-  'Urgences', 'Dépistage', 'Planning familial', 'Cancers', 'Maternité',
+  'Urgences', 'Dépistage', 'Planning familial', 'Conseils', 'Consultations', 'Cancers', 'Maternité',
 ];
 
 function typeIcon(type: string) {
@@ -55,6 +63,44 @@ function typeIcon(type: string) {
   }
 }
 
+async function openPhoneDialer(phone: string, wo: boolean) {
+  const telUrl = `tel:${phone.replace(/\s/g, '')}`;
+  const supported = await Linking.canOpenURL(telUrl);
+
+  if (!supported) {
+    Alert.alert(
+      'SaxalWer',
+      wo ? 'Manul ubbi woote bi ci appareil bii.' : "Impossible de lancer l'appel sur cet appareil."
+    );
+    return;
+  }
+
+  await Linking.openURL(telUrl);
+}
+
+async function openNavigationRoute(url: string, wo: boolean, isOffline: boolean) {
+  if (isOffline) {
+    Alert.alert(
+      'SaxalWer',
+      wo
+        ? 'Connexion internet la soxla ngir ubbi itineraire bi.'
+        : "Une connexion internet est nécessaire pour ouvrir l'itinéraire."
+    );
+    return;
+  }
+
+  const supported = await Linking.canOpenURL(url);
+  if (!supported) {
+    Alert.alert(
+      'SaxalWer',
+      wo ? 'Manul ubbi Maps ci appareil bii.' : "Impossible d'ouvrir Maps sur cet appareil."
+    );
+    return;
+  }
+
+  await Linking.openURL(url);
+}
+
 // ---------------------------------------------------------------------------
 // CenterCard
 // ---------------------------------------------------------------------------
@@ -63,11 +109,13 @@ function CenterCard({
   userLat,
   userLng,
   wo,
+  isOffline,
 }: {
   center: HealthCenter;
   userLat: number | null;
   userLng: number | null;
   wo: boolean;
+  isOffline: boolean;
 }) {
   const typeInfo = TYPE_LABELS[center.type] ?? TYPE_LABELS.public;
   const dist =
@@ -125,7 +173,9 @@ function CenterCard({
       <View style={styles.actionsRow}>
         {center.phone && (
           <Pressable
-            onPress={() => Linking.openURL(`tel:${center.phone}`)}
+            onPress={() => {
+              void openPhoneDialer(center.phone!, wo);
+            }}
             style={styles.callBtn}
           >
             <Feather name="phone" size={13} color="white" />
@@ -133,7 +183,13 @@ function CenterCard({
           </Pressable>
         )}
         <Pressable
-          onPress={() => Linking.openURL(buildNavigationUrl(center.lat, center.lng, center.name))}
+          onPress={() => {
+            void openNavigationRoute(
+              buildNavigationUrl(center.lat, center.lng, center.name),
+              wo,
+              isOffline
+            );
+          }}
           style={[styles.navBtn, !center.phone && { flex: 1 }]}
         >
           <Feather name="navigation" size={13} color={BASE.deepGreen} />
@@ -150,31 +206,44 @@ function CenterCard({
 // ---------------------------------------------------------------------------
 export default function MapScreen() {
   const router = useRouter();
-  const { language } = useApp();
+  const { language, sensitiveOrientation, isOffline } = useApp();
   const wo = language === 'wo';
 
   const [userLat, setUserLat] = React.useState<number | null>(null);
   const [userLng, setUserLng] = React.useState<number | null>(null);
-  const [geoStatus, setGeoStatus] = React.useState<'idle' | 'loading' | 'success' | 'denied'>('idle');
+  const [geoStatus, setGeoStatus] = React.useState<'idle' | 'loading' | 'success' | 'denied' | 'error'>('idle');
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedType, setSelectedType] = React.useState<string | null>(null);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [showFilters, setShowFilters] = React.useState(false);
 
+  const sensitiveSummary = React.useMemo(
+    () => getSensitiveMapSummary(sensitiveOrientation, language),
+    [language, sensitiveOrientation]
+  );
+  const sensitivePresets = React.useMemo(
+    () => getSensitiveMapPresets(sensitiveOrientation),
+    [sensitiveOrientation]
+  );
+
   // Request GPS on mount
   React.useEffect(() => {
     (async () => {
-      setGeoStatus('loading');
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setGeoStatus('denied');
-        return;
+      try {
+        setGeoStatus('loading');
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setGeoStatus('denied');
+          return;
+        }
+        const loc = await Location.getCurrentPositionAsync({});
+        setUserLat(loc.coords.latitude);
+        setUserLng(loc.coords.longitude);
+        setGeoStatus('success');
+      } catch {
+        setGeoStatus('error');
       }
-      const loc = await Location.getCurrentPositionAsync({});
-      setUserLat(loc.coords.latitude);
-      setUserLng(loc.coords.longitude);
-      setGeoStatus('success');
     })();
   }, []);
 
@@ -201,20 +270,38 @@ export default function MapScreen() {
         ),
       );
     }
-    if (userLat && userLng) {
-      centers.sort(
-        (a, b) =>
-          distanceKm(userLat, userLng, a.lat, a.lng) -
-          distanceKm(userLat, userLng, b.lat, b.lng),
-      );
-    }
-    return centers;
-  }, [searchQuery, selectedType, selectedTags, userLat, userLng]);
+
+    return centers
+      .map((center) => ({
+        center,
+        score: scoreHealthCenterForSensitiveOrientation(center, sensitiveOrientation),
+        distance:
+          userLat != null && userLng != null
+            ? distanceKm(userLat, userLng, center.lat, center.lng)
+            : null,
+      }))
+      .sort((a, b) => {
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        if (a.distance != null && b.distance != null) {
+          return a.distance - b.distance;
+        }
+        return a.center.name.localeCompare(b.center.name);
+      })
+      .map((entry) => entry.center);
+  }, [searchQuery, selectedType, selectedTags, sensitiveOrientation, userLat, userLng]);
 
   function toggleTag(tag: string) {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
+  }
+
+  function applySensitivePreset(preset: SensitiveMapPreset) {
+    setSelectedType(preset.type);
+    setSelectedTags(preset.tags);
+    setShowFilters(true);
   }
 
   return (
@@ -248,6 +335,11 @@ export default function MapScreen() {
                   {wo ? 'Yoon wi dafa sàqq' : 'Localisation refusée'}
                 </Text>
               )}
+              {geoStatus === 'error' && (
+                <Text style={styles.geoTextDenied}>
+                  {wo ? 'Manul jël sa position léegi' : 'Position indisponible pour le moment'}
+                </Text>
+              )}
             </View>
           </View>
           <View style={styles.countBadge}>
@@ -264,7 +356,9 @@ export default function MapScreen() {
             {wo ? 'Jiibo bu cas : 15 · Samu :' : 'Urgence : 15 · Samu :'}{' '}
             <Text
               style={styles.emergencyLink}
-              onPress={() => Linking.openURL('tel:15')}
+              onPress={() => {
+                void openPhoneDialer('15', wo);
+              }}
             >
               15
             </Text>
@@ -281,6 +375,59 @@ export default function MapScreen() {
               : "Cette liste est fournie à titre indicatif. Les centres, services, horaires et coordonnées sont encore en cours de vérification et de validation progressive. Avant de vous déplacer ou d'appeler, confirmez si possible que le centre est disponible et que les informations affichées sont à jour."}
           </Text>
         </View>
+
+        {isOffline ? (
+          <NoticeCard
+            title={wo ? 'Mode hors ligne' : 'Mode hors ligne'}
+            description={
+              wo
+                ? 'Liste centres yi ak sa position men nañu dox sans internet. Waaye ngir ubbi itinéraire ci Maps, connexion internet la soxla.'
+                : "La liste des centres et ta position peuvent rester disponibles hors ligne. Une connexion internet est nécessaire pour ouvrir un itinéraire dans Maps."
+            }
+            iconName="cloud-offline-outline"
+            accentColor={BASE.copper}
+            style={styles.offlineCard}
+          />
+        ) : null}
+
+        {sensitiveSummary ? (
+          <View style={styles.contextCard}>
+            <View style={styles.contextHeadingRow}>
+              <View style={styles.contextIconWrap}>
+                <MaterialCommunityIcons name="shield-check-outline" size={16} color={BASE.deepGreen} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.contextTitle}>
+                  {wo ? 'Orientation adaptee' : 'Orientation adaptee'}
+                </Text>
+                <Text style={styles.contextText}>{sensitiveSummary}</Text>
+              </View>
+            </View>
+
+            {sensitivePresets.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.contextPresetRow}
+              >
+                {sensitivePresets.map((preset) => (
+                  <Pressable
+                    key={preset.id}
+                    onPress={() => applySensitivePreset(preset)}
+                    style={styles.contextPresetCard}
+                  >
+                    <Text style={styles.contextPresetTitle}>
+                      {wo ? preset.labelWo : preset.labelFr}
+                    </Text>
+                    <Text style={styles.contextPresetText}>
+                      {wo ? preset.hintWo : preset.hintFr}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            ) : null}
+          </View>
+        ) : null}
 
         {/* Search + filter toggle */}
         <View style={styles.searchRow}>
@@ -395,6 +542,7 @@ export default function MapScreen() {
                 userLat={userLat}
                 userLng={userLng}
                 wo={wo}
+                isOffline={isOffline}
               />
             ))
           )}
@@ -450,6 +598,67 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: `${BASE.cocoa}88`,
+  },
+  offlineCard: {
+    marginHorizontal: 24,
+    marginBottom: 16,
+  },
+  contextCard: {
+    marginHorizontal: 24,
+    marginBottom: 16,
+    backgroundColor: '#F2F6F2',
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(26,60,52,0.10)',
+    gap: 12,
+  },
+  contextHeadingRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  contextIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(26,60,52,0.10)',
+  },
+  contextTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: BASE.deepGreen,
+    marginBottom: 4,
+  },
+  contextText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: `${BASE.cocoa}88`,
+  },
+  contextPresetRow: {
+    gap: 10,
+    paddingRight: 8,
+  },
+  contextPresetCard: {
+    width: 176,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(26,60,52,0.08)',
+  },
+  contextPresetTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: BASE.deepGreen,
+    marginBottom: 4,
+  },
+  contextPresetText: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: `${BASE.cocoa}78`,
   },
 
   searchRow: { paddingHorizontal: 24, marginBottom: 12, flexDirection: 'row', gap: 10 },

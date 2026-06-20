@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 
+import NoticeCard from '../../components/NoticeCard';
 import { useSpeak } from '../../hooks/usespeak';
 import { useApp } from '../../context/appcontext';
 import { type Center, type CenterService, CENTERS_DATA } from '../../data/centers';
@@ -128,7 +129,7 @@ function IconBadge({
 export default function CenterDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { discreteMode, oralMode, language } = useApp();
+  const { discreteMode, oralMode, language, isOffline } = useApp();
   const { speak } = useSpeak();
   const copy = COPY[language];
   const wo = language === 'wo';
@@ -156,12 +157,44 @@ export default function CenterDetailScreen() {
   const typeColor = getTypeColor(center.type);
 
   const openPhone = async (phone: string) => {
-    await Linking.openURL(`tel:${phone.replace(/\s/g, '')}`);
+    const telUrl = `tel:${phone.replace(/\s/g, '')}`;
+    const supported = await Linking.canOpenURL(telUrl);
+
+    if (!supported) {
+      Alert.alert(
+        'SaxalWer',
+        wo ? 'Manul ubbi woote bi ci appareil bii.' : "Impossible de lancer l'appel sur cet appareil."
+      );
+      return;
+    }
+
+    await Linking.openURL(telUrl);
   };
 
   const openMaps = async () => {
+    if (isOffline) {
+      Alert.alert(
+        'SaxalWer',
+        wo
+          ? 'Connexion internet la soxla ngir ubbi itineraire bi ci Maps.'
+          : "Une connexion internet est nécessaire pour ouvrir l'itinéraire dans Maps."
+      );
+      return;
+    }
+
     const query = encodeURIComponent(`${center.name}, ${center.fullAddress}`);
-    await Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${query}`);
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    const supported = await Linking.canOpenURL(mapUrl);
+
+    if (!supported) {
+      Alert.alert(
+        'SaxalWer',
+        wo ? 'Manul ubbi Maps ci appareil bii.' : "Impossible d'ouvrir Maps sur cet appareil."
+      );
+      return;
+    }
+
+    await Linking.openURL(mapUrl);
   };
 
   const shareCenter = async () => {
@@ -354,6 +387,20 @@ export default function CenterDetailScreen() {
                 <MaterialCommunityIcons name="navigation-variant-outline" size={18} color={BASE.copper} />
               </Pressable>
             </View>
+
+            {isOffline ? (
+              <NoticeCard
+                title={wo ? 'Mode hors ligne' : 'Mode hors ligne'}
+                description={
+                  wo
+                    ? 'Fiche bi nekk na disponible. Ngir ubbi Maps, connexion internet la soxla.'
+                    : 'La fiche reste disponible hors ligne. Une connexion internet est nécessaire pour ouvrir Maps.'
+                }
+                iconName="cloud-offline-outline"
+                accentColor={BASE.copper}
+                style={styles.offlineHint}
+              />
+            ) : null}
           </View>
         </Animated.View>
 
@@ -770,6 +817,9 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     gap: 10,
+  },
+  offlineHint: {
+    marginTop: 12,
   },
   primaryAction: {
     flex: 1,

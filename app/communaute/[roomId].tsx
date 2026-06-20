@@ -13,8 +13,10 @@ import {
     View,
 } from 'react-native';
 
+import NoticeCard from '../../components/NoticeCard';
 import { COMMUNITY_COLORS, CommunityMessage } from '../../data/community';
 import {
+    communityHasRemoteApi,
     getCommunityProfile,
     getCommunityUserId,
     joinCommunityRoom,
@@ -23,6 +25,7 @@ import {
     roomById,
     saveCommunityProfile,
     sendRoomMessage,
+    syncQueuedRoomMessages,
 } from '../../utils/communityApi';
 import { useApp } from '../../context/appcontext';
 import { useSpeak } from '../../hooks/usespeak';
@@ -47,6 +50,16 @@ const TEXT = {
     roomGuideDesc: 'Bienveillance, anonymat au choix et échanges utiles entre femmes concernées.',
     moderationTitle: 'Modération active',
     moderationDesc: 'Les messages signalés sont revus pour protéger un espace respectueux et sans pression.',
+    offlineTitle: 'Hors ligne: messages gardés localement',
+    offlineDesc:
+      'Tu peux lire le salon et continuer à écrire. Les nouveaux messages seront synchronisés dès le retour de la connexion.',
+    localOnlyTitle: 'Mode local sur cet appareil',
+    localOnlyDesc:
+      'Dans cette version, les échanges restent stockés localement sur cet appareil.',
+    pendingQueueTitle: 'Synchronisation à reprendre',
+    syncing: 'Synchronisation en cours...',
+    pendingLabel: 'En attente de sync',
+    localLabel: 'Local seulement',
     starterTitle: 'Sujets pour commencer',
     safetyRules: [
       'Parle depuis ton vécu, sans juger celui des autres',
@@ -72,6 +85,16 @@ const TEXT = {
     roomGuideDesc: 'Yërmandé, anonymat su la neexee ak waxtaan yu jariñ ci diggante jigéen yu concernées.',
     moderationTitle: 'Modération buy dox',
     moderationDesc: 'Messages yi ñu signale dañuy leen xool ngir aar bereb bu am respect te amul pression.',
+    offlineTitle: 'Hors ligne: messages yi dañu leen di denc fii',
+    offlineDesc:
+      'Man nga jàng salon bi te bind ba tey. Messages yees yi dinañu sync bu connexion dellusee.',
+    localOnlyTitle: 'Mode local ci appareil bii',
+    localOnlyDesc:
+      'Ci version bii, waxtaan yi dañu leen di denc fii rekk ci appareil bii.',
+    pendingQueueTitle: 'Sync bi war naa dellu',
+    syncing: 'Sync mi mungi dox...',
+    pendingLabel: 'Mi ngi ci xaar sync',
+    localLabel: 'Local rekk',
     starterTitle: 'Sujets ngir tàmbali',
     safetyRules: [
       'Waxal li nga dund te bul xaste dundu keneen',
@@ -162,10 +185,22 @@ const ROOM_STARTERS: Record<
   },
 };
 
+function getPendingQueueText(language: 'fr' | 'wo', count: number) {
+  if (count <= 0) {
+    return '';
+  }
+
+  if (language === 'fr') {
+    return `${count} message${count > 1 ? 's' : ''} en attente de synchronisation.`;
+  }
+
+  return `${count} message${count > 1 ? 's' : ''} ngi ci xaar sync.`;
+}
+
 export default function CommunityRoomScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
   const router = useRouter();
-  const { language, oralMode, userProfile, discreteMode } = useApp();
+  const { language, oralMode, userProfile, discreteMode, isOffline, isOnline } = useApp();
   const { speak } = useSpeak();
 
   const copy = TEXT[language];
@@ -180,6 +215,7 @@ export default function CommunityRoomScreen() {
   const [communityPseudo, setCommunityPseudo] = useState('');
   const [userId, setUserId] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
+  const [syncingQueued, setSyncingQueued] = useState(false);
 
   const scrollRef = useRef<ScrollView | null>(null);
 
@@ -191,6 +227,66 @@ export default function CommunityRoomScreen() {
     const fromProfile = userProfile.name?.trim();
     return communityPseudo || fromProfile || copy.anonymous;
   }, [communityPseudo, copy.anonymous, isAnonymous, userProfile.name]);
+
+  const pendingMessagesCount = useMemo(
+    () => messages.filter((message) => message.syncStatus === 'pending').length,
+    [messages]
+  );
+  const pendingQueueText = useMemo(
+    () => getPendingQueueText(language, pendingMessagesCount),
+    [language, pendingMessagesCount]
+  );
+  const modeInfo = useMemo(() => {
+    if (!communityHasRemoteApi) {
+      return {
+        color: COMMUNITY_COLORS.deepGreen,
+        icon: 'phone-portrait-outline' as const,
+        title: copy.localOnlyTitle,
+        description: copy.localOnlyDesc,
+      };
+    }
+
+    if (isOffline) {
+      return {
+        color: COMMUNITY_COLORS.copper,
+        icon: 'cloud-offline-outline' as const,
+        title: copy.offlineTitle,
+        description: copy.offlineDesc,
+      };
+    }
+
+    if (syncingQueued) {
+      return {
+        color: room?.color ?? COMMUNITY_COLORS.deepGreen,
+        icon: 'sync-outline' as const,
+        title: copy.pendingQueueTitle,
+        description: copy.syncing,
+      };
+    }
+
+    if (pendingMessagesCount > 0) {
+      return {
+        color: COMMUNITY_COLORS.copper,
+        icon: 'time-outline' as const,
+        title: copy.pendingQueueTitle,
+        description: pendingQueueText,
+      };
+    }
+
+    return null;
+  }, [
+    copy.localOnlyDesc,
+    copy.localOnlyTitle,
+    copy.offlineDesc,
+    copy.offlineTitle,
+    copy.pendingQueueTitle,
+    copy.syncing,
+    isOffline,
+    pendingMessagesCount,
+    pendingQueueText,
+    room?.color,
+    syncingQueued,
+  ]);
 
   useEffect(() => {
     let mounted = true;
@@ -224,7 +320,7 @@ export default function CommunityRoomScreen() {
     let active = true;
 
     const syncMessages = async () => {
-      const nextMessages = await loadRoomMessages(selectedRoomId);
+      const nextMessages = await loadRoomMessages(selectedRoomId, { offline: isOffline });
       if (active) {
         setMessages(nextMessages);
       }
@@ -240,7 +336,40 @@ export default function CommunityRoomScreen() {
       active = false;
       clearInterval(interval);
     };
-  }, [isLoaded, selectedRoomId]);
+  }, [isLoaded, isOffline, selectedRoomId]);
+
+  useEffect(() => {
+    if (!selectedRoomId || !isLoaded || !communityHasRemoteApi || !isOnline) {
+      return;
+    }
+
+    let active = true;
+
+    const flushQueuedMessages = async () => {
+      setSyncingQueued(true);
+
+      try {
+        await syncQueuedRoomMessages();
+        const nextMessages = await loadRoomMessages(selectedRoomId);
+
+        if (active) {
+          setMessages(nextMessages);
+        }
+      } catch {
+        // Next polling cycle will retry.
+      } finally {
+        if (active) {
+          setSyncingQueued(false);
+        }
+      }
+    };
+
+    flushQueuedMessages().catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+  }, [isLoaded, isOnline, selectedRoomId]);
 
   useEffect(() => {
     if (!selectedRoomId || !userId) {
@@ -248,8 +377,8 @@ export default function CommunityRoomScreen() {
     }
 
     const nameToJoin = isAnonymous ? copy.anonymous : userProfile.name || copy.anonymous;
-    joinCommunityRoom(selectedRoomId, userId, nameToJoin).catch(() => undefined);
-  }, [copy.anonymous, isAnonymous, selectedRoomId, userId, userProfile.name]);
+    joinCommunityRoom(selectedRoomId, userId, nameToJoin, { offline: isOffline }).catch(() => undefined);
+  }, [copy.anonymous, isAnonymous, isOffline, selectedRoomId, userId, userProfile.name]);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -271,7 +400,7 @@ export default function CommunityRoomScreen() {
         userName: currentDisplayName,
         text: content,
         isAnonymous,
-      });
+      }, { offline: isOffline });
 
       if (next) {
         setMessages((prev) => [...prev, next]);
@@ -294,7 +423,7 @@ export default function CommunityRoomScreen() {
     }
 
     try {
-      await reportMessage(messageId, userId);
+      await reportMessage(messageId, userId, { offline: isOffline });
       setReportingMessageId(null);
       if (oralMode) {
         speak(copy.reportDone);
@@ -391,11 +520,21 @@ export default function CommunityRoomScreen() {
 
             <View style={styles.moderationCard}>
               <Ionicons name="flag-outline" size={17} color={COMMUNITY_COLORS.terracotta} />
-              <View style={styles.moderationTextWrap}>
-                <Text style={styles.moderationTitle}>{copy.moderationTitle}</Text>
-                <Text style={styles.moderationDesc}>{copy.moderationDesc}</Text>
-              </View>
+            <View style={styles.moderationTextWrap}>
+              <Text style={styles.moderationTitle}>{copy.moderationTitle}</Text>
+              <Text style={styles.moderationDesc}>{copy.moderationDesc}</Text>
             </View>
+          </View>
+
+          {modeInfo ? (
+            <NoticeCard
+              title={modeInfo.title}
+              description={modeInfo.description}
+              iconName={modeInfo.icon}
+              accentColor={modeInfo.color}
+              style={styles.syncCard}
+            />
+          ) : null}
 
             <View style={styles.startersSection}>
               <Text style={styles.startersTitle}>{copy.starterTitle}</Text>
@@ -423,6 +562,8 @@ export default function CommunityRoomScreen() {
             ) : (
               messages.map((message) => {
                 const isOwn = message.userId === userId;
+                const isPending = message.syncStatus === 'pending';
+                const isLocalOnly = message.syncStatus === 'local-only';
 
                 return (
                   <View key={message.id} style={[styles.messageWrap, isOwn && styles.messageWrapOwn]}>
@@ -448,12 +589,30 @@ export default function CommunityRoomScreen() {
 
                       <Text style={[styles.messageText, isOwn && styles.messageTextOwn]}>{message.text}</Text>
 
-                      <Text style={[styles.timeText, isOwn && styles.timeTextOwn]}>
-                        {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </Text>
+                      <View style={styles.messageMetaRow}>
+                        <Text style={[styles.timeText, isOwn && styles.timeTextOwn]}>
+                          {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </Text>
+
+                        {isPending ? (
+                          <View style={[styles.messageStatusPill, isOwn && styles.messageStatusPillOwn]}>
+                            <Text style={[styles.messageStatusText, isOwn && styles.messageStatusTextOwn]}>
+                              {copy.pendingLabel}
+                            </Text>
+                          </View>
+                        ) : null}
+
+                        {isLocalOnly ? (
+                          <View style={[styles.messageStatusPill, isOwn && styles.messageStatusPillOwn]}>
+                            <Text style={[styles.messageStatusText, isOwn && styles.messageStatusTextOwn]}>
+                              {copy.localLabel}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
                     </View>
                   </View>
                 );
@@ -695,6 +854,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
   },
+  syncCard: {
+    marginBottom: 4,
+  },
   startersSection: {
     marginBottom: 4,
   },
@@ -781,13 +943,36 @@ const styles = StyleSheet.create({
   messageTextOwn: {
     color: COMMUNITY_COLORS.warmWhite,
   },
+  messageMetaRow: {
+    marginTop: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
   timeText: {
-    marginTop: 4,
     color: 'rgba(74,47,39,0.72)',
     fontSize: 10,
   },
   timeTextOwn: {
     color: 'rgba(253,250,245,0.78)',
+  },
+  messageStatusPill: {
+    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    backgroundColor: 'rgba(15,61,46,0.08)',
+  },
+  messageStatusPillOwn: {
+    backgroundColor: 'rgba(253,250,245,0.18)',
+  },
+  messageStatusText: {
+    color: COMMUNITY_COLORS.deepGreen,
+    fontSize: 9,
+    fontWeight: '700',
+  },
+  messageStatusTextOwn: {
+    color: COMMUNITY_COLORS.warmWhite,
   },
   discreteVeil: {
     ...StyleSheet.absoluteFillObject,

@@ -23,13 +23,13 @@ const BASE = {
 
 type IconName = React.ComponentProps<typeof Feather>["name"];
 
-const SITUATIONS: Array<{
+const SITUATIONS: {
   id: LifeSituation;
   icon: IconName;
   color: string;
   label: { fr: string; wo: string };
   description: { fr: string; wo: string };
-}> = [
+}[] = [
   {
     id: "curious",
     icon: "star",

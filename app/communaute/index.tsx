@@ -13,13 +13,18 @@ import {
     View,
 } from 'react-native';
 
+import NoticeCard from '../../components/NoticeCard';
 import {
     COMMUNITY_COLORS,
     CommunityProfile,
     DEFAULT_COMMUNITY_PROFILE,
     THEMATIC_ROOMS,
 } from '../../data/community';
-import { getCommunityProfile, saveCommunityProfile } from '../../utils/communityApi';
+import {
+  communityHasRemoteApi,
+  getCommunityProfile,
+  saveCommunityProfile,
+} from '../../utils/communityApi';
 import { useApp } from '../../context/appcontext';
 import { useSpeak } from '../../hooks/usespeak';
 
@@ -61,6 +66,12 @@ const TEXT = {
     sixRoomsTitle: '6 salons thématiques',
     sixRoomsDesc:
       'Endométriose, contraception, maternité, ménopause, intimité et soutien émotionnel.',
+    offlineTitle: 'Mode hors ligne',
+    offlineDesc:
+      'Tu peux continuer à lire les salons. Les nouveaux messages partiront dès le retour de la connexion.',
+    localOnlyTitle: 'Mode local',
+    localOnlyDesc:
+      'Cette version conserve les échanges de communauté sur cet appareil.',
     suggestedForYou: 'Suggestions pour toi',
     openRoom: 'Ouvrir',
     similarProfiles: 'Profils similaires',
@@ -104,6 +115,12 @@ const TEXT = {
     sixRoomsTitle: '6 salons thématiques',
     sixRoomsDesc:
       'Endométriose, contraception, maternité, ménopause, intimité ak soutien émotionnel.',
+    offlineTitle: 'Mode hors ligne',
+    offlineDesc:
+      'Man nga jàng salons yi. Messages yees yi dinañu dem bu connexion dellusee.',
+    localOnlyTitle: 'Mode local',
+    localOnlyDesc:
+      'Ci version bii, waxtaan yi dañu leen di denc ci appareil bii.',
     suggestedForYou: 'Li nu la digal',
     openRoom: 'Ubbi',
     similarProfiles: 'Profils yu mel ni yaw',
@@ -125,7 +142,7 @@ type MatchCard = {
 
 export default function CommunityRoomsScreen() {
   const router = useRouter();
-  const { language, oralMode, selectedAge, lifeSituation, selectedNeeds } = useApp();
+  const { language, oralMode, selectedAge, lifeSituation, selectedNeeds, isOffline } = useApp();
   const { speak } = useSpeak();
 
   const copy = TEXT[language];
@@ -281,6 +298,16 @@ export default function CommunityRoomsScreen() {
               <Text style={styles.noticeDesc}>{copy.secureDesc}</Text>
             </View>
           </View>
+
+          {(!communityHasRemoteApi || isOffline) ? (
+            <NoticeCard
+              title={communityHasRemoteApi ? copy.offlineTitle : copy.localOnlyTitle}
+              description={communityHasRemoteApi ? copy.offlineDesc : copy.localOnlyDesc}
+              iconName={communityHasRemoteApi ? 'cloud-offline-outline' : 'phone-portrait-outline'}
+              accentColor={communityHasRemoteApi ? COMMUNITY_COLORS.copper : COMMUNITY_COLORS.deepGreen}
+              style={styles.syncNotice}
+            />
+          ) : null}
 
           <View style={styles.featurePanel}>
             <View style={styles.featurePanelHeader}>
@@ -571,6 +598,9 @@ const styles = StyleSheet.create({
     borderLeftColor: COMMUNITY_COLORS.deepGreen,
     borderRadius: 10,
     padding: 14,
+    marginBottom: 18,
+  },
+  syncNotice: {
     marginBottom: 18,
   },
   noticeIcon: {

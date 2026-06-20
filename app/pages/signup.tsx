@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -12,12 +13,81 @@ import {
   View,
 } from 'react-native';
 import BackButton from '../../components/BackButton';
+import NoticeCard from '../../components/NoticeCard';
+import { useApp } from '../../context/appcontext';
+import { useSupabaseAuth } from '../../context/SupabaseAuthContext';
 
 export default function SignupScreen() {
   const router = useRouter();
+  const { isOffline } = useApp();
+  const {
+    configurationError,
+    initialized,
+    isConfigured,
+    signUpWithPassword,
+    user,
+  } = useSupabaseAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialized && user) {
+      router.replace('/profile-selection' as never);
+    }
+  }, [initialized, router, user]);
+
+  const handleSignup = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    if (isOffline) {
+      setInfoMessage(null);
+      setErrorMessage(null);
+      return;
+    }
+
+    if (!name.trim() || !email.trim() || !password) {
+      setInfoMessage(null);
+      setErrorMessage('Renseigne ton prénom, ton email et ton mot de passe.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setInfoMessage(null);
+      setErrorMessage('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
+    setErrorMessage(null);
+    setInfoMessage(null);
+    setIsSubmitting(true);
+
+    const { error, requiresEmailConfirmation } = await signUpWithPassword(
+      name,
+      email,
+      password
+    );
+
+    if (error) {
+      setErrorMessage(error);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setIsSubmitting(false);
+
+    if (requiresEmailConfirmation) {
+      setInfoMessage("Compte créé. Vérifie ton email pour confirmer l'inscription.");
+      return;
+    }
+
+    router.replace('/profile-selection' as never);
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -81,16 +151,52 @@ export default function SignupScreen() {
               />
             </View>
 
-            {/* Primary button */}
+            {!initialized ? (
+              <View style={styles.feedbackRow}>
+                <ActivityIndicator size="small" color="#1A3C34" />
+                <Text style={styles.feedbackInfo}>Chargement de la session...</Text>
+              </View>
+            ) : null}
+
+            {configurationError ? (
+              <Text style={styles.feedbackError}>{configurationError}</Text>
+            ) : null}
+
+            {isOffline ? (
+              <NoticeCard
+                title="Mode hors ligne"
+                description="Une connexion internet est nécessaire pour créer un compte."
+                iconName="cloud-offline-outline"
+                style={styles.noticeCard}
+              />
+            ) : null}
+
+            {errorMessage ? (
+              <Text style={styles.feedbackError}>{errorMessage}</Text>
+            ) : null}
+
+            {infoMessage ? (
+              <Text style={styles.feedbackInfo}>{infoMessage}</Text>
+            ) : null}
+
             <Pressable
               style={({ pressed }) => [
                 styles.primaryBtn,
-                pressed && styles.btnPressed,
+                (!isConfigured || isSubmitting || isOffline) && styles.primaryBtnDisabled,
+                pressed && isConfigured && !isSubmitting && !isOffline && styles.btnPressed,
               ]}
-              onPress={() => router.push('/profile-selection' as never)}
+              onPress={handleSignup}
+              disabled={!isConfigured || isSubmitting || isOffline}
               accessibilityRole="button"
             >
-              <Text style={styles.primaryBtnText}>Créer mon compte</Text>
+              <Text
+                style={[
+                  styles.primaryBtnText,
+                  (!isConfigured || isSubmitting || isOffline) && styles.primaryBtnTextDisabled,
+                ]}
+              >
+                {isSubmitting ? 'Creation du compte...' : 'Créer mon compte'}
+              </Text>
             </Pressable>
           </View>
 
@@ -187,6 +293,11 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 6,
   },
+  primaryBtnDisabled: {
+    backgroundColor: '#4A2F2720',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   btnPressed: {
     opacity: 0.82,
     transform: [{ scale: 0.98 }],
@@ -196,6 +307,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  primaryBtnTextDisabled: {
+    color: '#4A2F2760',
+  },
+  feedbackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  feedbackInfo: {
+    fontSize: 13,
+    color: '#1A3C34',
+    lineHeight: 20,
+  },
+  feedbackError: {
+    fontSize: 13,
+    color: '#A0442D',
+    lineHeight: 20,
+  },
+  noticeCard: {
+    marginTop: -4,
   },
 
   /* Secondary */

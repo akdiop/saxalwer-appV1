@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import SymptomLogger from '../../components/SymptomLogger';
+import { SymptomLogger } from '../../components/SymptomLogger';
 import type { SymptomEntry } from '../../context/appcontext';
 import { useApp } from '../../context/appcontext';
 import { usePredictiveNotifications } from '../../hooks/usepredictivenotification';
@@ -83,11 +83,14 @@ export default function TrackerScreen() {
   usePredictiveNotifications();
 
   const wo = language === 'wo';
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = useMemo(() => {
+    const next = new Date();
+    next.setHours(0, 0, 0, 0);
+    return next;
+  }, []);
 
   const [view, setView] = useState<TrackerView>('cycle');
-  const [selectedDay, setSelectedDay] = useState(today.getDate());
+  const [selectedDay] = useState(() => today.getDate());
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedFlow, setSelectedFlow] = useState<number | null>(null);
   const [showSymptomLogger, setShowSymptomLogger] = useState(false);

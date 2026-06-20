@@ -137,13 +137,14 @@ function ProfilContent() {
     );
   };
 
+  const closeMenuAndNavigate = (path: string) => {
+    setMenuOpen(false);
+    router.push(path as never);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {menuOpen && (
-          <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)} />
-        )}
-
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
@@ -183,70 +184,6 @@ function ProfilContent() {
 
             <Text style={styles.headerTitle}>{profileTitle}</Text>
             <Text style={styles.headerSubtitle}>Ton Sanctuaire Personnel</Text>
-
-            <Animated.View
-              style={[
-                styles.settingsMenu,
-                {
-                  opacity: menuAnim,
-                  transform: [
-                    {
-                      translateY: menuAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-8, 0],
-                      }),
-                    },
-                    {
-                      scale: menuAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0.97, 1],
-                      }),
-                    },
-                  ],
-                  pointerEvents: menuOpen ? 'auto' : 'none',
-                },
-              ]}
-            >
-              <ProfileRowItem
-                icon="language"
-                title="Changer la langue"
-                subtitle="Basculer entre Français et Wolof"
-                rightText={language === 'fr' ? 'Français' : 'Wolof'}
-                onPress={() => setLanguage(language === 'fr' ? 'wo' : 'fr')}
-              />
-              <ProfileRowItem
-                icon="person-outline"
-                title="Modifier mon profil"
-                onPress={() => {
-                  setMenuOpen(false);
-                  router.push('/edit-profile' as never);
-                }}
-              />
-              <ProfileRowItem
-                icon="refresh-circle-outline"
-                title="Refaire onboarding"
-                onPress={() => {
-                  setMenuOpen(false);
-                  router.push('/onboarding/age' as never);
-                }}
-              />
-              <ProfileRowItem
-                icon="log-in-outline"
-                title="Connexion / compte"
-                subtitle="Se connecter ou créer un compte"
-                onPress={() => {
-                  setMenuOpen(false);
-                  router.push('/login' as never);
-                }}
-              />
-              <ProfileRowItem
-                icon="volume-high-outline"
-                title="Mode oral"
-                subtitle="Lecture vocale des contenus"
-                rightText={oralMode ? 'Actif' : 'Off'}
-                onPress={toggleOralMode}
-              />
-            </Animated.View>
           </View>
 
           <View style={styles.section}>
@@ -569,6 +506,72 @@ function ProfilContent() {
           </View>
         </ScrollView>
 
+        {menuOpen ? (
+          <View pointerEvents="box-none" style={styles.menuLayer}>
+            <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)} />
+            <Animated.View
+              style={[
+                styles.settingsMenu,
+                {
+                  opacity: menuAnim,
+                  transform: [
+                    {
+                      translateY: menuAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [-8, 0],
+                      }),
+                    },
+                    {
+                      scale: menuAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.97, 1],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+              pointerEvents="auto"
+            >
+              <ProfileRowItem
+                icon="language"
+                title="Changer la langue"
+                subtitle="Basculer entre Français et Wolof"
+                rightText={language === 'fr' ? 'Français' : 'Wolof'}
+                onPress={() => {
+                  setLanguage(language === 'fr' ? 'wo' : 'fr');
+                  setMenuOpen(false);
+                }}
+              />
+              <ProfileRowItem
+                icon="person-outline"
+                title="Modifier mon profil"
+                onPress={() => closeMenuAndNavigate('/edit-profile')}
+              />
+              <ProfileRowItem
+                icon="refresh-circle-outline"
+                title="Refaire onboarding"
+                onPress={() => closeMenuAndNavigate('/onboarding/age')}
+              />
+              <ProfileRowItem
+                icon="log-in-outline"
+                title="Connexion / compte"
+                subtitle="Se connecter ou créer un compte"
+                onPress={() => closeMenuAndNavigate('/login')}
+              />
+              <ProfileRowItem
+                icon="volume-high-outline"
+                title="Mode oral"
+                subtitle="Lecture vocale des contenus"
+                rightText={oralMode ? 'Actif' : 'Off'}
+                onPress={() => {
+                  toggleOralMode();
+                  setMenuOpen(false);
+                }}
+              />
+            </Animated.View>
+          </View>
+        ) : null}
+
       </View>
     </SafeAreaView>
   );
@@ -586,14 +589,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.beige,
+    position: 'relative',
   },
   scrollContent: {
     paddingBottom: 34,
   },
+  menuLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 40,
+  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'transparent',
-    zIndex: 20,
   },
   headerCard: {
     marginHorizontal: 14,
@@ -711,8 +718,8 @@ const styles = StyleSheet.create({
   },
   settingsMenu: {
     position: 'absolute',
-    top: 58,
-    right: 16,
+    top: 68,
+    right: 30,
     width: 268,
     borderRadius: 18,
     backgroundColor: colors.white,

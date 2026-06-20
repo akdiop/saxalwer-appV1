@@ -26,9 +26,16 @@ import {
   type GoalId,
   type LifeSituation,
   type PersonalizationContext,
+  type SensitiveOrientationSession,
   type UserProfile,
 } from '../context/appcontext';
 import { ARTICLES, type Article } from '../data/articles';
+import {
+  detectSensitiveChatIntent,
+  getSensitiveChatFollowUpOptions,
+  getSensitiveChatSupportLines,
+  getSensitiveLocationTags,
+} from '../utils/sensitiveOrientation';
 
 const C = {
   deepGreen: '#1A3C34',
@@ -704,6 +711,7 @@ function buildAdaptiveText(
   personalization: PersonalizationContext,
   userProfile: UserProfile,
   discreteMode: boolean,
+  sensitiveOrientation: SensitiveOrientationSession,
   wo: boolean
 ): string {
   const { text, topic = 'fallback', severity = 'normal' } = options;
@@ -760,6 +768,12 @@ function buildAdaptiveText(
     );
   }
 
+  getSensitiveChatSupportLines(
+    sensitiveOrientation,
+    wo ? 'wo' : 'fr',
+    topic === 'definition' ? 'definition' : topic
+  ).forEach((line) => lines.push(line));
+
   lines.push(text);
 
   const adapted = lines.join('\n\n');
@@ -769,15 +783,29 @@ function buildAdaptiveText(
 function getAdaptiveFollowUpOptions(
   topic: 'symptom' | 'orientation' | 'definition' | 'fallback' | 'image' | 'welcome',
   personalization: PersonalizationContext,
-  stage: 'adolescent' | 'contraception' | 'pregnancy' | 'postpartum' | 'menopause' | 'general'
+  stage: 'adolescent' | 'contraception' | 'pregnancy' | 'postpartum' | 'menopause' | 'general',
+  sensitiveOrientation: SensitiveOrientationSession
 ): FollowUpOption[] {
+  const priorityOptions: FollowUpOption[] = [];
   const options: FollowUpOption[] = [];
+
+  const pushPriority = (option: FollowUpOption) => {
+    if (!priorityOptions.some((item) => item.fr === option.fr && item.wo === option.wo)) {
+      priorityOptions.push(option);
+    }
+  };
 
   const pushUnique = (option: FollowUpOption) => {
     if (!options.some((item) => item.fr === option.fr && item.wo === option.wo)) {
       options.push(option);
     }
   };
+
+  if (topic !== 'definition') {
+    getSensitiveChatFollowUpOptions(sensitiveOrientation).forEach((option) =>
+      pushPriority(option)
+    );
+  }
 
   if (topic === 'welcome') {
     if (stage === 'pregnancy') {
@@ -860,7 +888,7 @@ function getAdaptiveFollowUpOptions(
     pushUnique({ fr: 'Trouver un centre de sante', wo: 'Seet ker wu jamm' });
   }
 
-  return options.slice(0, 4);
+  return [...priorityOptions, ...options].slice(0, 4);
 }
 
 function getAdaptiveChipCategories(
@@ -1106,6 +1134,7 @@ export default function ChatScreen() {
     personalization,
     selectedGoals,
     lifeSituation,
+    sensitiveOrientation,
   } = useApp();
   const wo = language === 'wo';
   const lifeStage = inferLifeStage(personalization, lifeSituation, selectedGoals);
@@ -1142,6 +1171,11 @@ export default function ChatScreen() {
   const buildWelcomeText = useCallback(() => {
     const firstName = getFirstName();
     const stage = inferLifeStage(personalization, lifeSituation, selectedGoals);
+    const sensitiveWelcomeLines = getSensitiveChatSupportLines(
+      sensitiveOrientation,
+      wo ? 'wo' : 'fr',
+      'welcome'
+    );
     const privacyHint =
       discreteMode || personalization.privacyLevel === 'high' || personalization.privacyLevel === 'very-high'
         ? wo
@@ -1190,12 +1224,13 @@ export default function ChatScreen() {
         : 'Salaam aleikum! Man la sa assistante SaxalWer.';
       return buildAdaptiveText(
         {
-          text: `${greeting}\n\n${stageHint}\n\n${privacyHint}`,
+          text: [greeting, stageHint, privacyHint, ...sensitiveWelcomeLines].join('\n\n'),
           topic: 'welcome',
         },
         personalization,
         userProfile,
         discreteMode,
+        sensitiveOrientation,
         wo
       );
     }
@@ -1204,15 +1239,25 @@ export default function ChatScreen() {
       : 'Bonjour ! Je suis ton assistante SaxalWer.';
     return buildAdaptiveText(
       {
-        text: `${greeting}\n\n${stageHint}\n\n${privacyHint}`,
+        text: [greeting, stageHint, privacyHint, ...sensitiveWelcomeLines].join('\n\n'),
         topic: 'welcome',
       },
       personalization,
       userProfile,
       discreteMode,
+      sensitiveOrientation,
       wo
     );
-  }, [discreteMode, getFirstName, lifeSituation, personalization, selectedGoals, userProfile, wo]);
+  }, [
+    discreteMode,
+    getFirstName,
+    lifeSituation,
+    personalization,
+    selectedGoals,
+    sensitiveOrientation,
+    userProfile,
+    wo,
+  ]);
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -1221,11 +1266,16 @@ export default function ChatScreen() {
           id: 'welcome',
           role: 'bot',
           text: buildWelcomeText(),
-          followUpOptions: getAdaptiveFollowUpOptions('welcome', personalization, lifeStage),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'welcome',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         },
       ]);
     }
-  }, [buildWelcomeText, lifeStage, messages.length, personalization]);
+  }, [buildWelcomeText, lifeStage, messages.length, personalization, sensitiveOrientation]);
 
   useEffect(() => {
     if (activeChipCat >= chipCategories.length) {
@@ -1311,8 +1361,12 @@ export default function ChatScreen() {
           personalization,
           userProfile,
           discreteMode,
+          sensitiveOrientation,
           wo
         );
+
+      const resolvedLocationTags = (tags: string[] | null | undefined) =>
+        getSensitiveLocationTags(sensitiveOrientation, tags ?? []);
 
       if (hasUrgentSignal(userText)) {
         return {
@@ -1326,8 +1380,128 @@ export default function ChatScreen() {
           ),
           referToProfessional: true,
           showLocation: true,
-          locationTags: detectLocationTags(userText) ?? ['Urgences', 'Gynecologie'],
-          followUpOptions: getAdaptiveFollowUpOptions('orientation', personalization, lifeStage),
+          locationTags: resolvedLocationTags(
+            detectLocationTags(userText) ?? ['Urgences', 'Gynecologie']
+          ),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'orientation',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
+        };
+      }
+
+      const sensitiveIntent = detectSensitiveChatIntent(userText);
+      if (sensitiveIntent) {
+        if (sensitiveIntent === 'neutral-words') {
+          return {
+            id: `bot-${Date.now()}`,
+            role: 'bot',
+            text: adaptText(
+              wo
+                ? 'Baax na. Men nga wax ko ak ay kadu yu yomb te yu dal. Ci misaal: "damaa am metit ci suuf", "am naa xel mu dalul", walla "am naa benn doute". Dinaa la topp te du ma la àtte.'
+                : 'Tres bien. Tu peux utiliser des mots simples et neutres. Par exemple : "j ai une gene", "j ai mal en bas", "je ne me sens pas bien", ou "j ai un doute". Je te suivrai sans jugement.',
+              { topic: 'symptom' }
+            ),
+            followUpOptions: getAdaptiveFollowUpOptions(
+              'symptom',
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            ),
+          };
+        }
+
+        if (sensitiveIntent === 'prepare-consultation') {
+          return {
+            id: `bot-${Date.now()}`,
+            role: 'bot',
+            text: adaptText(
+              wo
+                ? 'Men nga tambalee ak lii: "Salaam, soxla naa conseil ci benn mbir bu sutura. Am naa [symptome] depuis [duree]." Soo bëggee, man naa la dimbali nga ko soppi ci sa waxin.'
+                : 'Tu peux partir de cette phrase courte : "Bonjour, j ai besoin d un conseil pour un souci intime. J ai [symptome] depuis [duree]." Si tu veux, je peux t aider a la reformuler avec tes mots.',
+              { topic: 'orientation' }
+            ),
+            followUpOptions: getAdaptiveFollowUpOptions(
+              'orientation',
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            ),
+          };
+        }
+
+        if (sensitiveIntent === 'decision-support') {
+          return {
+            id: `bot-${Date.now()}`,
+            role: 'bot',
+            text: adaptText(
+              wo
+                ? 'Man nanu xool ndank ndank li nga mën a dogal sa bopp, li nga mën a laaj ci professionnel de sante, ak naka nga mën a ubbi waxtaan bi ci sutura.'
+                : 'On peut clarifier ensemble ce qui depend de toi, ce que tu peux demander a un soignant, et comment ouvrir la discussion sans tout dire d un coup.',
+              { topic: 'orientation' }
+            ),
+            followUpOptions: getAdaptiveFollowUpOptions(
+              'orientation',
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            ),
+          };
+        }
+
+        if (sensitiveIntent === 'step-by-step') {
+          return {
+            id: `bot-${Date.now()}`,
+            role: 'bot',
+            text: adaptText(
+              wo
+                ? 'Baax na. Dem nanu ndank ndank: 1. Ban mbir moo gëna la sonal leegi ? 2. Kañ la tambali ? 3. Ndax dafa metti lool walla man nga ko muñ ?'
+                : 'D accord. On va faire simple, pas a pas : 1. Qu est-ce qui te gene le plus en ce moment ? 2. Depuis quand ? 3. Est-ce supportable ou tres intense ?',
+              { topic: 'symptom' }
+            ),
+            followUpOptions: getAdaptiveFollowUpOptions(
+              'symptom',
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            ),
+          };
+        }
+
+        const locationIntentTags =
+          sensitiveIntent === 'accessible-location'
+            ? ['Planning familial']
+            : sensitiveIntent === 'nearby-location'
+              ? ['Consultations']
+              : ['Conseils', 'Planning familial'];
+
+        const locationIntentText =
+          sensitiveIntent === 'accessible-location'
+            ? wo
+              ? 'Maa ngi jox la ay options yu gëna yomb ak premier recours:'
+              : 'Je te montre d abord des options souvent plus accessibles ou de premier recours :'
+            : sensitiveIntent === 'nearby-location'
+              ? wo
+                ? 'Maa ngi jox la ay berab yu gëna jege ngir yombal deplacement bi:'
+                : 'Je te montre d abord des lieux plus proches pour limiter le deplacement :'
+              : wo
+                ? 'Maa ngi jox la ay berab yu gëna sutura te jëm ci conseils:'
+                : 'Je te montre d abord des lieux plus discrets et orientes conseil :';
+
+        return {
+          id: `bot-${Date.now()}`,
+          role: 'bot',
+          text: adaptText(locationIntentText, { topic: 'orientation' }),
+          showLocation: true,
+          locationTags: resolvedLocationTags(locationIntentTags),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'orientation',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         };
       }
 
@@ -1364,7 +1538,7 @@ export default function ChatScreen() {
               { topic: 'orientation', severity: 'urgent' }
             ),
             showLocation: true,
-            locationTags: flow.locationTags,
+            locationTags: resolvedLocationTags(flow.locationTags),
             articles,
             referToProfessional: true,
           };
@@ -1381,7 +1555,12 @@ export default function ChatScreen() {
             { topic: 'symptom' }
           ),
           articles,
-          followUpOptions: getAdaptiveFollowUpOptions('symptom', personalization, lifeStage),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'symptom',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         };
       }
 
@@ -1396,7 +1575,7 @@ export default function ChatScreen() {
             { topic: 'orientation' }
           ),
           showLocation: true,
-          locationTags: ['Gynecologie'],
+          locationTags: resolvedLocationTags(['Gynecologie']),
         };
       }
 
@@ -1424,7 +1603,12 @@ export default function ChatScreen() {
                   { topic: 'orientation' }
                 ),
                 articles: articles.slice(0, 1),
-                followUpOptions: getAdaptiveFollowUpOptions('orientation', personalization, lifeStage),
+                followUpOptions: getAdaptiveFollowUpOptions(
+                  'orientation',
+                  personalization,
+                  lifeStage,
+                  sensitiveOrientation
+                ),
               };
             }
           }
@@ -1456,7 +1640,12 @@ export default function ChatScreen() {
               : "Merci pour la photo. Je la prends en compte.\n\nJe ne suis pas en mesure de poser un diagnostic a partir d'une image. Mais je peux t'orienter.\n\nPeux-tu me decrire ce que tu ressens pour que je te guide mieux ?",
             { topic: 'orientation' }
           ),
-          followUpOptions: getAdaptiveFollowUpOptions('image', personalization, lifeStage),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'image',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         };
       }
 
@@ -1468,7 +1657,12 @@ export default function ChatScreen() {
           role: 'bot',
           text: adaptText(wo ? definition.wo : definition.fr, { topic: 'definition' }),
           articles: articles.length > 0 ? articles.slice(0, 2) : undefined,
-          followUpOptions: getAdaptiveFollowUpOptions('definition', personalization, lifeStage),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'definition',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         };
       }
 
@@ -1486,7 +1680,12 @@ export default function ChatScreen() {
               fr: option.fr,
               wo: option.wo,
             })),
-            ...getAdaptiveFollowUpOptions('orientation', personalization, lifeStage).slice(0, 1),
+            ...getAdaptiveFollowUpOptions(
+              'orientation',
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            ).slice(0, 1),
           ].slice(0, 4),
         };
       }
@@ -1507,8 +1706,15 @@ export default function ChatScreen() {
           ),
           articles,
           showLocation: !!locationTags,
-          locationTags: locationTags ?? undefined,
-          followUpOptions: getAdaptiveFollowUpOptions('orientation', personalization, lifeStage),
+          locationTags: locationTags
+            ? resolvedLocationTags(locationTags)
+            : undefined,
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'orientation',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         };
       }
 
@@ -1523,8 +1729,13 @@ export default function ChatScreen() {
             { topic: 'orientation' }
           ),
           showLocation: true,
-          locationTags,
-          followUpOptions: getAdaptiveFollowUpOptions('orientation', personalization, lifeStage),
+          locationTags: resolvedLocationTags(locationTags),
+          followUpOptions: getAdaptiveFollowUpOptions(
+            'orientation',
+            personalization,
+            lifeStage,
+            sensitiveOrientation
+          ),
         };
       }
 
@@ -1537,10 +1748,24 @@ export default function ChatScreen() {
             : "Pour mieux t'aider, tu peux :\n\n- Me décrire tes symptômes\n- Me poser une question sur la contraception, la grossesse ou la ménopause\n- M'envoyer une photo",
           { topic: 'fallback' }
         ),
-        followUpOptions: getAdaptiveFollowUpOptions('fallback', personalization, lifeStage),
+        followUpOptions: getAdaptiveFollowUpOptions(
+          'fallback',
+          personalization,
+          lifeStage,
+          sensitiveOrientation
+        ),
       };
     },
-    [discreteMode, findRelevantArticles, isSevere, lifeStage, personalization, userProfile, wo]
+    [
+      discreteMode,
+      findRelevantArticles,
+      isSevere,
+      lifeStage,
+      personalization,
+      sensitiveOrientation,
+      userProfile,
+      wo,
+    ]
   );
 
   const appendUserMessage = useCallback(
@@ -1693,9 +1918,15 @@ export default function ChatScreen() {
               personalization,
               userProfile,
               discreteMode,
+              sensitiveOrientation,
               wo
             ),
-            followUpOptions: getAdaptiveFollowUpOptions('fallback', personalization, lifeStage),
+            followUpOptions: getAdaptiveFollowUpOptions(
+              'fallback',
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            ),
           };
           setPendingBotSpeechId(response.id);
           setMessages((prev) => [...prev, response]);
@@ -1706,7 +1937,15 @@ export default function ChatScreen() {
     } catch {
       Alert.alert('Audio', wo ? 'Probleme avec lenregistrement.' : "Probleme avec l'enregistrement.");
     }
-  }, [discreteMode, lifeStage, personalization, recordDuration, userProfile, wo]);
+  }, [
+    discreteMode,
+    lifeStage,
+    personalization,
+    recordDuration,
+    sensitiveOrientation,
+    userProfile,
+    wo,
+  ]);
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

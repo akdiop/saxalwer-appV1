@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
+import { AppState as RNAppState, Platform } from 'react-native';
 
 import { mapPersonalizationToProfile } from '@/utils/personalizationMapper';
 
 export type GoalId = 'cycle' | 'grossesse' | 'menopause' | 'bienetre';
 export type Language = 'fr' | 'wo';
+export type NetworkStatus = 'online' | 'offline' | 'unknown';
 export type LifeSituation =
 	| 'curious'
 	| 'cycles'
@@ -210,6 +212,10 @@ interface AppState {
 }
 
 export interface AppContextType extends AppState {
+	networkStatus: NetworkStatus;
+	isOffline: boolean;
+	isOnline: boolean;
+	refreshNetworkStatus: () => Promise<NetworkStatus>;
 	setAge: (age: string) => void;
 	setNeeds: (needs: string[]) => void;
 	setGoals: (goals: GoalId[]) => void;
@@ -350,15 +356,67 @@ const defaultState: AppState = {
 };
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
+const NETWORK_CHECK_URL = 'https://www.google.com/generate_204';
+
+const getBrowserOnlineStatus = () => {
+	if (typeof navigator === 'undefined' || typeof navigator.onLine !== 'boolean') {
+		return null;
+	}
+
+	return navigator.onLine;
+};
+
+const probeNetworkStatus = async (): Promise<NetworkStatus> => {
+	const browserOnline = getBrowserOnlineStatus();
+
+	if (Platform.OS === 'web') {
+		if (browserOnline === false) {
+			return 'offline';
+		}
+
+		if (browserOnline === true) {
+			return 'online';
+		}
+
+		return 'unknown';
+	}
+
+	try {
+		await Promise.race([
+			fetch(NETWORK_CHECK_URL, { method: 'GET' }),
+			new Promise<never>((_, reject) => {
+				setTimeout(() => reject(new Error('timeout')), 4000);
+			}),
+		]);
+		return 'online';
+	} catch {
+		if (browserOnline === false) {
+			return 'offline';
+		}
+
+		return 'offline';
+	}
+};
 
 const mergeLoadedState = (loadedState: Partial<AppState>): AppState => {
 	const loadedNotificationPreferences = loadedState.notificationPreferences;
 	const loadedCycleData = loadedState.cycleData;
 	const loadedUserProfile = loadedState.userProfile;
+	const loadedOrientationSession = loadedState.orientationSession;
+	const loadedSensitiveOrientation = loadedState.sensitiveOrientation;
+	const loadedPersonalization = loadedState.personalization;
 
 	return {
 		...defaultState,
 		...loadedState,
+		orientationSession: {
+			...defaultState.orientationSession,
+			...(loadedOrientationSession ?? {}),
+		},
+		sensitiveOrientation: {
+			...defaultState.sensitiveOrientation,
+			...(loadedSensitiveOrientation ?? {}),
+		},
 		notificationPreferences: {
 			...defaultState.notificationPreferences,
 			...(loadedNotificationPreferences || {}),
@@ -379,12 +437,69 @@ const mergeLoadedState = (loadedState: Partial<AppState>): AppState => {
 			...defaultState.userProfile,
 			...(loadedUserProfile || {}),
 		},
+		personalization: {
+			...defaultState.personalization,
+			...(loadedPersonalization ?? {}),
+		},
 	};
 };
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
 	const [state, setState] = React.useState<AppState>(defaultState);
 	const [isLoaded, setIsLoaded] = React.useState(false);
+	const [networkStatus, setNetworkStatus] = React.useState<NetworkStatus>('unknown');
+
+	const refreshNetworkStatus = React.useCallback(async () => {
+		try {
+			const nextStatus = await probeNetworkStatus();
+			setNetworkStatus(nextStatus);
+			return nextStatus;
+		} catch {
+			setNetworkStatus('unknown');
+			return 'unknown';
+		}
+	}, []);
+
+	React.useEffect(() => {
+		let active = true;
+		const syncNetworkStatus = async () => {
+			const nextStatus = await probeNetworkStatus();
+
+			if (!active) {
+				return;
+			}
+
+			setNetworkStatus(nextStatus);
+		};
+
+		syncNetworkStatus().catch(() => undefined);
+		const intervalId = setInterval(() => {
+			syncNetworkStatus().catch(() => undefined);
+		}, 20000);
+		const appStateSubscription = RNAppState.addEventListener('change', (nextState) => {
+			if (nextState === 'active') {
+				syncNetworkStatus().catch(() => undefined);
+			}
+		});
+		const handleOnline = () => setNetworkStatus('online');
+		const handleOffline = () => setNetworkStatus('offline');
+
+		if (Platform.OS === 'web' && typeof window !== 'undefined') {
+			window.addEventListener('online', handleOnline);
+			window.addEventListener('offline', handleOffline);
+		}
+
+		return () => {
+			active = false;
+			clearInterval(intervalId);
+			appStateSubscription.remove();
+
+			if (Platform.OS === 'web' && typeof window !== 'undefined') {
+				window.removeEventListener('online', handleOnline);
+				window.removeEventListener('offline', handleOffline);
+			}
+		};
+	}, []);
 
 	React.useEffect(() => {
 		const loadState = async () => {
@@ -859,6 +974,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	const value = React.useMemo<AppContextType>(
 		() => ({
 			...state,
+			networkStatus,
+			isOffline: networkStatus === 'offline',
+			isOnline: networkStatus === 'online',
+			refreshNetworkStatus,
 			setAge,
 			setNeeds,
 			setGoals,
@@ -894,7 +1013,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			setPersonalization,
 			resetAppState,
 		}),
-		[state, unreadCount, isFavorite, resetAppState]
+		[state, unreadCount, isFavorite, resetAppState, networkStatus, refreshNetworkStatus]
 	);
 
 	return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

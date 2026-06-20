@@ -179,7 +179,7 @@ export function HealthNeeds({ onFinish }: HealthNeedsProps) {
           ))}
           <Text style={styles.stepText}>Étape 2 / 3</Text>
         </View>
-        <Text style={styles.title}>Quel est ton besoin{"\n"}aujourd'hui&nbsp;?</Text>
+        <Text style={styles.title}>{"Quel est ton besoin\naujourd'hui ?"}</Text>
         <Text style={styles.desc}>
           {selected.size === 0
             ? "Sélectionne tous les besoins qui te concernent. Le premier deviendra ton objectif principal."

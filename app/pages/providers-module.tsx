@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import {
+  Alert,
   LayoutAnimation,
   Linking,
   Platform,
@@ -15,7 +16,9 @@ import {
 } from 'react-native';
 
 import BackButton from '../../components/BackButton';
+import NoticeCard from '../../components/NoticeCard';
 import { colors } from '../../constants/colors';
+import { useApp } from '../../context/appcontext';
 import { useProfileMock } from '../../context/ProfileMockContext';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -180,6 +183,7 @@ const DOCTORS: Doctor[] = [
 
 function ProvidersModuleContent() {
   const { language, selectedNeeds, discreteMode } = useProfileMock();
+  const { isOffline } = useApp();
   const isWo = language === 'wo';
 
   const getDefaultTheme = (): string => {
@@ -310,15 +314,37 @@ function ProvidersModuleContent() {
     const telUrl = 'tel:' + phone;
     if (await Linking.canOpenURL(telUrl)) {
       await Linking.openURL(telUrl);
+      return;
     }
+
+    Alert.alert(
+      'SaxalWer',
+      isWo ? 'Manul ubbi woote bi ci appareil bii.' : "Impossible de lancer l'appel sur cet appareil."
+    );
   };
 
   const handleLocationPress = async (location: string) => {
+    if (isOffline) {
+      Alert.alert(
+        'SaxalWer',
+        isWo
+          ? 'Connexion internet la soxla ngir ubbi itineraire bi.'
+          : "Une connexion internet est nécessaire pour ouvrir l'itinéraire."
+      );
+      return;
+    }
+
     const encodedLocation = encodeURIComponent(location);
     const mapUrl = 'https://maps.google.com/?q=' + encodedLocation;
     if (await Linking.canOpenURL(mapUrl)) {
       await Linking.openURL(mapUrl);
+      return;
     }
+
+    Alert.alert(
+      'SaxalWer',
+      isWo ? 'Manul ubbi Maps ci appareil bii.' : "Impossible d'ouvrir Maps sur cet appareil."
+    );
   };
 
   return (
@@ -386,6 +412,20 @@ function ProvidersModuleContent() {
               : "Ce répertoire est fourni à titre indicatif. Les noms, spécialités, horaires, assurances et coordonnées sont encore en cours de vérification et de validation progressive. Avant de vous déplacer ou d'appeler, confirmez si possible la disponibilité et les informations affichées."}
           </Text>
         </View>
+
+        {isOffline ? (
+          <NoticeCard
+            title={isWo ? 'Mode hors ligne' : 'Mode hors ligne'}
+            description={
+              isWo
+                ? 'Répertoire bi nekk na disponible. Ngir ubbi itinéraire yi, connexion internet la soxla.'
+                : "Le répertoire reste disponible hors ligne. Une connexion internet est nécessaire pour ouvrir les itinéraires."
+            }
+            iconName="cloud-offline-outline"
+            accentColor={colors.copper}
+            style={styles.offlineCard}
+          />
+        ) : null}
 
         {showFilters ? (
           <View style={styles.filtersPanel}>
@@ -685,6 +725,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: colors.cocoaDark,
+  },
+  offlineCard: {
+    marginHorizontal: 16,
+    marginBottom: 10,
   },
   headerTopRow: {
     flexDirection: 'row',

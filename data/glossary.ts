@@ -407,6 +407,16 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
 		wo: 'Examen médical ngir gis feebar kanam lu ko symptômes nekk. Dépistage bu gaaw aar na dundël.',
 		category: 'depistage',
 	},
+	diagnostic: {
+		fr: "Conclusion provisoire ou confirmée d'un professionnel de santé sur la cause probable d'un problème ou de plusieurs symptômes.",
+		wo: 'Li professionnel de santé di wax ci lu mën a nekk sabab bu jafe-jafe walla symptômes yi, bu mën a nekk provisoire walla confirmé.',
+		category: 'depistage',
+	},
+	ordonnance: {
+		fr: "Document écrit par un professionnel de santé pour indiquer un traitement, des examens ou des conseils à suivre après la consultation.",
+		wo: 'Këyit bu professionnel de santé bind ngir wax traitement, examens walla ndigël yi nga wara topp ginnaaw consultation.',
+		category: 'depistage',
+	},
 	frottis: {
 		fr: "Examen rapide et indolore qui consiste à prélever des cellules du col de l'utérus pour détecter précocement un cancer.",
 		wo: 'Examen bu gaaw te du metti bu jël cellules ci col utérus bi ngir gis cancer bu bonk.',
@@ -509,6 +519,21 @@ export const GLOSSARY: Record<string, GlossaryEntry> = {
 	hormones: {
 		fr: 'Substances chimiques produites par le corps qui régulent de nombreuses fonctions : cycle menstruel, grossesse, humeur, métabolisme, etc.',
 		wo: 'Substances chimiques bu yaram bi jox bu am solo ci bëri fonctions : weer gi, gàtt, humeur, métabolisme, etc.',
+		category: 'general',
+	},
+	consultation: {
+		fr: "Moment d'échange avec un professionnel de santé pour expliquer ses symptômes, poser des questions, recevoir un avis, un examen ou un traitement.",
+		wo: 'Waxtu waxtaan ak professionnel de santé ngir wax sa symptômes, laaj, jot avis, examen walla traitement.',
+		category: 'general',
+	},
+	symptômes: {
+		fr: "Signes ou sensations qui montrent qu'un changement se passe dans le corps : douleur, saignement, fatigue, pertes, démangeaisons ou autre gêne.",
+		wo: 'Signes walla yëg-yëg yi wone ne soppi am na ci yaram bi : mettit, deret, fatigue, pertes, démangeaisons walla beneen jafe-jafe.',
+		category: 'general',
+	},
+	antécédents: {
+		fr: "Informations sur ta santé passée ou familiale : maladies déjà connues, opérations, allergies, grossesses, traitements ou problèmes déjà vécus.",
+		wo: 'Xibaar ci sa wéru yaram gu weesu walla ci njaboot gi : feebar yu ñu xam, opérations, allergies, gàtt, traitements walla jafe-jafe yu weesu.',
 		category: 'general',
 	},
 	SSR: {

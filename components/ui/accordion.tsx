@@ -4,7 +4,7 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
 import * as React from "react";
 
-function cn(...classes: Array<string | undefined | null | false>) {
+function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -66,4 +66,3 @@ function AccordionContent({
 }
 
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };
-

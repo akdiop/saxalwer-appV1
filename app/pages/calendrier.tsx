@@ -30,12 +30,6 @@ type Appointment = {
   reminder?: boolean;
 };
 
-type CycleData = {
-  lastPeriodDate: string | null;
-  periodLength: number;
-  cycleLength: number;
-};
-
 type NewAppointmentDraft = {
   type: AppointmentType;
   title: string;

@@ -20,6 +20,7 @@ export type CommunityMessage = {
   text: string;
   timestamp: number;
   isAnonymous: boolean;
+  syncStatus?: 'synced' | 'pending' | 'local-only';
 };
 
 export type CommunityRoom = {

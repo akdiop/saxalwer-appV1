@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -12,11 +13,60 @@ import {
   View,
 } from 'react-native';
 import BackButton from '../../components/BackButton';
+import NoticeCard from '../../components/NoticeCard';
+import { useApp } from '../../context/appcontext';
+import { useSupabaseAuth } from '../../context/SupabaseAuthContext';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { isOffline } = useApp();
+  const {
+    configurationError,
+    initialized,
+    isConfigured,
+    signInWithPassword,
+    user,
+  } = useSupabaseAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialized && user) {
+      router.replace('/profile-selection' as never);
+    }
+  }, [initialized, router, user]);
+
+  const handleLogin = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    if (isOffline) {
+      setErrorMessage(null);
+      return;
+    }
+
+    if (!email.trim() || !password) {
+      setErrorMessage('Renseigne ton email et ton mot de passe.');
+      return;
+    }
+
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
+    const { error } = await signInWithPassword(email, password);
+
+    if (error) {
+      setErrorMessage(error);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setIsSubmitting(false);
+    router.replace('/profile-selection' as never);
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -67,16 +117,48 @@ export default function LoginScreen() {
               />
             </View>
 
-            {/* Primary button */}
+            {!initialized ? (
+              <View style={styles.feedbackRow}>
+                <ActivityIndicator size="small" color="#1A3C34" />
+                <Text style={styles.feedbackInfo}>Chargement de la session...</Text>
+              </View>
+            ) : null}
+
+            {configurationError ? (
+              <Text style={styles.feedbackError}>{configurationError}</Text>
+            ) : null}
+
+            {isOffline ? (
+              <NoticeCard
+                title="Mode hors ligne"
+                description="Une connexion internet est nécessaire pour se connecter."
+                iconName="cloud-offline-outline"
+                style={styles.noticeCard}
+              />
+            ) : null}
+
+            {errorMessage ? (
+              <Text style={styles.feedbackError}>{errorMessage}</Text>
+            ) : null}
+
             <Pressable
               style={({ pressed }) => [
                 styles.primaryBtn,
-                pressed && styles.btnPressed,
+                (!isConfigured || isSubmitting || isOffline) && styles.primaryBtnDisabled,
+                pressed && isConfigured && !isSubmitting && !isOffline && styles.btnPressed,
               ]}
-              onPress={() => router.push('/profile-selection' as never)}
+              onPress={handleLogin}
+              disabled={!isConfigured || isSubmitting || isOffline}
               accessibilityRole="button"
             >
-              <Text style={styles.primaryBtnText}>Se connecter</Text>
+              <Text
+                style={[
+                  styles.primaryBtnText,
+                  (!isConfigured || isSubmitting || isOffline) && styles.primaryBtnTextDisabled,
+                ]}
+              >
+                {isSubmitting ? 'Connexion...' : 'Se connecter'}
+              </Text>
             </Pressable>
           </View>
 
@@ -173,6 +255,11 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 6,
   },
+  primaryBtnDisabled: {
+    backgroundColor: '#4A2F2720',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
   btnPressed: {
     opacity: 0.82,
     transform: [{ scale: 0.98 }],
@@ -182,6 +269,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  primaryBtnTextDisabled: {
+    color: '#4A2F2760',
+  },
+  feedbackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  feedbackInfo: {
+    fontSize: 14,
+    color: '#1A3C34',
+  },
+  feedbackError: {
+    fontSize: 13,
+    color: '#A0442D',
+    lineHeight: 20,
+  },
+  noticeCard: {
+    marginTop: -4,
   },
 
   /* Secondary */

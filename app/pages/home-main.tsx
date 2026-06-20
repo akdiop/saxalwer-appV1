@@ -1,23 +1,14 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import {
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
-
+import { Modal, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View, TextInput } from 'react-native';
+import { useRouter } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import HamburgerMenu from '../../components/HamburgerMenu';
 import { HorizontalScroll } from '../../components/HorizontalScroll';
 import LifeStagePoster from '../../components/LifeStagePoster';
 import SensitiveContent from '../../components/SensitiveContent';
 import { useApp, type QuickAccessId } from '../../context/appcontext';
+import { GLOSSARY } from '../../data/glossary';
+import { ARTICLES } from '../../data/articles';
 import { getSituationTheme } from '../../utils/situationAdaptation';
 import { getContextualMessage } from '../../utils/situationMessages';
 
@@ -43,7 +34,7 @@ type QuickAccessDef = {
 
 const QUICK_ACCESS_CATALOG: QuickAccessDef[] = [
   { id: 'bibliotheque', fr: 'Bibliothèque', wo: 'Kàttan yi', route: '/bibliotheque', icon: 'bookshelf' },
-  { id: 'suivi', fr: 'Suivi santé', wo: 'Topptoo', route: '/suivi', icon: 'clipboard-pulse-outline' },
+  { id: 'suivi', fr: 'Mon cycle', wo: 'Topptoo', route: '/suivi', icon: 'clipboard-pulse-outline' },
   { id: 'carte', fr: 'Carte locale', wo: 'Kàrt', route: '/carte', icon: 'map-marker-radius-outline' },
   { id: 'about', fr: 'À propos', wo: 'Ci biir', route: '/about', icon: 'information-outline' },
   { id: 'orientation', fr: 'Orientation', wo: 'Jubanti', route: '/orientation', icon: 'compass-outline' },
@@ -74,14 +65,14 @@ const SUGGESTIONS = [
   {
     title: 'Comprendre mon cycle',
     subtitle: 'Un guide clair pour relier symptômes et périodes du cycle.',
-    route: '/bibliotheque',
+    route: '/bibliotheque/25',
     icon: 'moon-waning-crescent',
     tone: '#E9D4C5',
   },
   {
     title: 'Parler sans gêne en consultation',
     subtitle: 'Prépare tes mots-clés avant de voir un professionnel.',
-    route: '/orientation',
+    route: '/ressources?focus=consultation',
     icon: 'account-voice',
     tone: '#DCE8DF',
   },
@@ -96,15 +87,21 @@ const SUGGESTIONS = [
 
 const TESTIMONIALS = [
   {
-    quote: 'Pour la première fois, je comprends mes douleurs sans honte, avec des mots simples que je peux aussi reprendre en consultation.',
+    context: 'Étudiante, cycles irréguliers et douleurs difficiles à décrire',
+    quote: 'Avant, je disais seulement que j’avais mal, sans savoir expliquer quand les douleurs commençaient, combien de temps elles duraient ni ce qui les calmait. Avec les contenus de SaxalWér, j’ai appris à mieux observer mon cycle, à mettre des mots sur mes symptômes et à préparer mes questions avant ma consultation.',
+    impact: 'Je me suis sentie plus écoutée, parce que j’arrivais enfin à raconter clairement ce que je vivais.',
     author: 'Aminata, 24 ans',
   },
   {
-    quote: 'Le mode discret m’a aidée à garder mon intimité au quotidien, surtout quand je consulte des sujets sensibles dans des espaces partagés.',
+    context: 'Mère de famille, téléphone souvent utilisé dans des espaces partagés',
+    quote: 'Le mode discret m’a beaucoup aidée quand je voulais consulter des sujets sensibles sans attirer l’attention. J’ai pu lire sur la contraception, revenir sur mes notes plus tard et garder un suivi personnel, même lorsque je n’avais que quelques minutes seule pour me renseigner.',
+    impact: 'J’ai retrouvé de l’intimité dans ma recherche d’informations et plus de liberté pour avancer à mon rythme.',
     author: 'Fatou, 31 ans',
   },
   {
-    quote: 'Les explications sont douces, concrètes et jamais culpabilisantes. Je me sens mieux accompagnée et moins seule face à mes questions.',
+    context: 'Commerçante, changements hormonaux et questions restées sans réponse',
+    quote: 'Je vivais plusieurs changements en même temps, comme des règles différentes, des sautes d’humeur et des troubles du sommeil, sans réussir à faire le lien. Les explications sont restées simples, concrètes et respectueuses, ce qui m’a aidée à comprendre que mes ressentis méritaient d’être pris au sérieux et discutés sereinement.',
+    impact: 'Je me sens moins seule, mieux préparée pour demander de l’aide et plus confiante dans mes décisions.',
     author: 'Ndèye, 42 ans',
   },
 ];
@@ -118,6 +115,45 @@ function firstName(fullName: string) {
 }
 
 export default function HomeMainScreen() {
+    // --- Ajout hooks et logique recherche ---
+    const [searchValue, setSearchValue] = useState('');
+    const [searchError, setSearchError] = useState('');
+
+    function normalize(str: string) {
+      return (
+        str
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/['’`-]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toLowerCase()
+      );
+    }
+
+    function handleSearch() {
+      setSearchError('');
+      const query = normalize(searchValue);
+      if (!query) return;
+
+      // Recherche dans les articles (titre/tags)
+      const foundArticle = ARTICLES.find(
+        (a) => normalize(a.title).includes(query) || (a.tags && a.tags.some((t) => normalize(t).includes(query)))
+      );
+      if (foundArticle) {
+        router.push(`/article/${foundArticle.id}` as never);
+        return;
+      }
+
+      // Recherche dans le glossaire (terme)
+      const foundTerm = Object.keys(GLOSSARY).find((term) => normalize(term).includes(query));
+      if (foundTerm) {
+        router.push(`/glossaire?terme=${encodeURIComponent(foundTerm)}` as never);
+        return;
+      }
+
+      setSearchError('Aucun résultat trouvé.');
+    }
   const router = useRouter();
   const {
     userProfile,
@@ -353,13 +389,27 @@ export default function HomeMainScreen() {
           ))}
         </HorizontalScroll>
 
-        <Pressable
-          style={({ pressed }) => [styles.searchBar, pressed && styles.cardPressed]}
-          onPress={() => router.push('/bibliotheque' as never)}
-        >
+
+        {/* Champ de recherche intelligent */}
+        <View style={styles.searchBar}>
           <MaterialCommunityIcons name="magnify" size={20} color={BASE.deepGreen} />
-          <Text style={styles.searchPlaceholder}>Rechercher un sujet: cycle, douleurs, fertilité...</Text>
-        </Pressable>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher un sujet: cycle, douleurs, fertilité..."
+            placeholderTextColor="#8E766A"
+            value={searchValue}
+            onChangeText={setSearchValue}
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
+            accessibilityLabel="Champ de recherche de sujet ou terme"
+          />
+          <Pressable onPress={handleSearch} style={styles.searchButton} accessibilityLabel="Valider la recherche">
+            <MaterialCommunityIcons name="arrow-right" size={20} color={BASE.deepGreen} />
+          </Pressable>
+        </View>
+        {searchError ? (
+          <Text style={styles.searchError}>{searchError}</Text>
+        ) : null}
 
         <Text style={styles.sectionTitle}>Accès rapide personnalisable</Text>
         <View style={styles.quickGrid}>
@@ -394,7 +444,7 @@ export default function HomeMainScreen() {
               showBaobabWatermark
             />
           </Pressable>
-          <Pressable onPress={() => router.push('/ressources' as never)}>
+          <Pressable onPress={() => router.push('/ressources?focus=consultation' as never)}>
             <LifeStagePoster
               title="Préparer ma consultation"
               stage="young"
@@ -414,7 +464,9 @@ export default function HomeMainScreen() {
         <HorizontalScroll itemMinWidth={286} gap={14}>
           {TESTIMONIALS.map((item) => (
             <View key={item.author} style={[styles.testimonialCard, discreteMode && styles.discreteMask]}>
+              <Text style={styles.testimonialContext}>{item.context}</Text>
               <Text style={styles.testimonialQuote}>&quot;{item.quote}&quot;</Text>
+              <Text style={styles.testimonialImpact}>{item.impact}</Text>
               <Text style={styles.testimonialAuthor}>{item.author}</Text>
             </View>
           ))}
@@ -514,7 +566,7 @@ export default function HomeMainScreen() {
                 <Text style={styles.sheetSecondaryText}>Annuler</Text>
               </Pressable>
               <Pressable onPress={saveQuickAccess} style={styles.sheetPrimaryButton}>
-                <Text style={styles.sheetPrimaryText}>Enregistrer</Text>
+                <MaterialCommunityIcons name="content-save-outline" size={22} color={BASE.deepGreen} />
               </Pressable>
             </View>
           </View>
@@ -539,6 +591,24 @@ export default function HomeMainScreen() {
 }
 
 const styles = StyleSheet.create({
+  searchInput: {
+    flex: 1,
+    fontSize: 13,
+    color: BASE.deepGreen,
+    paddingVertical: 0,
+    paddingHorizontal: 6,
+    backgroundColor: 'transparent',
+  },
+  searchButton: {
+    padding: 6,
+    borderRadius: 16,
+  },
+  searchError: {
+    color: BASE.terracotta,
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 8,
+  },
   safe: {
     flex: 1,
     backgroundColor: BASE.beige,
@@ -815,13 +885,21 @@ const styles = StyleSheet.create({
     borderColor: '#E3D9CA',
     backgroundColor: '#FFFDF8',
     padding: 18,
-    minHeight: 136,
-    justifyContent: 'space-between',
+    minHeight: 232,
+    gap: 10,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.04,
     shadowRadius: 18,
     elevation: 3,
+  },
+  testimonialContext: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: BASE.terracotta,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
   },
   testimonialQuote: {
     fontSize: 14,
@@ -829,10 +907,16 @@ const styles = StyleSheet.create({
     color: BASE.cocoa,
     fontStyle: 'italic',
   },
+  testimonialImpact: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: BASE.muted,
+  },
   testimonialAuthor: {
     fontSize: 12,
     color: BASE.deepGreen,
     fontWeight: '700',
+    marginTop: 'auto',
   },
   discreteMask: {
     opacity: 0.25,

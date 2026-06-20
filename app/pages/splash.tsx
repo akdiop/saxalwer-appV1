@@ -81,7 +81,7 @@ export default function SplashScreen() {
 
     const timeout = setTimeout(() => {
       router.replace(getPostSplashRoute() as never);
-    }, 3500);
+    }, 5000);
 
     return () => {
       clearTimeout(timeout);

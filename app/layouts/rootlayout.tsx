@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import HamburgerMenu from '../../components/HamburgerMenu';
+import OfflineBanner from '../../components/OfflineBanner';
 import { shouldShowSplash } from '../../utils/splashUtils';
 import { useApp } from '../../context/appcontext';
 
@@ -92,16 +93,17 @@ export function RootLayout() {
 	const router = useRouter();
 	const [menuOpen, setMenuOpen] = React.useState(false);
 	const wo = language === 'wo';
+	const isLegalRoute = pathname === '/legal';
 
 	if (shouldShowSplash() && pathname !== '/splash') {
 		return <Redirect href={"/splash" as any} />;
 	}
 
-	if ((!hasSeenWelcome || !hasConsented) && pathname !== '/splash' && pathname !== '/welcome') {
+	if ((!hasSeenWelcome || !hasConsented) && pathname !== '/splash' && pathname !== '/welcome' && !isLegalRoute) {
 		return <Redirect href={"/welcome" as any} />;
 	}
 
-	if (!hasCompletedTutorial && pathname !== '/splash' && pathname !== '/welcome' && pathname !== '/tutoriel') {
+	if (!hasCompletedTutorial && pathname !== '/splash' && pathname !== '/welcome' && pathname !== '/tutoriel' && !isLegalRoute) {
 		return <Redirect href={"/tutoriel" as any} />;
 	}
 
@@ -111,7 +113,8 @@ export function RootLayout() {
 		pathname !== '/splash' &&
 		pathname !== '/welcome' &&
 		pathname !== '/tutoriel' &&
-		pathname !== '/orientation'
+		pathname !== '/orientation' &&
+		!isLegalRoute
 	) {
 		return <Redirect href={"/onboarding" as any} />;
 	}
@@ -121,7 +124,8 @@ export function RootLayout() {
 		pathname !== '/splash' &&
 		pathname !== '/welcome' &&
 		pathname !== '/tutoriel' &&
-		pathname !== '/orientation';
+		pathname !== '/orientation' &&
+		!isLegalRoute;
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -157,15 +161,16 @@ export function RootLayout() {
 				</Pressable>
 			)}
 
-			<View
-				style={[
-					styles.main,
-					discreteMode && !isNavVisible ? styles.mainBlur : null,
-					isNavVisible ? styles.mainWithNav : null,
-				]}
-			>
-				<Slot />
-			</View>
+				<View
+					style={[
+						styles.main,
+						discreteMode && !isNavVisible ? styles.mainBlur : null,
+						isNavVisible ? styles.mainWithNav : null,
+					]}
+				>
+					<OfflineBanner topOffset={isNavVisible && !menuOpen ? 62 : 14} />
+					<Slot />
+				</View>
 
 			{isNavVisible && (
 				<Pressable
