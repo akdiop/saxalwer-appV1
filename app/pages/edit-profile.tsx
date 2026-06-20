@@ -47,12 +47,12 @@ const HEALTH_CONDITIONS: HealthCondition[] = [
     icon: 'stethoscope',
     color: '#4A2F27',
   },
-  { id: 'diabetes', fr: 'Diabete', wo: 'Diabete', icon: 'stethoscope', color: '#D4AF37' },
+  { id: 'diabetes', fr: 'Diabète', wo: 'Diabète', icon: 'stethoscope', color: '#D4AF37' },
   { id: 'hypertension', fr: 'Hypertension', wo: 'Hypertension', icon: 'heart-outline', color: '#C0392B' },
   {
     id: 'drepanocytose',
-    fr: 'Drepanocytose',
-    wo: 'Drepanocytose',
+    fr: 'Drépanocytose',
+    wo: 'Drépanocytose',
     icon: 'stethoscope',
     color: '#7A8C5A',
   },
@@ -63,56 +63,56 @@ const HEALTH_CONDITIONS: HealthCondition[] = [
     icon: 'pulse',
     color: '#1A3C34',
   },
-  { id: 'anemia', fr: 'Anemie', wo: 'Anemie', icon: 'heart-outline', color: '#A65D40' },
+  { id: 'anemia', fr: 'Anémie', wo: 'Anémie', icon: 'heart-outline', color: '#A65D40' },
 ];
 
 const CONTRACEPTION_METHODS: OptionItem[] = [
   { id: 'pilule', fr: 'Pilule', wo: 'Pilule' },
   { id: 'implant', fr: 'Implant', wo: 'Implant' },
-  { id: 'diu-cuivre', fr: 'DIU cuivre (sterilet)', wo: 'DIU cuivre (sterilet)' },
+  { id: 'diu-cuivre', fr: 'DIU cuivre (stérilet)', wo: 'DIU cuivre (stérilet)' },
   { id: 'diu-hormonal', fr: 'DIU hormonal', wo: 'DIU hormonal' },
   { id: 'injection', fr: 'Injection', wo: 'Injection' },
-  { id: 'preservatif', fr: 'Preservatif', wo: 'Preservatif' },
-  { id: 'naturelle', fr: 'Methode naturelle', wo: 'Methode naturelle' },
+  { id: 'preservatif', fr: 'Préservatif', wo: 'Préservatif' },
+  { id: 'naturelle', fr: 'Méthode naturelle', wo: 'Méthode naturelle' },
   { id: 'autre', fr: 'Autre', wo: 'Yeneen' },
 ];
 
 const MARITAL_OPTIONS: OptionItem[] = [
-  { id: '', fr: 'Non precise', wo: 'Binduwul' },
-  { id: 'single', fr: 'Celibataire', wo: 'Jiggeen rekk' },
-  { id: 'married', fr: 'Mariee', wo: 'Sey na' },
-  { id: 'divorced', fr: 'Divorcee', wo: 'Facce na' },
+  { id: '', fr: 'Non précisé', wo: 'Binduwul' },
+  { id: 'single', fr: 'Célibataire', wo: 'Jiggeen rekk' },
+  { id: 'married', fr: 'Mariée', wo: 'Sey na' },
+  { id: 'divorced', fr: 'Divorcée', wo: 'Facce na' },
   { id: 'widow', fr: 'Veuve', wo: 'Neew jekker' },
   { id: 'couple', fr: 'En couple', wo: 'Am na jekker' },
-  { id: 'prefer-not-say', fr: 'Je prefere ne pas dire', wo: 'Begguma wax' },
+  { id: 'prefer-not-say', fr: 'Je préfère ne pas dire', wo: 'Begguma wax' },
 ];
 
 const DESIRE_OPTIONS: OptionItem[] = [
-  { id: '', fr: 'Non precise', wo: 'Binduwul' },
-  { id: 'yes', fr: 'Oui, j aimerais', wo: 'Waaw, begg naa' },
-  { id: 'yes-soon', fr: 'Oui, bientot', wo: 'Waaw, ci kanam' },
+  { id: '', fr: 'Non précisé', wo: 'Binduwul' },
+  { id: 'yes', fr: "Oui, j'aimerais", wo: 'Waaw, begg naa' },
+  { id: 'yes-soon', fr: 'Oui, bientôt', wo: 'Waaw, ci kanam' },
   { id: 'no', fr: 'Non', wo: 'Deet' },
-  { id: 'maybe', fr: 'Peut-etre un jour', wo: 'Xam-xamu, benn bes' },
-  { id: 'prefer-not-say', fr: 'Je prefere ne pas dire', wo: 'Begguma wax' },
+  { id: 'maybe', fr: 'Peut-être un jour', wo: 'Xam-xamu, benn bes' },
+  { id: 'prefer-not-say', fr: 'Je préfère ne pas dire', wo: 'Begguma wax' },
 ];
 
 const FAITH_OPTIONS: OptionItem[] = [
-  { id: '', fr: 'Non precise', wo: 'Binduwul' },
+  { id: '', fr: 'Non précisé', wo: 'Binduwul' },
   { id: 'muslim', fr: 'Musulmane', wo: 'Muslim' },
-  { id: 'christian', fr: 'Chretienne', wo: 'Chretien' },
+  { id: 'christian', fr: 'Chrétienne', wo: 'Chretien' },
   { id: 'traditional', fr: 'Religion traditionnelle', wo: 'Degg-degg bu mbokk' },
   { id: 'spiritual', fr: 'Spirituelle (non religieuse)', wo: 'Spirituel' },
   { id: 'none', fr: 'Aucune', wo: 'Amul' },
-  { id: 'prefer-not-say', fr: 'Je prefere ne pas dire', wo: 'Begguma wax' },
+  { id: 'prefer-not-say', fr: 'Je préfère ne pas dire', wo: 'Begguma wax' },
 ];
 
 const PREGNANCY_STATUS_OPTIONS: OptionItem[] = [
-  { id: '', fr: 'Non precise', wo: 'Binduwul' },
+  { id: '', fr: 'Non précisé', wo: 'Binduwul' },
   { id: 'pregnant', fr: 'Je suis enceinte', wo: 'Dama gatt' },
   { id: 'not-pregnant', fr: 'Je ne suis pas enceinte', wo: 'Gattuma' },
-  { id: 'trying', fr: 'J essaie de tomber enceinte', wo: 'Dama seet doom' },
+  { id: 'trying', fr: "J'essaie de tomber enceinte", wo: 'Dama seet doom' },
   { id: 'postpartum', fr: 'Je suis en post-partum', wo: 'Maangi ci ginnaaw wasin' },
-  { id: 'prefer-not-say', fr: 'Je prefere ne pas dire', wo: 'Begguma wax' },
+  { id: 'prefer-not-say', fr: 'Je préfère ne pas dire', wo: 'Begguma wax' },
 ];
 
 function SectionTitle({
@@ -303,7 +303,7 @@ function EditProfileContent() {
           </Pressable>
 
           <View style={styles.headerTitleWrap}>
-            <Text style={styles.headerTitle}>{wo ? 'Soppi sa profil' : 'Modifier Mon Profil'}</Text>
+            <Text style={styles.headerTitle}>{wo ? 'Soppi sa profil' : 'Modifier mon profil'}</Text>
             <Text style={styles.headerSubtitle}>
               {wo ? 'Sa xibaarkat' : 'Tes informations personnelles'}
             </Text>
@@ -340,10 +340,10 @@ function EditProfileContent() {
               </Pressable>
             </View>
 
-            <Text style={styles.photoHint}>{wo ? 'Bes sa nataal (optionnel)' : 'Photo (optionnel)'}</Text>
+            <Text style={styles.photoHint}>{wo ? 'Bes sa nataal (optionnel)' : 'Photo (optionnelle)'}</Text>
           </View>
 
-          <SectionTitle icon="account-outline" label={wo ? 'Sa bopp' : 'Identite'} color={colors.deepGreen} />
+          <SectionTitle icon="account-outline" label={wo ? 'Sa bopp' : 'Identité'} color={colors.deepGreen} />
 
           <View style={styles.fieldsBlock}>
             <View>
@@ -380,7 +380,7 @@ function EditProfileContent() {
             </View>
 
             <View>
-              <Text style={styles.labelText}>{wo ? 'Sa jikko' : 'Personnalite'}</Text>
+              <Text style={styles.labelText}>{wo ? 'Sa jikko' : 'Personnalité'}</Text>
               <TextInput
                 value={personality}
                 onChangeText={setPersonality}
@@ -424,7 +424,7 @@ function EditProfileContent() {
             </View>
 
             <View>
-              <Text style={styles.labelText}>{wo ? 'Begg am doom' : 'Desir d avoir des enfants'}</Text>
+              <Text style={styles.labelText}>{wo ? 'Begg am doom' : "Désir d'avoir des enfants"}</Text>
               <SelectField value={desireChildren} options={infoDesire} onChange={setDesireChildren} />
             </View>
           </View>
@@ -478,12 +478,12 @@ function EditProfileContent() {
 
           <View style={styles.cardGreenSoft}>
             <Text style={styles.cardTitle}>
-              {wo ? 'Sa degg-degg bu xel ak boppam' : 'Ta confession ou spiritualite'}
+              {wo ? 'Sa degg-degg bu xel ak boppam' : 'Ta confession ou spiritualité'}
             </Text>
             <Text style={styles.cardDesc}>
               {wo
                 ? 'Xibaarkat bii jox na la dimbali ci resource yi ak sa degg-degg. Xamunu kenn.'
-                : 'Cette information nous aide a personnaliser les ressources et contenus sensibles selon tes valeurs. Totalement confidentiel.'}
+                : 'Cette information nous aide à personnaliser les ressources et contenus sensibles selon tes valeurs. Totalement confidentiel.'}
             </Text>
 
             <Text style={styles.labelText}>{wo ? 'Tannal sa degg-degg' : 'Ta confession'}</Text>
@@ -492,7 +492,7 @@ function EditProfileContent() {
             <Text style={styles.cardFootNote}>
               {wo
                 ? 'Ngir jox la resources yi am solo. Xamunu kenn - doxal na rekk ci sa telephone.'
-                : 'Pour te proposer des ressources respectueuses de tes valeurs. Jamais partage - stocke uniquement sur ton appareil.'}
+                : 'Pour te proposer des ressources respectueuses de tes valeurs. Jamais partagé - stocké uniquement sur ton appareil.'}
             </Text>
           </View>
 
@@ -540,7 +540,7 @@ function EditProfileContent() {
             ) : null}
           </View>
 
-          <SectionTitle icon="stethoscope" label={wo ? 'Sa wer' : 'Ma sante'} color={colors.gold} />
+          <SectionTitle icon="stethoscope" label={wo ? 'Sa wer' : 'Ma santé'} color={colors.gold} />
 
           <View style={styles.cardGoldSoft}>
             <Text style={styles.cardTitle}>{wo ? 'Jafe yi ci sa wer' : 'Conditions de santé'}</Text>
@@ -696,7 +696,7 @@ function EditProfileContent() {
               color={colors.white}
             />
             <Text style={styles.bottomSaveText}>
-              {saved ? (wo ? 'Doxal na!' : 'Enregistre !') : wo ? 'Doxal' : 'Enregistrer'}
+              {saved ? (wo ? 'Doxal na!' : 'Enregistré !') : wo ? 'Doxal' : 'Enregistrer'}
             </Text>
           </Pressable>
         </ScrollView>

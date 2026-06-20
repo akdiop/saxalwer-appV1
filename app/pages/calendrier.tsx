@@ -31,7 +31,7 @@ type Appointment = {
 };
 
 type CycleData = {
-  lastPeriodDate: string;
+  lastPeriodDate: string | null;
   periodLength: number;
   cycleLength: number;
 };
@@ -47,12 +47,6 @@ type NewAppointmentDraft = {
 };
 
 const STORAGE_KEY = 'saxalwer_appointments';
-
-const CYCLE_DATA_MOCK: CycleData = {
-  lastPeriodDate: '2026-03-04',
-  periodLength: 5,
-  cycleLength: 28,
-};
 
 const WEEK_DAYS_FR = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
@@ -134,8 +128,7 @@ function formatSelectedDate(date: Date) {
 
 export default function CalendrierScreen() {
   const router = useRouter();
-  const { language, setLanguage, oralMode, toggleOralMode, discreteMode } = useApp();
-  const [cycleData] = useState<CycleData>(CYCLE_DATA_MOCK);
+  const { language, setLanguage, oralMode, toggleOralMode, discreteMode, cycleData } = useApp();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);

@@ -253,10 +253,12 @@ function ProfilContent() {
             <View style={styles.grid2}>
               <ProfileStatCard
                 icon="leaf-outline"
-                title="Etape de vie"
+                title="Étape de vie"
                 value={selectedAge ? `${selectedAge} ans` : 'Non renseigné'}
-                subtitle="Mise a jour aujourd'hui"
+                subtitle="Mise à jour aujourd'hui"
                 onPress={() => router.push('/onboarding/age' as never)}
+                showEdit
+                onEditPress={() => router.push('/onboarding/age' as never)}
               />
               <ProfileStatCard
                 icon="heart-outline"
@@ -264,6 +266,8 @@ function ProfilContent() {
                 value={`${favorites.length}`}
                 subtitle="Articles sauvegardés"
                 onPress={() => toggleWithAnimation(setFavoritesOpen, favoritesOpen)}
+                showEdit
+                onEditPress={() => toggleWithAnimation(setFavoritesOpen, favoritesOpen)}
               />
             </View>
           </View>
@@ -273,14 +277,16 @@ function ProfilContent() {
               <ProfileStatCard
                 icon="fitness-outline"
                 title="Profil santé"
-                value={userProfile.healthConditions[0] || 'General'}
+                value={userProfile.healthConditions[0] || 'Général'}
                 subtitle={`${userProfile.healthConditions.length} indicateurs suivis`}
                 onPress={() => router.push('/edit-profile' as never)}
+                showEdit
+                onEditPress={() => router.push('/edit-profile' as never)}
               />
               <ProfileStatCard
                 icon="layers-outline"
                 title="Mon contexte"
-                value={selectedNeeds[0] || 'Non defini'}
+                value={selectedNeeds[0] || 'Non défini'}
                 subtitle={`${selectedNeeds.length} besoins actifs`}
                 onPress={() => router.push('/mon-contexte' as never)}
                 showEdit
@@ -325,6 +331,8 @@ function ProfilContent() {
                 value="72%"
                 subtitle="Progression hebdomadaire"
                 onPress={() => router.push('/suivi' as never)}
+                showEdit
+                onEditPress={() => router.push('/suivi' as never)}
               />
               <ProfileStatCard
                 icon="calendar-outline"
@@ -332,6 +340,8 @@ function ProfilContent() {
                 value="3 rappels"
                 subtitle="Cette semaine"
                 onPress={() => router.push('/calendrier' as never)}
+                showEdit
+                onEditPress={() => router.push('/calendrier' as never)}
               />
             </View>
           </View>
@@ -465,7 +475,7 @@ function ProfilContent() {
               <View style={[styles.expandedBodyCard, styles.preferencesList]}>
                 <NotificationCategoryCard
                   title="Cycle"
-                  description="Rappels de suivi et fenetres importantes"
+                  description="Rappels de suivi et fenêtres importantes"
                   enabled={notificationPreferences.cycle.enabled}
                   frequency={notificationPreferences.cycle.frequency as NotificationFrequency}
                   onToggle={() =>
@@ -479,8 +489,8 @@ function ProfilContent() {
                   }
                 />
                 <NotificationCategoryCard
-                  title="Medication"
-                  description="Rappels de prise et suivi regulier"
+                  title="Médication"
+                  description="Rappels de prise et suivi régulier"
                   enabled={notificationPreferences.medication.enabled}
                   frequency={
                     notificationPreferences.medication.frequency as NotificationFrequency
@@ -496,7 +506,7 @@ function ProfilContent() {
                   }
                 />
                 <NotificationCategoryCard
-                  title="Bien-etre"
+                  title="Bien-être"
                   description="Hydratation, respiration et repos"
                   enabled={notificationPreferences.wellness.enabled}
                   frequency={notificationPreferences.wellness.frequency as NotificationFrequency}
@@ -530,7 +540,7 @@ function ProfilContent() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Aide & Support</Text>
+            <Text style={styles.sectionTitle}>Aide et support</Text>
             <View style={styles.groupCard}>
               <ProfileRowItem
                 icon="help-circle-outline"

@@ -8,6 +8,9 @@ import {
   Alert,
   Animated,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -86,6 +89,27 @@ type AdaptiveResponseOptions = {
 };
 
 type FollowUpOption = { fr: string; wo: string };
+
+const URGENT_KEYWORDS = [
+  'urgence',
+  'urgent',
+  'hémorragie',
+  'hemorragie',
+  'saignement abondant',
+  'beaucoup de sang',
+  'douleur intense',
+  'douleur insupportable',
+  'évanouissement',
+  'evanouissement',
+  'malaise',
+  'fièvre',
+  'fievre',
+  'je saigne beaucoup',
+  'viol',
+  'agression',
+  'violence',
+  'impossible de respirer',
+];
 
 const KEYWORD_MAP: Record<string, number[]> = {
   contraception: [1],
@@ -263,7 +287,7 @@ const SYMPTOM_FLOWS: SymptomFlow[] = [
     questionsFr: [
       'Ou exactement ? (zone intime, vulve, vagin)',
       "As-tu des pertes inhabituelles (couleur, odeur) ?",
-      'Depuis quand ressens-tu ces symptomes ?',
+      'Depuis quand ressens-tu ces symptômes ?',
     ],
     questionsWo: [
       'Fan la ? (zone intime, vulve, vagin)',
@@ -279,7 +303,7 @@ const SYMPTOM_FLOWS: SymptomFlow[] = [
     questionsFr: [
       'Depuis combien de temps as-tu ce retard de regles ?',
       'As-tu eu des rapports sexuels non proteges recemment ?',
-      "Ressens-tu d'autres symptomes ? (nausees, fatigue, seins sensibles)",
+      "Ressens-tu d'autres symptômes ? (nausées, fatigue, seins sensibles)",
     ],
     questionsWo: [
       'Naata weer la naakk regles ?',
@@ -293,7 +317,7 @@ const SYMPTOM_FLOWS: SymptomFlow[] = [
   {
     trigger: /\b(bouffée|chaleur|sueur|insomnie|sécheresse|ménopause|50|45)\b/i,
     questionsFr: [
-      'Quel age as-tu ? Ces symptomes sont-ils recents ?',
+      'Quel âge as-tu ? Ces symptômes sont-ils récents ?',
       'Combien de bouffees de chaleur as-tu par jour environ ?',
       "Comment cela affecte-t-il ton quotidien ? (sommeil, humeur, energie)",
     ],
@@ -510,6 +534,28 @@ function detectLocationTags(text: string): string[] | null {
   return null;
 }
 
+function hasUrgentSignal(text: string) {
+  const lower = text.toLowerCase();
+  return URGENT_KEYWORDS.some((keyword) => lower.includes(keyword));
+}
+
+function scoreArticleRelevance(text: string) {
+  const lower = text.toLowerCase();
+  const scores = new Map<number, number>();
+
+  Object.entries(KEYWORD_MAP).forEach(([keyword, ids]) => {
+    if (lower.includes(keyword)) {
+      ids.forEach((id) => {
+        scores.set(id, (scores.get(id) ?? 0) + keyword.length);
+      });
+    }
+  });
+
+  return [...scores.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([id]) => id);
+}
+
 function findDefinition(text: string): { fr: string; wo: string } | null {
   const lower = text.toLowerCase();
   const isQuestion =
@@ -633,9 +679,9 @@ function adaptEducationLevel(text: string, personalization: PersonalizationConte
           ['diagnostic', 'xam bu leer ci sa xaalis wergu-yaram'],
         ]
       : [
-          ['professionnel de sante', 'sage-femme ou medecin'],
+          ['professionnel de sante', 'sage-femme ou médecin'],
           ['consultation', 'avis d’un soignant'],
-          ['diagnostic', 'avis medical precis'],
+          ['diagnostic', 'avis médical précis'],
         ];
 
     replacements.forEach(([from, to]) => {
@@ -646,7 +692,7 @@ function adaptEducationLevel(text: string, personalization: PersonalizationConte
   if (personalization.educationLevel === 'advanced') {
     const detail = wo
       ? '\n\nSu fekkee dangay soxla lu gën a leer, man naa joxe itam leeral bu gëna tekinik ci anatomi, hormones walla facteurs de risque.'
-      : '\n\nSi tu le souhaites, je peux aussi détailler les mecanismes biologiques, les facteurs de risque et le vocabulaire medical precis.';
+      : '\n\nSi tu le souhaites, je peux aussi détailler les mécanismes biologiques, les facteurs de risque et le vocabulaire médical précis.';
     adapted += detail;
   }
 
@@ -747,10 +793,10 @@ function getAdaptiveFollowUpOptions(
       pushUnique({ fr: 'Choisir une contraception', wo: 'Tannal contraception' });
       pushUnique({ fr: 'Effets secondaires', wo: 'Effets secondaires' });
     } else {
-      pushUnique({ fr: "J'ai des symptomes a decrire", wo: 'Am naa signes begg naa wax' });
-      pushUnique({ fr: "J'ai une question sante", wo: 'Am naa laaj ci wer' });
+      pushUnique({ fr: "J'ai des symptômes à décrire", wo: 'Am naa signes begg naa wax' });
+      pushUnique({ fr: 'J’ai une question de santé', wo: 'Am naa laaj ci wer' });
     }
-    pushUnique({ fr: 'Trouver un centre de sante', wo: 'Seet ker wu jamm' });
+    pushUnique({ fr: 'Trouver un centre de santé', wo: 'Seet ker wu jamm' });
   }
 
   if (topic === 'symptom') {
@@ -1134,7 +1180,7 @@ export default function ChatScreen() {
         case 'menopause':
           return 'Tu peux me parler de menopause, de bouffees de chaleur, du sommeil ou du confort intime.';
         default:
-          return "Tu peux me decrire tes symptomes, poser une question, ou m'envoyer une photo pour m'aider a comprendre.";
+          return "Tu peux me décrire tes symptômes, poser une question, ou m'envoyer une photo pour m'aider à comprendre.";
       }
     })();
 
@@ -1206,14 +1252,11 @@ export default function ChatScreen() {
   }, []);
 
   const findRelevantArticles = useCallback((text: string): Article[] => {
-    const lower = text.toLowerCase();
-    const matchedIds = new Set<number>();
-    Object.entries(KEYWORD_MAP).forEach(([keyword, ids]) => {
-      if (lower.includes(keyword)) {
-        ids.forEach((id) => matchedIds.add(id));
-      }
-    });
-    return ARTICLES.filter((article) => matchedIds.has(article.id)).slice(0, 3);
+    const rankedIds = scoreArticleRelevance(text);
+    return rankedIds
+      .map((id) => ARTICLES.find((article) => article.id === id))
+      .filter((article): article is Article => Boolean(article))
+      .slice(0, 3);
   }, []);
 
   const isSevere = useCallback((answers: string[], flow: SymptomFlow) => {
@@ -1271,6 +1314,23 @@ export default function ChatScreen() {
           wo
         );
 
+      if (hasUrgentSignal(userText)) {
+        return {
+          id: `bot-${Date.now()}`,
+          role: 'bot',
+          text: adaptText(
+            wo
+              ? 'Li ngay wax dafay wone ne dafa wara jëfandikoo jàppale bu gaaw. Manuma def diagnostic, waaye li gëna am solo mooy nga seet professionnel de sante wala service d’urgence bu gaaw.'
+              : "Ce que tu décris peut demander une aide médicale rapide. Je ne peux pas poser de diagnostic, mais le plus important est de consulter rapidement un professionnel de santé ou un service d'urgence.",
+            { topic: 'orientation', severity: 'urgent' }
+          ),
+          referToProfessional: true,
+          showLocation: true,
+          locationTags: detectLocationTags(userText) ?? ['Urgences', 'Gynecologie'],
+          followUpOptions: getAdaptiveFollowUpOptions('orientation', personalization, lifeStage),
+        };
+      }
+
       if (symptomFlowRef.current) {
         const { flow, step, answers } = symptomFlowRef.current;
         const nextAnswers = [...answers, userText];
@@ -1300,7 +1360,7 @@ export default function ChatScreen() {
             text: adaptText(
               wo
                 ? 'Ci li ngay wax, dafay am solo nga dem tabax bu gaaw. Soo amee symptomes yu mel nii, professionnel de sante moo men la dimbali bu baax.\n\nMen naa la wone ker wu jamm wu jege ci yow :'
-                : "D'apres ce que tu me decris, je te recommande de consulter un professionnel de sante rapidement. Ces symptomes meritent une attention medicale.\n\nJe peux te localiser un centre de sante pres de toi :",
+                : "D'après ce que tu me décris, je te recommande de consulter un professionnel de santé rapidement. Ces symptômes méritent une attention médicale.\n\nJe peux te localiser un centre de santé près de toi :",
               { topic: 'orientation', severity: 'urgent' }
             ),
             showLocation: true,
@@ -1317,7 +1377,7 @@ export default function ChatScreen() {
           text: adaptText(
             wo
               ? `Ci li ngay wax, mangi la jox xam-xam :\n\n${brief?.wo ?? ''}\n\nBu symptomes yi di yees wala epp, waxal tabax.`
-              : `D'apres ce que tu me decris :\n\n${brief?.fr ?? ''}\n\nSi les symptomes persistent ou s'aggravent, n'hesite pas a consulter un professionnel.`,
+              : `D'après ce que tu me décris :\n\n${brief?.fr ?? ''}\n\nSi les symptômes persistent ou s'aggravent, n'hésite pas à consulter un professionnel.`,
             { topic: 'symptom' }
           ),
           articles,
@@ -1332,7 +1392,7 @@ export default function ChatScreen() {
           text: adaptText(
             wo
               ? 'Mangi la wone ker wu jamm yi jege ci yow ci Senegaal :'
-              : 'Voici les centres de sante les plus proches de toi au Senegal :',
+              : 'Voici les centres de santé les plus proches de toi au Sénégal :',
             { topic: 'orientation' }
           ),
           showLocation: true,
@@ -1464,6 +1524,7 @@ export default function ChatScreen() {
           ),
           showLocation: true,
           locationTags,
+          followUpOptions: getAdaptiveFollowUpOptions('orientation', personalization, lifeStage),
         };
       }
 
@@ -1473,7 +1534,7 @@ export default function ChatScreen() {
         text: adaptText(
           wo
             ? "Ngir ma gena la dimbali, men nga :\n\n- Wax ma sa symptomes\n- Laaj ma ci contraception, grossesse, menopause\n- Yonni ma nataal"
-            : "Pour mieux t'aider, tu peux :\n\n- Me decrire tes symptomes\n- Me poser une question sur la contraception, grossesse, menopause\n- M'envoyer une photo",
+            : "Pour mieux t'aider, tu peux :\n\n- Me décrire tes symptômes\n- Me poser une question sur la contraception, la grossesse ou la ménopause\n- M'envoyer une photo",
           { topic: 'fallback' }
         ),
         followUpOptions: getAdaptiveFollowUpOptions('fallback', personalization, lifeStage),
@@ -1515,6 +1576,7 @@ export default function ChatScreen() {
       const imageUri = pendingImage ?? undefined;
       setInput('');
       setPendingImage(null);
+      Keyboard.dismiss();
       appendUserMessage(text || (wo ? 'Nataal' : 'Photo'), imageUri);
     },
     [appendUserMessage, input, pendingImage, wo]
@@ -1661,7 +1723,11 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.screen}>
+      <KeyboardAvoidingView
+        style={styles.screen}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+      >
         <View style={styles.header}>
           <View style={styles.headerDecorationOuter} />
           <View style={styles.headerDecorationInner} />
@@ -1706,6 +1772,8 @@ export default function ChatScreen() {
             contentContainerStyle={styles.chatScroll}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            onScrollBeginDrag={Keyboard.dismiss}
           >
             {messages.map((message) => {
               const isUser = message.role === 'user';
@@ -1776,7 +1844,7 @@ export default function ChatScreen() {
                     <View style={styles.referralCard}>
                       <MaterialCommunityIcons name="stethoscope" size={14} color={C.terracotta} />
                       <Text style={styles.referralText}>
-                        {wo ? 'Consultation medicale recommandee' : 'Consultation medicale recommandee'}
+                        {wo ? 'Consultation medicale recommandee' : 'Consultation médicale recommandée'}
                       </Text>
                     </View>
                   ) : null}
@@ -1937,7 +2005,7 @@ export default function ChatScreen() {
               value={input}
               onChangeText={setInput}
               onFocus={() => setShowChips(true)}
-              placeholder={wo ? 'Waxal sa symptomes fii...' : 'Decris tes symptomes ici...'}
+              placeholder={wo ? 'Waxal sa symptomes fii...' : 'Décris tes symptômes ici...'}
               placeholderTextColor="rgba(74,47,39,0.42)"
               style={styles.input}
               multiline
@@ -1971,7 +2039,7 @@ export default function ChatScreen() {
             </Text>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

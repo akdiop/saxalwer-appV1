@@ -55,7 +55,7 @@ const FAITH_RESOURCES: FaithResource[] = [
     titleFr: 'Islam et Planification Familiale',
     titleWo: 'Islam ak Planification familiale',
     contentFr:
-      "L'Islam permet la planification familiale pour proteger la sante de la mere et de la famille. Le Prophete (PSL) a autorise l'espacement des naissances. Consulte un imam ou un savant de confiance pour des avis adaptes a ta situation.",
+      "L'Islam permet la planification familiale pour protéger la santé de la mère et de la famille. Le Prophète (PSL) a autorisé l'espacement des naissances. Consulte un imam ou un savant de confiance pour des avis adaptés à ta situation.",
     contentWo:
       'Islam dafa yamal planification familiale ngir kaarange weru yaay ak ndey. Prophete (PSL) yamal na espacement ci doom yi. Jel Imam wala kenn ku xam Koran ngir gis tey wu la jem.',
     faith: 'islam',
@@ -81,7 +81,7 @@ const FAITH_RESOURCES: FaithResource[] = [
     titleFr: 'Islam et Maternite',
     titleWo: 'Islam ak Maternite',
     contentFr:
-      "Le Coran honore les meres et les femmes enceintes. L'allaitement est encourage jusqu'a 2 ans si possible. La periode post-partum (Nifas) a des regles specifiques : demande conseil a un savant.",
+      "Le Coran honore les mères et les femmes enceintes. L'allaitement est encouragé jusqu'à 2 ans si possible. La période post-partum (Nifas) a des règles spécifiques : demande conseil à un savant.",
     contentWo:
       'Coran bi rafet na yaay yi ak jigeen yi mu gatt. Allaitement bi dagnu ko digal ba naar at su men. Post-partum (Nifas) am na leer yu bokk : jel xetu ci expert bu Coran.',
     faith: 'islam',
@@ -94,33 +94,33 @@ const FAITH_RESOURCES: FaithResource[] = [
     titleFr: 'Christianisme et Soins du Corps',
     titleWo: 'Kersa-yalla ak Tangal yaram',
     contentFr:
-      "Ton corps est un temple du Saint-Esprit (1 Cor 6:19). Prendre soin de ta sante reproductive est un acte de respect envers toi-meme et envers Dieu. Ne neglige jamais ton bien-etre.",
+      "Ton corps est un temple du Saint-Esprit (1 Cor 6:19). Prendre soin de ta santé reproductive est un acte de respect envers toi-même et envers Dieu. Ne néglige jamais ton bien-être.",
     contentWo:
       'Sa yaram mooy ker gu Saint-Esprit (1 Cor 6:19). Tangal sa weru yaram mooy boole bu rafetal sa bopp ak Yalla. Bul feey sa weru boppam.',
     faith: 'christianity',
     icon: 'sparkles',
     color: '#A65D40',
-    category: 'Bien-etre',
+    category: 'Bien-être',
   },
   {
     id: 'islam-body',
     titleFr: 'Islam et Sante Corporelle',
     titleWo: 'Islam ak Weru yaram',
     contentFr:
-      "Le Prophete (PSL) a dit : \"Ton corps a un droit sur toi\". Proteger ta sante est une obligation religieuse. Le depistage, la contraception, et le soin de soi ne sont pas contraires a l'Islam.",
+      "Le Prophète (PSL) a dit : \"Ton corps a un droit sur toi\". Protéger ta santé est une obligation religieuse. Le dépistage, la contraception et le soin de soi ne sont pas contraires à l'Islam.",
     contentWo:
       'Prophete (PSL) ko wax : "Sa yaram am na jamono ci yaw". Kaarange sa weru yaram mooy buro ci islam. Depistage, contraception, ak tangal bopp dagnu xamul ci Islam.',
     faith: 'islam',
     icon: 'star',
     color: '#4A2F27',
-    category: 'Bien-etre',
+    category: 'Bien-être',
   },
   {
     id: 'universal-compassion',
     titleFr: 'Toutes confessions : Compassion envers soi',
     titleWo: 'Yepp : Nob ci sa bopp',
     contentFr:
-      "Quelle que soit ta foi, tu merites compassion, dignite et acces aux soins de sante. Ta spiritualite peut etre une force dans ton parcours de sante. Tu n'es jamais seule.",
+      "Quelle que soit ta foi, tu mérites compassion, dignité et accès aux soins de santé. Ta spiritualité peut être une force dans ton parcours de santé. Tu n'es jamais seule.",
     contentWo:
       'Kon ngir sa gem, am nga jamono ci nob, dignite ak soxla ci weru yaram. Sa gem-gem ci Yalla men na dimbali la ci sa yoon bu wer. Amula benn ci sa biir.',
     faith: 'universal',
@@ -235,7 +235,7 @@ function FaithResourcesContent() {
               <Text style={styles.headerSubtitle}>
                 {wo
                   ? 'Liggeey ci kersa-yalla ak weru yaram'
-                  : 'Ressources spirituelles et sante reproductive'}
+                  : 'Ressources spirituelles et santé reproductive'}
               </Text>
             </View>
 
@@ -250,13 +250,13 @@ function FaithResourcesContent() {
                 <View style={styles.introHeartWrap}>
                   <Ionicons name="heart" size={16} color={BASE.terracotta} />
                 </View>
-                <Text style={styles.introTitle}>{wo ? 'Yeg-yegal ci sa gem ak sa wer' : 'Harmoniser foi et sante'}</Text>
+                <Text style={styles.introTitle}>{wo ? 'Yeg-yegal ci sa gem ak sa wer' : 'Harmoniser foi et santé'}</Text>
               </View>
 
               <Text style={styles.introText}>
                 {wo
                   ? 'SaxalWer rafetal ni sa gem-gem ci Yalla dafa am solo ci sa yoon bu wer. Fii, amal na ressources ngir japp naka nga men a liggeey ci gem-gem ak wer ci ker wu bees.'
-                  : 'SaxalWer reconnait que la foi et la spiritualite sont souvent au coeur des choix de sante. Voici des ressources pour comprendre comment christianisme et islam abordent la sante reproductive, sans jugement.'}
+                  : 'SaxalWer reconnaît que la foi et la spiritualité sont souvent au cœur des choix de santé. Voici des ressources pour comprendre comment le christianisme et l’islam abordent la santé reproductive, sans jugement.'}
               </Text>
             </View>
 
@@ -295,7 +295,7 @@ function FaithResourcesContent() {
               <Text style={styles.externalText}>
                 {wo
                   ? 'Jel na xetu ci imam, pasteur, wala expert bu spirituel ngir gis tey wu la jem ci sa situation.'
-                  : "N'hesite pas a consulter un imam, pasteur, ou conseiller spirituel de confiance pour des avis adaptes a ta situation personnelle."}
+                  : "N'hésite pas à consulter un imam, un pasteur ou un conseiller spirituel de confiance pour des avis adaptés à ta situation personnelle."}
               </Text>
             </View>
 

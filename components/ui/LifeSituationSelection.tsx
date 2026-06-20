@@ -77,21 +77,21 @@ const SITUATIONS: Array<{
     icon: "sun",
     color: BASE.copper,
     label: { fr: "Menopause / Pre-menopause", wo: "Menopause" },
-    description: { fr: "Transition vers la menopause", wo: "Transition ci menopause" },
+    description: { fr: "Transition vers la ménopause", wo: "Transition ci menopause" },
   },
   {
     id: "general",
     icon: "sunrise",
     color: BASE.gold,
-    label: { fr: "Bien-etre general", wo: "Jamm ak yaram" },
-    description: { fr: "Prendre soin de ma sante globale", wo: "Saxal sama yaram bu mat" },
+    label: { fr: "Bien-être général", wo: "Jamm ak yaram" },
+    description: { fr: "Prendre soin de ma santé globale", wo: "Saxal sama yaram bu mat" },
   },
   {
     id: "prefer-not-say",
     icon: "help-circle",
     color: "rgba(74,47,39,0.6)",
-    label: { fr: "Prefere ne pas preciser", wo: "Begg naa du wax" },
-    description: { fr: "Je souhaite garder cela prive", wo: "Begg naa mu dekk sutura" },
+    label: { fr: "Préfère ne pas préciser", wo: "Begg naa du wax" },
+    description: { fr: "Je souhaite garder cela privé", wo: "Begg naa mu dekk sutura" },
   },
 ];
 

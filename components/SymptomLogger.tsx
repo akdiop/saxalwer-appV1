@@ -145,7 +145,7 @@ export function SymptomLogger({
             <Feather name="activity" size={18} color={C.copper} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.title}>{wo ? "Enregistrer tes symptomes" : "Enregistrer tes symptomes"}</Text>
+            <Text style={styles.title}>{wo ? "Enregistrer tes symptomes" : "Enregistrer tes symptômes"}</Text>
             <Text style={styles.dateText}>
               {new Date(date).toLocaleDateString("fr-FR", {
                 weekday: "long",

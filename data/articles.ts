@@ -35,7 +35,7 @@ export interface Article {
 	content: ArticleSection[];
 }
 
-export const ARTICLES: Article[] = [
+const BASE_ARTICLES: Article[] = [
 	{
 		id: 1,
 		category: 'Contraception',
@@ -952,4 +952,721 @@ export const ARTICLES: Article[] = [
 			},
 		],
 	},
+	{
+		id: 17,
+		category: 'Contraception',
+		categoryWo: 'Contraception',
+		lifeStage: 'Protection',
+		lifeStageWo: 'Jafe',
+		lifeSituations: ['contraception', 'general', 'curious'],
+		ageRange: 'all',
+		title: "Contraception d'urgence : quand et comment l'utiliser",
+		titleWo: "Contraception d'urgence : kañ ak naka ñuy ko jëfandikoo",
+		description:
+			"Pilule d'urgence, délai d'utilisation, efficacité et idées reçues à connaître après un rapport non protégé.",
+		descriptionWo:
+			"Pilule d'urgence, waxtu jëfandikoo, efficacité ak xalaat yu wrong yu war a xam ginnaaw rapport bu amul aar.",
+		stage: 'young',
+		audio: true,
+		readTime: '8 min',
+		author: 'Dr. Fatou Diallo, Gynécologue',
+		authorWo: 'Dr. Fatou Diallo, Gynécologue',
+		rating: 4.8,
+		readers: 1986,
+		featured: false,
+		tags: ['Contraception', 'Urgence', 'Pilule du lendemain', 'Prévention'],
+		tagsWo: ['Contraception', 'Urgence', 'Pilule du lendemain', 'Prévention'],
+		content: [
+			{ type: 'heading', fr: "A quoi sert la contraception d'urgence ?", wo: "Lu tax ñuy jëfandikoo contraception d'urgence ?" },
+			{
+				type: 'text',
+				fr: "La contraception d'urgence peut réduire le risque de grossesse après un rapport non protégé ou en cas d'oubli de méthode. Elle doit être utilisée le plus tôt possible.",
+				wo: "Contraception d'urgence mën na wàññi risque gàtt ginnaaw rapport bu amul aar walla bu amee oubli ci méthode bi. War naa ñu ko jëfandikoo bu gaaw."
+			},
+			{
+				type: 'list',
+				itemsFr: [
+					'Elle ne remplace pas une méthode régulière.',
+					'Elle ne protège pas contre les IST.',
+					'Plus elle est prise tôt, plus elle a de chances d’être utile.',
+					'En cas de vomissement rapide après la prise, demande conseil sans tarder.',
+				],
+				itemsWo: [
+					'Du wuutu méthode bu siiw.',
+					'Du aar ci IST.',
+					'Bu ñu ko jëlee bu gaaw, moo gën a mën a dimbali.',
+					'Su vomissement amee bu gaaw ginnaaw prise bi, laajal digalante bu gaaw.',
+				],
+			},
+		],
+	},
+	{
+		id: 18,
+		category: 'Grossesse',
+		categoryWo: 'Gàtt',
+		lifeStage: 'Maternité',
+		lifeStageWo: 'Yaayam',
+		lifeSituations: ['pregnant', 'trying', 'general'],
+		ageRange: 'all',
+		title: "Premiers signes de grossesse : ce qu'ils veulent dire",
+		titleWo: "Signes yu njëkk ci gàtt : lan lañuy tekki",
+		description:
+			"Retard de règles, nausées, fatigue, seins sensibles : comment reconnaître les premiers changements et quand faire un test.",
+		descriptionWo:
+			"Retard règles, nausées, fatigue, ween yuy metti : naka ngay xame soppi yu njëkk ak kañ nga wara def test.",
+		stage: 'pregnant',
+		audio: true,
+		readTime: '8 min',
+		author: 'Sage-femme Aminata Ndiaye',
+		authorWo: 'Sage-femme Aminata Ndiaye',
+		rating: 4.8,
+		readers: 1764,
+		featured: false,
+		tags: ['Grossesse', 'Test de grossesse', 'Retard de règles', 'Symptômes'],
+		tagsWo: ['Gàtt', 'Test gàtt', 'Retard règles', 'Symptômes'],
+		content: [
+			{ type: 'heading', fr: 'Reconnaître les premiers signes', wo: 'Xam signs yu njëkk yi' },
+			{
+				type: 'list',
+				itemsFr: [
+					'Retard de règles',
+					'Fatigue inhabituelle',
+					'Nausées ou dégoûts alimentaires',
+					'Seins plus sensibles',
+					'Envie fréquente d’uriner chez certaines femmes',
+				],
+				itemsWo: [
+					'Retard règles',
+					'Fatigue bu bees',
+					'Nausées walla bëggul yenn lekk',
+					'Ween yi gën a metti',
+					'Suuxat buy bari ci yenn jigéen',
+				],
+			},
+			{
+				type: 'text',
+				fr: "Ces signes ne suffisent pas toujours à confirmer une grossesse. Un test de grossesse ou une consultation permet d'y voir plus clair.",
+				wo: "Signes yii duñu doy ngir firndeel gàtt ci yeneen xaalis. Test gàtt walla consultation mën na leeral xaalis bi."
+			},
+		],
+	},
+	{
+		id: 19,
+		category: 'Maladies chroniques',
+		categoryWo: 'Maladies chroniques',
+		lifeStage: 'Toutes',
+		lifeStageWo: 'Yépp',
+		lifeSituations: ['cycles', 'general', 'menopause'],
+		ageRange: '25+',
+		title: 'Fibromes utérins : saignements, douleurs et options',
+		titleWo: 'Fibromes utérins : deret, mettit ak options',
+		description:
+			"Comprendre les fibromes, leurs signes fréquents et les solutions possibles selon les symptômes et le projet de vie.",
+		descriptionWo:
+			"Xam fibromes yi, seen signes yu bari ak solutions yi mën a am selon symptômes ak projet de vie.",
+		stage: 'mature',
+		audio: true,
+		readTime: '10 min',
+		author: 'Dr. Aïssatou Ba, Gynécologue',
+		authorWo: 'Dr. Aïssatou Ba, Gynécologue',
+		rating: 4.7,
+		readers: 1322,
+		featured: false,
+		tags: ['Fibrome', 'Saignements', 'Douleurs pelviennes', 'Utérus'],
+		tagsWo: ['Fibrome', 'Deret', 'Mettit pelvienne', 'Utérus'],
+		content: [
+			{ type: 'heading', fr: 'Que sont les fibromes ?', wo: 'Lan la fibromes yi ?' },
+			{
+				type: 'text',
+				fr: "Les fibromes sont des masses bénignes de l'utérus. Certaines femmes n'ont aucun symptôme, d'autres ont des règles abondantes, une sensation de pesanteur ou des douleurs.",
+				wo: "Fibromes yi ay masses yu baax lañu ci utérus bi. Yenn jigéen amuñu benn symptôme, yeneen am règles yu bari, biir buy diis walla mettit."
+			},
+			{
+				type: 'warning',
+				fr: "Des saignements très abondants, une anémie, un ventre qui grossit ou des douleurs persistantes méritent une consultation.",
+				wo: "Deret bu bari lool, anémie, biir buy rëy walla mettit buy yàgg war naa tax consultation."
+			},
+		],
+	},
+	{
+		id: 20,
+		category: 'IST & Prévention',
+		categoryWo: 'IST & Prévention',
+		lifeStage: 'Toutes',
+		lifeStageWo: 'Yépp',
+		lifeSituations: ['general', 'contraception', 'curious'],
+		ageRange: 'all',
+		title: 'Pertes vaginales : normales ou signe d’alerte ?',
+		titleWo: 'Pertes vaginales : normal walla signe d’alerte ?',
+		description:
+			"Couleur, odeur, démangeaisons, douleur : apprendre à distinguer ce qui est habituel de ce qui doit faire consulter.",
+		descriptionWo:
+			"Melo, xet, démangeaisons, mettit : jàng ni nga man a xam li normal ak li wara tax consultation.",
+		stage: 'young',
+		audio: true,
+		readTime: '9 min',
+		author: 'Dr. Cheikh Diop, Infectiologue',
+		authorWo: 'Dr. Cheikh Diop, Infectiologue',
+		rating: 4.7,
+		readers: 2107,
+		featured: false,
+		tags: ['Pertes vaginales', 'Infection', 'Prévention', 'Consultation'],
+		tagsWo: ['Pertes vaginales', 'Infection', 'Prévention', 'Consultation'],
+		content: [
+			{ type: 'heading', fr: 'Ce qui peut être habituel', wo: 'Li mën a nekk lu siiw' },
+			{
+				type: 'text',
+				fr: "Les pertes vaginales peuvent varier selon le cycle. Elles peuvent devenir plus transparentes ou plus abondantes autour de l'ovulation sans être anormales.",
+				wo: "Pertes vaginales yi mën nañu soppeeku selon cycle bi. Mën nañu gën a leer walla bari ci waxtu ovulation te du lu dul normal."
+			},
+			{
+				type: 'list',
+				itemsFr: [
+					'Odeur forte inhabituelle',
+					'Démangeaisons',
+					'Brûlure ou douleur',
+					'Couleur verdâtre, grisâtre ou présence de sang hors règles',
+				],
+				itemsWo: [
+					'Xet bu tar bu dul siiw',
+					'Démangeaisons',
+					'Brûlure walla mettit',
+					'Melo bu vert, gris walla deret ci biti règles',
+				],
+			},
+		],
+	},
+	{
+		id: 21,
+		category: 'Ménopause',
+		categoryWo: 'Ménopause',
+		lifeStage: 'Plénitude',
+		lifeStageWo: 'Plénitude',
+		lifeSituations: ['menopause', 'general'],
+		ageRange: '45+',
+		title: 'Sommeil, humeur et ménopause',
+		titleWo: 'Nelaw, humeur ak ménopause',
+		description:
+			"Pourquoi le sommeil et l’humeur changent pendant la transition hormonale, et quels repères peuvent aider au quotidien.",
+		descriptionWo:
+			"Lu tax nelaw ak humeur di soppeeku ci waxtu transition hormonale, ak repères yi mën a dimbali ci dund gu bés bu nekk.",
+		stage: 'mature',
+		audio: true,
+		readTime: '9 min',
+		author: 'Dr. Mariama Sow, Gynécologue',
+		authorWo: 'Dr. Mariama Sow, Gynécologue',
+		rating: 4.8,
+		readers: 1189,
+		featured: false,
+		tags: ['Ménopause', 'Sommeil', 'Humeur', 'Bien-être'],
+		tagsWo: ['Ménopause', 'Nelaw', 'Humeur', 'Jàmm'],
+		content: [
+			{ type: 'heading', fr: 'Des changements fréquents', wo: 'Soppi yu bari' },
+			{
+				type: 'text',
+				fr: "Pendant la ménopause, certaines femmes dorment moins bien, se réveillent la nuit ou se sentent plus irritables. Ces changements sont réels et méritent d'être pris au sérieux.",
+				wo: "Ci ménopause, yenn jigéen dafa leen jafe ci nelaw, ñu di yeewu guddi walla ñu gën a mer. Soppi yii dëgg lañu te war naa ñu leen jàppe ci solo."
+			},
+			{
+				type: 'tip',
+				fr: "Parler du sommeil, de l'anxiété ou de l'humeur en consultation peut ouvrir la porte à des solutions simples et utiles.",
+				wo: "Wax ci nelaw, anxiété walla humeur ci consultation mën na ubbi bunt bi ci solutions yu yomb te jariñ."
+			},
+		],
+	},
+	{
+		id: 22,
+		category: 'SSR',
+		categoryWo: 'Wér Sexuelle',
+		lifeStage: 'Toutes',
+		lifeStageWo: 'Yépp',
+		lifeSituations: ['general', 'curious', 'contraception'],
+		ageRange: 'all',
+		title: 'Consentement, respect et vie intime',
+		titleWo: 'Consentement, respect ak dund gu intime',
+		description:
+			"Comprendre le consentement, les limites, le respect dans le couple et les signes de violence ou de pression.",
+		descriptionWo:
+			"Xam consentement, limites, respect ci couple bi ak signes violence walla pression.",
+		stage: 'young',
+		audio: true,
+		readTime: '9 min',
+		author: 'Aïcha Ndiaye, Conseillère',
+		authorWo: 'Aïcha Ndiaye, Conseillère',
+		rating: 4.9,
+		readers: 1675,
+		featured: false,
+		tags: ['Consentement', 'Violence', 'Droits', 'SSR'],
+		tagsWo: ['Consentement', 'Violence', 'Droits', 'SSR'],
+		content: [
+			{ type: 'heading', fr: 'Le consentement doit être clair', wo: 'Consentement bi war naa leer' },
+			{
+				type: 'text',
+				fr: "Le consentement veut dire un accord libre, éclairé et réversible. Le silence, la peur ou la pression ne sont pas un oui.",
+				wo: "Consentement mooy ndigël bu libre, bu leer te mën a soppeeku. Noppalu, tiit walla pression du waaw."
+			},
+			{
+				type: 'warning',
+				fr: "Si tu te sens forcée, menacée ou empêchée de décider pour ton corps, cela mérite du soutien et une aide adaptée.",
+				wo: "Su fekkee dangay yëg ne ñu la force, la threats walla la tere nga tànn ci sa yaram, loolu war naa ndimbal ak jàppale bu méngoo."
+			},
+		],
+	},
+	{
+		id: 23,
+		category: 'Post-partum',
+		categoryWo: 'Après doom',
+		lifeStage: 'Maternité',
+		lifeStageWo: 'Yaayam',
+		lifeSituations: ['postpartum', 'pregnant'],
+		ageRange: 'all',
+		title: 'Allaitement : bien démarrer et gérer les difficultés',
+		titleWo: 'Allaitement : tàmbali ko bu baax ak gérer jafe-jafe yi',
+		description:
+			"Position, fréquence, douleurs, crevasses et signes qui justifient de demander de l’aide pendant l’allaitement.",
+		descriptionWo:
+			"Position, fréquence, mettit, crevasses ak signes yi wara tax nga laaj ndimbal ci allaitement.",
+		stage: 'pregnant',
+		audio: true,
+		readTime: '10 min',
+		author: 'Sage-femme Aminata Ndiaye',
+		authorWo: 'Sage-femme Aminata Ndiaye',
+		rating: 4.8,
+		readers: 1438,
+		featured: false,
+		tags: ['Allaitement', 'Post-partum', 'Maternité', 'Douleurs'],
+		tagsWo: ['Allaitement', 'Après doom', 'Maternité', 'Mettit'],
+		content: [
+			{ type: 'heading', fr: 'Les premiers jours comptent', wo: 'Fan yu njëkk yi am nañu solo' },
+			{
+				type: 'text',
+				fr: "L'allaitement peut demander de l'apprentissage. Une bonne position et une prise correcte du sein peuvent réduire la douleur et aider le bébé à bien téter.",
+				wo: "Allaitement bi mën naa soxla njàng. Position bu baax ak ni doom bi di jàpp ween wi mën naa wàññi mettit te dimbali doom bi mu naan bu baax."
+			},
+			{
+				type: 'list',
+				itemsFr: [
+					'Douleur persistante au mamelon',
+					'Fièvre',
+					'Sein rouge et très douloureux',
+					'Bébé qui ne prend pas bien le sein ou qui urine très peu',
+				],
+				itemsWo: [
+					'Mettit buy yàgg ci mamelon',
+					'Fievre',
+					'Ween wu xonq te metti lool',
+					'Doom buy jàpp ween wi lu bon walla buy suuxat lu néew lool',
+				],
+			},
+		],
+	},
+	{
+		id: 24,
+		category: 'Fertilité',
+		categoryWo: 'Fertilité',
+		lifeStage: 'Conception',
+		lifeStageWo: 'Conception',
+		lifeSituations: ['trying', 'general', 'cycles'],
+		ageRange: '18-44',
+		title: 'Fausse couche : comprendre, se soigner, se relever',
+		titleWo: 'Fausse couche : xam, faj boppam, jógat',
+		description:
+			"Repères sur la fausse couche, signes fréquents, récupération physique et émotionnelle, et moments où consulter rapidement.",
+		descriptionWo:
+			"Repères ci fausse couche, signes yu bari, récupération physique ak émotionnelle, ak waxtu yi wara tax consultation bu gaaw.",
+		stage: 'young',
+		audio: true,
+		readTime: '10 min',
+		author: 'Dr. Aïssatou Ba, Gynécologue',
+		authorWo: 'Dr. Aïssatou Ba, Gynécologue',
+		rating: 4.8,
+		readers: 1094,
+		featured: false,
+		tags: ['Fausse couche', 'Grossesse', 'Douleur', 'Soutien émotionnel'],
+		tagsWo: ['Fausse couche', 'Gàtt', 'Mettit', 'Ndimbal xol'],
+		content: [
+			{ type: 'heading', fr: 'Une épreuve qui demande du soutien', wo: 'Nattu bu soxla ndimbal' },
+			{
+				type: 'text',
+				fr: "Une fausse couche est une expérience physique et émotionnelle difficile. Elle n'est pas causée par une faute de la femme dans la grande majorité des cas.",
+				wo: "Faussse couche mooy expérience bu metti ci yaram ak ci xol. Lu bari du aju ci bàkkaaru jigéen ji."
+			},
+			{
+				type: 'warning',
+				fr: "En cas de saignement très abondant, de fièvre, de malaise ou de douleur intense, une consultation rapide est nécessaire.",
+				wo: "Su amee deret bu bari lool, fievre, malaise walla mettit bu tar, consultation bu gaaw war na am."
+			},
+		],
+	},
 ];
+
+function heading(fr: string, wo: string): ArticleSection {
+	return { type: 'heading', fr, wo };
+}
+
+function text(fr: string, wo: string): ArticleSection {
+	return { type: 'text', fr, wo };
+}
+
+function list(itemsFr: string[], itemsWo: string[]): ArticleSection {
+	return { type: 'list', itemsFr, itemsWo };
+}
+
+function tip(fr: string, wo: string): ArticleSection {
+	return { type: 'tip', fr, wo };
+}
+
+function warning(fr: string, wo: string): ArticleSection {
+	return { type: 'warning', fr, wo };
+}
+
+function buildCenterSections(article: Article): ArticleSection[] {
+	return [
+		heading('Trouver un centre ou une professionnelle', 'Gis centre walla professionnelle'),
+		text(
+			`Si tu veux un conseil personnalisé, un examen, un dépistage ou un suivi, tu peux chercher un centre adapté à ce sujet directement depuis SaxalWér.`,
+			'Su fekkee bëgg nga am digalante bu méngoo ak yow, examen, dépistage walla suivi, mën nga seet centre bu méngoo ak sujet bii ci biir SaxalWér.'
+		),
+		tip(
+			`Avant d'y aller, prépare si possible la date de tes dernières règles, tes symptômes, les traitements déjà essayés et les questions que tu veux poser.`,
+			'Bala ngay dem, waajal su mënée bésu sa règles yu mujj, sa symptômes, traitements yi nga mas a jëfandikoo ak laaj yi nga bëgg a laaj.'
+		),
+	];
+}
+
+function buildArticleExtras(article: Article): ArticleSection[] {
+	switch (article.id) {
+		case 1:
+			return [
+				heading('Les méthodes disponibles', 'Méthodes yi am'),
+				list(
+					[
+						'Préservatif masculin : gaine fine portée sur le pénis à chaque rapport. Il protège à la fois contre la grossesse et contre les IST.',
+						'Préservatif féminin : gaine souple placée dans le vagin avant le rapport. Il protège aussi contre la grossesse et les IST.',
+						'Pilule : comprimé pris régulièrement, souvent chaque jour à heure fixe. Elle empêche surtout l’ovulation selon le type de pilule.',
+						'Injectable : contraception administrée par injection toutes les quelques semaines ou tous les trois mois selon le produit.',
+						'Implant : petit bâtonnet placé sous la peau du bras par un soignant. Il protège pendant plusieurs années.',
+						'DIU au cuivre : petit dispositif placé dans l’utérus. Il agit sans hormones et protège plusieurs années.',
+						'DIU hormonal : petit dispositif placé dans l’utérus qui libère une hormone locale. Il protège longtemps et peut réduire les règles abondantes chez certaines femmes.',
+						'Méthodes naturelles : observation du cycle, abstinence périodique ou retrait. Elles demandent beaucoup de rigueur et sont moins fiables si elles sont mal utilisées.',
+						'Contraception d’urgence : pilule à prendre rapidement après un rapport non protégé. Elle ne remplace pas une méthode régulière.',
+					],
+					[
+						'Préservatif bu góor : gaine bu ñu sol ci pénis bi ci bépp rapport. Moo gën a aar ci gàtt ak IST.',
+						'Préservatif bu jigéen : gaine bu nooy bu ñuy teg ci biir vagin bala rapport. Mu ngi itam aar ci gàtt ak IST.',
+						'Pilule : comprimé bu ñuy naan bu siiw, lu bari bés bu nekk ci waxtu wu féete. Moom dafay tax ovulation bi bañ a am ci yenn pilules.',
+						'Injectable : contraception bu ñuy joxe ak injection ay semaine walla weer yu bari selon produit bi.',
+						'Implant : bant bu tuuti bu ñuy teg ci suufu deru loxo bi ci ndimbal soignant. Dafay aar ay at.',
+						'DIU cuivre : jumtukaay bu tuuti bu ñuy teg ci utérus bi. Hormones amul te dafay aar ay at.',
+						'DIU hormonal : jumtukaay bu tuuti bu ñuy teg ci utérus bi te mu di génne hormone bu ndaw ci bërab bi. Dafay aar lu yàgg te mën na wàññi règles yu bari ci yenn jigéen.',
+						'Méthodes naturelles : xool cycle bi, moytu rapports ci yenn fan walla retrait. Soxla na yëngu-yëngu bu baax te wóor gu mat amul su ñu ko jëfandikoo lu bon.',
+						'Contraception d’urgence : pilule bu ñuy naan bu gaaw ginnaaw rapport bu amul aar. Du wuutu méthode bu siiw.',
+					]
+				),
+				heading('Comment choisir ?', 'Naka ngay tànne ?'),
+				list(
+					[
+						'Demande-toi si tu veux une méthode courte durée ou longue durée.',
+						'Réfléchis à ce que tu peux utiliser facilement sans oublier.',
+						'Vérifie si tu veux aussi une protection contre les IST : dans ce cas, le préservatif reste essentiel.',
+						'Parle de tes antécédents de santé : hypertension, migraines, tabac, allaitement, diabète ou saignements abondants peuvent orienter le choix.',
+						'Choisis une méthode que tu comprends bien et que tu te sens capable d’utiliser correctement.',
+					],
+					[
+						'Laajal sa bopp ndax bëgg nga méthode bu gàtt walla bu yàgg.',
+						'Xalaatal li nga mën a jëfandikoo bu yomb te doo fàtte ko.',
+						'Xoolal ndax soxla nga itam aar ci IST : su ko defee, préservatif bi war naa am solo.',
+						'Waxal sa antécédents de santé : hypertension, migraines, taba, allaitement, diabète walla saignements yu bari mën nañu jëme tànn bi.',
+						'Tànnal méthode bu nga dégg bu baax te nga mën a jëfandikoo ni mu ware.',
+					]
+				),
+				warning(
+					'Une méthode qui convient à une autre femme ne sera pas toujours la meilleure pour toi. En cas de doute, demande un avis professionnel avant de commencer ou de changer.',
+					'Méthode bu baax ci beneen jigéen du war a tekki ne mooy gën ci yaw. Su amee duda, laajal avis professionnel bala ngay tàmbali walla soppi.'
+				),
+				...buildCenterSections(article),
+			];
+		case 2:
+			return [
+				heading('Les bases d’une grossesse suivie', 'Li war a nekk ci gàtt bu ñu topp'),
+				list(
+					[
+						'Commencer tôt les consultations prénatales permet de surveiller la tension, le poids, la croissance du bébé et les analyses importantes.',
+						'Manger varié, boire assez et prendre les compléments prescrits aide le corps à mieux soutenir la grossesse.',
+						'Le repos compte aussi : fatigue, vertiges et essoufflement doivent être signalés s’ils deviennent importants.',
+					],
+					[
+						'Tàmbali consultations prénatales bu gaaw dafay may ñu topp tension, tolluwaay, ni doom bi di mag ak analyses yu am solo.',
+						'Lekk lu bari te wu mel ni mu ware, naan ndox te naan compléments yi ñu bindal la dimbal na yaram bi topp gàtt bi.',
+						'Noppalu itam am na solo : fatigue, vertiges ak jafe-jafe ci noflaay war nañu ko wax su ñu bari.',
+					]
+				),
+				heading("Quand consulter sans attendre", 'Kañ nga wara dem bu gaaw'),
+				list(
+					[
+						'Saignement vaginal',
+						'Forte douleur abdominale',
+						'Fièvre',
+						'Maux de tête intenses, gonflement soudain ou vision trouble',
+						'Diminution des mouvements du bébé quand ils étaient déjà bien ressentis',
+					],
+					[
+						'Deret ci vagin',
+						'Mettit bu tar ci biir',
+						'Fievre',
+						'Bopp buy metti lool, yaram buy rëy gaaw walla gis-gis bu leerul',
+						'Yëngu-yëngu doom bi buy wàññi ginnaaw nga doon ko xam bu baax',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 3:
+			return [
+				heading('Ce qui peut améliorer tes chances', 'Li mën a yokk sa chances'),
+				list(
+					[
+						'Avoir des rapports réguliers dans la période fertile sans se mettre une pression excessive.',
+						'Noter les cycles pendant plusieurs mois aide à mieux repérer le rythme du corps.',
+						'Éviter le tabac, l’alcool excessif et certains produits non prescrits peut protéger la fertilité.',
+						'Un bilan concerne souvent les deux partenaires, pas seulement la femme.',
+					],
+					[
+						'Am rapports yu siiw ci waxtu fertilité bi te bul tooñ sa bopp ak pression.',
+						'Bind cycle yi ay weer yu bari dafay dimbali nga gën a xam rythme yaram bi.',
+						'Moytu taba, alcool bu bari ak yenn garab yu ñu la bindul mën na aar fertilité bi.',
+						'Bilan bi lu bari dafay jàpp ñaar ñépp, du jigéen ji rekk.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 4:
+			return [
+				heading('Dépistage et traitement', 'Dépistage ak faj'),
+				list(
+					[
+						'Certaines IST se traitent avec des médicaments adaptés, d’autres se contrôlent dans la durée.',
+						'Le ou la partenaire peut aussi avoir besoin d’un traitement pour éviter les réinfections.',
+						'Ne partage pas un antibiotique ou un traitement conseillé à quelqu’un d’autre.',
+					],
+					[
+						'Yenn IST mën nañu ko faj ak ay garab yu méngoo, yeneen dafay soxla topptoo buy yàgg.',
+						'Partenaire bi itam mën na soxla traitement ngir infection bi bañ a dellu.',
+						'Bul sédd antibiotique walla traitement bu ñu waxal woon kenn ku bees.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 5:
+			return [
+				heading('Ce qui aide au quotidien', 'Li dimbali ci dund gu bés bu nekk'),
+				list(
+					[
+						'Suivre la douleur dans un carnet peut aider à repérer les périodes les plus difficiles.',
+						'La chaleur locale, le repos, l’activité douce ou des traitements prescrits peuvent soulager selon les cas.',
+						'La douleur chronique n’est pas “dans ta tête” et mérite une vraie écoute.',
+					],
+					[
+						'Topptoo mettit bi ci carnet mën na dimbali nga xam fan yi gën a metti.',
+						'Tàngoor bu nekk ci bërab bi, noppalu, mouvement bu ndaw walla traitements yu ñu la bind mën nañu wàññi mettit bi selon xaalis bi.',
+						'Mettit buy yàgg du lu nekk ci sa xel rekk te war naa am déglu bu baax.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 6:
+			return [
+				heading('Les objectifs du suivi', 'Jubluwaayu suivi bi'),
+				list(
+					[
+						'Rendre les cycles plus compréhensibles.',
+						'Diminuer les symptômes qui gênent la vie quotidienne.',
+						'Préparer un projet de grossesse si tu en as un.',
+						'Prévenir les effets à long terme sur le métabolisme.',
+					],
+					[
+						'Def ba cycle yi gën a leer.',
+						'Wàññi symptômes yi di jafe-jafe ci dund gu bés bu nekk.',
+						'Waajal projet gàtt su amee.',
+						'Jiit effets yu yàgg ci métabolisme bi.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 7:
+			return [
+				heading('Demander de l’aide est normal', 'Laaj ndimbal lu normal la'),
+				list(
+					[
+						'Le post-partum peut être intense même si le bébé va bien.',
+						'Le soutien du partenaire, de la famille ou d’une sage-femme peut alléger la charge.',
+						'Une tristesse qui dure, l’angoisse ou le sentiment de rejet du bébé doivent être pris au sérieux.',
+					],
+					[
+						'Post-partum bi mën na tar doonte doom bi dafay dem bu baax.',
+						'Ndimbal jëkkër, njaboot walla sage-femme mën na wàññi yombal.',
+						'Nakharlu buy yàgg, tiit walla xel mu bëggul doom bi war naa ñu jàppe ko ci solo.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 8:
+			return [
+				heading('Pré, péri et post-ménopause', 'Pré, péri ak post-ménopause'),
+				list(
+					[
+						'Préménopause : les cycles sont encore présents mais peuvent commencer à changer.',
+						'Périménopause : période de transition avec règles irrégulières et symptômes variables.',
+						'Post-ménopause : phase après 12 mois sans règles.',
+					],
+					[
+						'Préménopause : règles yi angi am waaye mën nañu tàmbali soppeeku.',
+						'Périménopause : waxtu jall bi ak règles yu soppeeku ak symptômes yu bari.',
+						'Post-ménopause : xàll wi ginnaaw 12 weer yu amul règles.',
+					]
+				),
+				heading('Solutions possibles', 'Solutions yi mën a am'),
+				list(
+					[
+						'Adapter les vêtements, l’aération et l’hydratation peut aider pour les bouffées de chaleur.',
+						'Le sommeil, l’activité physique et la santé intime méritent d’être discutés en consultation.',
+						'Certaines femmes bénéficient de traitements hormonaux ou non hormonaux, selon leur histoire médicale.',
+					],
+					[
+						'Soppi col, air bi ak naan ndox mën na dimbali ci bouffées de chaleur.',
+						'Nelaw, activité physique ak santé intime war nañu ñu wax ci consultation.',
+						'Yenn jigéen mën nañu gën a jariñ ci traitements hormonaux walla yu dul hormonaux, selon seen histoire médicale.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 9:
+			return [
+				heading('Quand demander un bilan', 'Kañ nga wara laaj bilan'),
+				list(
+					[
+						'Après plusieurs mois d’essais sans grossesse, selon l’âge et le contexte.',
+						'Plus tôt si les cycles sont très irréguliers, s’il y a une douleur importante, une chirurgie passée ou une infection connue.',
+						'Le bilan se fait idéalement en couple quand cela est possible.',
+					],
+					[
+						'Ginnaaw ay weer yu bari te gàtt amul, selon at ak xaalis bi.',
+						'Lu gën a gaaw su cycles yi bari soppeeku, su mettit bi tar, su amoon opération walla infection bu ñu xam.',
+						'Bilan bi gën na def ko ci couple bi su mënée am.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 10:
+			return [
+				heading('Contraception, grossesse et maladie chronique', 'Contraception, gàtt ak maladie chronique'),
+				list(
+					[
+						'Le choix contraceptif dépend parfois du traitement en cours et du risque cardiovasculaire.',
+						'Un projet de grossesse se prépare idéalement avant la conception pour ajuster les médicaments si besoin.',
+						'Les rendez-vous réguliers réduisent souvent les complications évitables.',
+					],
+					[
+						'Tànnu contraception bi mën naa aju ci traitement bi ngay jëfandikoo ak risque cardiovasculaire.',
+						'Projet gàtt bi gën naa waajal ko bala conception ngir soppi yenn garab su am soxla.',
+						'Rendez-vous yu siiw lu bari dañuy wàññi complications yu mën a ñëw te ñu mën a jiitu.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 11:
+			return [
+				heading('Qui peut bénéficier du dépistage ?', 'Kan mën a jariñ ci dépistage bi ?'),
+				text(
+					'La réponse dépend de l’âge, des recommandations locales et des antécédents. Un centre ou une sage-femme peut te dire quand commencer et à quelle fréquence.',
+					'Li nga wara def mi ngi aju ci at, recommandations bërab bi ak antécédents yi. Centre walla sage-femme mën na la wax kañ nga wara tàmbali ak ni ñu koy faral.'
+				),
+				...buildCenterSections(article),
+			];
+		case 12:
+			return [
+				heading('Quand faire contrôler un changement', 'Kañ nga wara xoolal soppi bi'),
+				list(
+					[
+						'Si une boule persiste après les règles.',
+						'Si un changement apparaît d’un seul côté.',
+						'Si la peau, le mamelon ou la forme du sein changent clairement.',
+					],
+					[
+						'Su boule bi yàggee ginnaaw règles yi.',
+						'Su soppi bi feeñee ci benn wetu rekk.',
+						'Su der, mamelon walla melokaanu ween wi soppeekoo bu leer.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 13:
+			return [
+				heading('Pourquoi consulter tôt', 'Lu tax consultation bu gaaw am solo'),
+				text(
+					'Les symptômes de ces cancers peuvent sembler banals. Un avis précoce peut aider à écarter un problème grave ou à commencer une prise en charge plus vite.',
+					'Symptômes yi mën nañu mel ni lu yomb. Avis bu gaaw mën na dimbali ñu dindi xel ci lu tar walla tàmbali topptoo bu gaaw.'
+				),
+				...buildCenterSections(article),
+			];
+		case 14:
+			return [
+				heading('Questions utiles à poser', 'Laaj yu am solo'),
+				list(
+					[
+						'Quelle méthode ou quel soin est compatible avec ma situation de santé ?',
+						'Comment parler de ce sujet dans mon couple ou ma famille ?',
+						'Vers qui me tourner si je veux un avis médical et un cadre respectueux de ma foi ?',
+					],
+					[
+						'Ban méthode walla ban soin moo méngoo ak sama xaalis wér ?',
+						'Naka laa man a wax mbir mii ci sama couple walla sama njaboot ?',
+						'Kan laa wara jëm ci moom su bëggée avis médical ak bërab bu respect sama ngëm ?',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		case 15:
+			return [
+				heading('Avancer avec discernement', 'Dem ak xalaat bu sell'),
+				text(
+					'Quand les avis de l’entourage sont différents, il peut être utile de s’appuyer sur une information médicale claire et sur un dialogue apaisé.',
+					'Bu avis yu nekk ci sa wet differ, mën na jariñ nga wéeru ci xibaarkat médical bu leer ak waxtaan bu dal.'
+				),
+				...buildCenterSections(article),
+			];
+		case 16:
+			return [
+				heading('Tes droits en pratique', 'Sa droits ci jëf'),
+				list(
+					[
+						'Poser des questions et demander des explications simples.',
+						'Recevoir des soins sans violence ni humiliation.',
+						'Choisir librement une méthode ou accepter ou refuser un examen après explication.',
+						'Demander la confidentialité sur les informations partagées.',
+					],
+					[
+						'Laaj ak laaj ay leeral yu yomb.',
+						'Am soins yu amul fitna walla toroxte.',
+						'Tànnal librement méthode walla nangoo walla bañ examen bu ñu ko la leeral.',
+						'Laaj sutura ci xibaarkat yi nga sédd.',
+					]
+				),
+				...buildCenterSections(article),
+			];
+		default:
+			return buildCenterSections(article);
+	}
+}
+
+function enrichArticle(article: Article): Article {
+	const extraSections = buildArticleExtras(article);
+	const extraReadTime = Math.max(2, Math.ceil(extraSections.length / 2));
+
+	return {
+		...article,
+		readTime: `${parseInt(article.readTime, 10) + extraReadTime} min`,
+		content: [...article.content, ...extraSections],
+	};
+}
+
+export const ARTICLES: Article[] = BASE_ARTICLES.map(enrichArticle);

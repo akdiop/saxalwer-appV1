@@ -44,7 +44,7 @@ const TYPE_LABELS: Record<string, { fr: string; wo: string; color: string; bg: s
 
 const CENTER_TAGS = [
   'Contraception', 'Grossesse', 'IST', 'Gynécologie', 'Pédiatrie',
-  'Urgences', 'VIH/SIDA', 'Planning familial', 'Cancers', 'Maternité',
+  'Urgences', 'Dépistage', 'Planning familial', 'Cancers', 'Maternité',
 ];
 
 function typeIcon(type: string) {
@@ -271,6 +271,17 @@ export default function MapScreen() {
           </Text>
         </View>
 
+        <View style={styles.disclaimerCard}>
+          <Text style={styles.disclaimerTitle}>
+            {wo ? 'Leeral bu am solo' : 'Centres en cours de validation'}
+          </Text>
+          <Text style={styles.disclaimerText}>
+            {wo
+              ? "Liste bii indicatif la. Centres yi, services yi, horaires yi ak coordonnées yi ñu ngi leen di seetaat te di leen validaat ndànk-ndànk. Bala ngay dem walla woo, gën na nga firndeel ne centre bi ubbeeku te li ñu bind dafa baax."
+              : "Cette liste est fournie à titre indicatif. Les centres, services, horaires et coordonnées sont encore en cours de vérification et de validation progressive. Avant de vous déplacer ou d'appeler, confirmez si possible que le centre est disponible et que les informations affichées sont à jour."}
+          </Text>
+        </View>
+
         {/* Search + filter toggle */}
         <View style={styles.searchRow}>
           <View style={styles.searchBox}>
@@ -420,6 +431,26 @@ const styles = StyleSheet.create({
   },
   emergencyText: { fontSize: 12, color: 'white', fontWeight: '600' },
   emergencyLink: { textDecorationLine: 'underline' },
+  disclaimerCard: {
+    marginHorizontal: 24,
+    marginBottom: 16,
+    backgroundColor: '#FFF7EF',
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(181,98,42,0.18)',
+  },
+  disclaimerTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: BASE.copper,
+    marginBottom: 4,
+  },
+  disclaimerText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: `${BASE.cocoa}88`,
+  },
 
   searchRow: { paddingHorizontal: 24, marginBottom: 12, flexDirection: 'row', gap: 10 },
   searchBox: {

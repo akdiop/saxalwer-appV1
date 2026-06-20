@@ -73,6 +73,7 @@ const GOAL_OPTIONS: GoalOption[] = [
 export default function ObjectifsScreen() {
   const router = useRouter();
   const {
+    age,
     primaryGoal,
     setPrimaryGoal,
     secondaryGoal,
@@ -82,6 +83,12 @@ export default function ObjectifsScreen() {
   } = useOnboarding();
   const screenWidth = Dimensions.get('window').width;
   const translateX = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (age === '50+' && !primaryGoal) {
+      setPrimaryGoal('Ménopause & Transitions');
+    }
+  }, [age, primaryGoal, setPrimaryGoal]);
 
   useFocusEffect(
     useCallback(() => {
@@ -118,6 +125,14 @@ export default function ObjectifsScreen() {
   };
 
   const isDisabled = !primaryGoal;
+  const title =
+    age === '50+'
+      ? 'Quel est ton objectif principal pour cette étape de transition ?'
+      : 'Quel est ton objectif principal ?';
+  const subtitle =
+    age === '50+'
+      ? 'Le parcours ménopause et pré/post-ménopause est déjà mis en avant pour toi, mais tu peux choisir librement ce dont tu as besoin.'
+      : 'Tu peux aussi ajouter le bien-être général à ton objectif.';
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -139,8 +154,8 @@ export default function ObjectifsScreen() {
           </View>
 
           <View style={styles.contentBlock}>
-            <Text style={styles.title}>Quel est ton objectif{"\n"}principal ?</Text>
-            <Text style={styles.subtitle}>Tu peux aussi ajouter le bien-être général à ton objectif.</Text>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.subtitle}>{subtitle}</Text>
 
             <View style={styles.list}>
               {GOAL_OPTIONS.map((item) => (
@@ -338,6 +353,8 @@ const styles = StyleSheet.create({
     height: 78,
     borderRadius: 24,
     backgroundColor: COLORS.deepGreen,
+    borderWidth: 1,
+    borderColor: 'rgba(93,67,55,0.16)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#C9B9A2',
@@ -347,7 +364,10 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   primaryButtonDisabled: {
-    backgroundColor: 'rgba(26,60,52,0.52)',
+    backgroundColor: '#7C9388',
+    borderColor: 'rgba(93,67,55,0.14)',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   primaryButtonInner: {
     flexDirection: 'row',
@@ -360,7 +380,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   primaryButtonTextDisabled: {
-    color: 'rgba(255,249,239,0.92)',
+    color: '#FFF9EF',
   },
   footerHint: {
     marginTop: 18,

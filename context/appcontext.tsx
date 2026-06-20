@@ -146,6 +146,7 @@ export type QuickAccessId =
 	| 'bibliotheque'
 	| 'suivi'
 	| 'carte'
+	| 'about'
 	| 'orientation'
 	| 'orientation-sensible'
 	| 'chat'
@@ -328,8 +329,8 @@ const defaultState: AppState = {
 	glossaryViews: {},
 	cycleData: {
 		lastPeriodDate: null,
-		cycleLength: 28,
-		periodLength: 5,
+		cycleLength: 0,
+		periodLength: 0,
 		pillTracking: false,
 		pillLogs: {},
 		dailyLogs: {},
@@ -420,10 +421,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	}, [state, isLoaded]);
 
 	React.useEffect(() => {
-		if (isLoaded && state.privacyConcern && !state.discreteMode) {
+		if (!isLoaded || state.discreteModeManual !== null) {
+			return;
+		}
+
+		if (state.privacyConcern && !state.discreteMode) {
 			setState((prev) => ({ ...prev, discreteMode: true }));
 		}
-	}, [state.privacyConcern, state.discreteMode, isLoaded]);
+	}, [state.privacyConcern, state.discreteMode, state.discreteModeManual, isLoaded]);
 
 	React.useEffect(() => {
 		if (!isLoaded) {
@@ -432,7 +437,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 		const p = state.personalization;
 
-		if ((p.privacyLevel === 'high' || p.privacyLevel === 'very-high') && !state.discreteMode) {
+		if (
+			state.discreteModeManual === null &&
+			(p.privacyLevel === 'high' || p.privacyLevel === 'very-high') &&
+			!state.discreteMode
+		) {
 			setState((prev) => ({ ...prev, discreteMode: true }));
 		}
 
@@ -456,7 +465,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 				},
 			}));
 		}
-	}, [isLoaded, state.discreteMode, state.oralMode, state.personalization]);
+	}, [isLoaded, state.discreteMode, state.discreteModeManual, state.oralMode, state.personalization]);
 
 	React.useEffect(() => {
 		if (!isLoaded || !state.isOnboarded) {
@@ -515,7 +524,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		if (prefs.articleOfDay && isDue('articleOfDay')) {
 			const articlePool = [
 				{
-					msg: "Un article t'attend dans la bibliotheque",
+					msg: "Un article t'attend dans la bibliothèque",
 					metaphor: "Le savoir nourrit l'esprit",
 				},
 				{ msg: 'Decouvre la lecture du jour', metaphor: 'Chaque page ouvre un chemin' },
@@ -579,7 +588,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		if (prefs.orientation && isDue('orientation') && state.sensitiveOrientation?.completedAt) {
 			const oriPool = [
 				{
-					msg: 'Pense a reevaluer ton orientation sante',
+					msg: 'Pense à réévaluer ton orientation santé',
 					metaphor: 'Le chemin se redessine a chaque pas',
 				},
 				{
@@ -627,7 +636,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	const setGoals = (goals: GoalId[]) => setState((prev) => ({ ...prev, selectedGoals: goals }));
 	const setLifeSituation = (situation: LifeSituation) =>
 		setState((prev) => ({ ...prev, lifeSituation: situation }));
-	const toggleDiscreteMode = () => setState((prev) => ({ ...prev, discreteMode: !prev.discreteMode }));
+	const toggleDiscreteMode = () =>
+		setState((prev) => {
+			const nextDiscreteMode = !prev.discreteMode;
+
+			return {
+				...prev,
+				discreteMode: nextDiscreteMode,
+				discreteModeManual: nextDiscreteMode,
+			};
+		});
 	const toggleOralMode = () => setState((prev) => ({ ...prev, oralMode: !prev.oralMode }));
 	const completeOnboarding = () => setState((prev) => ({ ...prev, isOnboarded: true }));
 	const completeTutorial = () => setState((prev) => ({ ...prev, hasCompletedTutorial: true }));

@@ -193,6 +193,10 @@ function ProvidersModuleContent() {
       'Grossesse & Maternite': 'grossesse',
       'Grossesse & Maternité': 'grossesse',
       Contraception: 'contraception',
+      Menopause: 'menopause',
+      'Ménopause': 'menopause',
+      'Infos menopause 50+': 'menopause',
+      'Infos ménopause 50+': 'menopause',
       'Bien-etre hormonal': 'menopause',
       'Bien-être hormonal': 'menopause',
       'Droit & Sante': 'all',
@@ -221,6 +225,10 @@ function ProvidersModuleContent() {
     }
 
     if (
+      selectedNeeds.includes('Menopause') ||
+      selectedNeeds.includes('Ménopause') ||
+      selectedNeeds.includes('Infos menopause 50+') ||
+      selectedNeeds.includes('Infos ménopause 50+') ||
       selectedNeeds.includes('Bien-etre hormonal') ||
       selectedNeeds.includes('Bien-être hormonal')
     ) {
@@ -368,11 +376,22 @@ function ProvidersModuleContent() {
           </View>
         </View>
 
+        <View style={styles.disclaimerCard}>
+          <Text style={styles.disclaimerTitle}>
+            {isWo ? 'Leeral bu am solo' : 'Répertoire en cours de validation'}
+          </Text>
+          <Text style={styles.disclaimerText}>
+            {isWo
+              ? "Répertoire bii indicatif la. Tur yi, spécialités yi, horaires yi, assurances yi ak coordonnées yi ñu ngi leen di seetaat te di leen validaat ndànk-ndànk. Bala ngay dem walla woo, gën na nga firndeel disponibilité ak informations yi."
+              : "Ce répertoire est fourni à titre indicatif. Les noms, spécialités, horaires, assurances et coordonnées sont encore en cours de vérification et de validation progressive. Avant de vous déplacer ou d'appeler, confirmez si possible la disponibilité et les informations affichées."}
+          </Text>
+        </View>
+
         {showFilters ? (
           <View style={styles.filtersPanel}>
             <View style={styles.filterSection}>
               <Text style={styles.filterSectionLabel}>
-                {isWo ? 'Ci wallu' : 'Thematique sante'}
+                {isWo ? 'Ci wallu' : 'Thématique santé'}
               </Text>
               <View style={styles.filterWrapRow}>
                 {THEMES.map((theme) => {
@@ -646,6 +665,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.07,
     shadowRadius: 8,
     elevation: 2,
+  },
+  disclaimerCard: {
+    marginHorizontal: 16,
+    marginBottom: 10,
+    borderRadius: 16,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: 'rgba(181, 98, 42, 0.18)',
+    padding: 14,
+    gap: 6,
+  },
+  disclaimerTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.copper,
+  },
+  disclaimerText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.cocoaDark,
   },
   headerTopRow: {
     flexDirection: 'row',

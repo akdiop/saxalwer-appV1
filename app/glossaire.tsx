@@ -1,7 +1,6 @@
-import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useApp } from '../context/appcontext';
@@ -13,13 +12,15 @@ import {
 } from '../data/glossary';
 
 const COLORS = {
-  bg: '#FDFAF5',
+  bg: '#F5F1E6',
+  surface: '#FFFCF7',
+  white: '#FFFFFF',
   deepGreen: '#1A3C34',
   copper: '#B5622A',
+  terracotta: '#A65D40',
   cocoa: '#4A2F27',
-  border: 'rgba(26,60,52,0.1)',
-  chipBg: 'rgba(181,98,42,0.1)',
-  white: '#FFFFFF',
+  border: 'rgba(181,98,42,0.14)',
+  softBorder: 'rgba(26,60,52,0.08)',
 };
 
 type ThemeKey = keyof typeof GLOSSARY_CATEGORIES | 'all';
@@ -102,9 +103,36 @@ function getSearchScore(item: GlossaryItem, query: string) {
   return score;
 }
 
+function getToneLabel(
+  personalization: ReturnType<typeof useApp>['personalization'],
+  language: 'fr' | 'wo'
+) {
+  if (language === 'wo') {
+    if (personalization.socialNorms === 'conservative' || personalization.privacyLevel === 'very-high') {
+      return 'Wax yu gëna sutura';
+    }
+
+    if (personalization.needsSupport) {
+      return 'Wax yu gëna andale';
+    }
+
+    return 'Wax yu leer';
+  }
+
+  if (personalization.socialNorms === 'conservative' || personalization.privacyLevel === 'very-high') {
+    return 'Ton plus discret';
+  }
+
+  if (personalization.needsSupport) {
+    return 'Ton plus rassurant';
+  }
+
+  return 'Ton clair et simple';
+}
+
 export default function GlossaireScreen() {
   const router = useRouter();
-  const { language, oralMode, trackGlossaryView } = useApp();
+  const { language, trackGlossaryView, personalization } = useApp();
   const wo = language === 'wo';
   const [query, setQuery] = React.useState('');
   const [activeTheme, setActiveTheme] = React.useState<ThemeKey>('all');
@@ -159,54 +187,55 @@ export default function GlossaireScreen() {
         ? GLOSSARY_CATEGORIES[activeTheme].wo
         : GLOSSARY_CATEGORIES[activeTheme].fr;
 
+  const toneLabel = getToneLabel(personalization, language);
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
-            <Feather name="chevron-left" size={20} color={COLORS.deepGreen} />
+            <Text style={styles.backBtnText}>{wo ? 'Retour' : 'Retour'}</Text>
           </Pressable>
           <View style={styles.headerText}>
             <Text style={styles.title}>{wo ? 'Glossaire' : 'Glossaire'}</Text>
             <Text style={styles.subtitle}>
               {wo
-                ? 'Xam-xam ci waxi santé sexuelle ak reproductive'
-                : 'Tous les termes utiles de santé sexuelle et reproductive'}
+                ? 'Dégg ay wax yu am solo ci santé sexuelle ak reproductive.'
+                : 'Les mots utiles, expliqués dans un langage plus simple et plus apaisé.'}
             </Text>
           </View>
         </View>
 
         <View style={styles.heroCard}>
-          <View style={styles.heroBadge}>
-            <Feather name="book-open" size={13} color="rgba(255,255,255,0.82)" />
-            <Text style={styles.heroBadgeText}>{wo ? 'Waxi-kàddu' : 'Glossaire'}</Text>
-          </View>
+          <Text style={styles.heroEyebrow}>{wo ? 'Repères de lecture' : 'Repères de lecture'}</Text>
           <Text style={styles.heroTitle}>
-            {wo ? 'Xam sa baat yi ngir gëna dégg sa yaram' : 'Comprendre les mots pour mieux comprendre ton corps'}
+            {wo
+              ? 'Xam sa baat yi ngir gëna dégg sa yaram'
+              : 'Comprendre les termes pour mieux comprendre ton corps'}
           </Text>
           <Text style={styles.heroDescription}>
             {wo
-              ? 'Seet, filtre te déggat ay baat yu am solo ci santé sexuelle ak reproductive.'
-              : 'Retrouve les termes essentiels, filtrés par thème, dans un langage plus clair et plus accessible.'}
+              ? 'Seet, filtre te jàngat waxi santé yu am solo. Benn baat, benn tekki bu leer.'
+              : 'Cherche un mot, filtre par thème, puis retrouve une définition claire, sobre et adaptée à ton contexte.'}
           </Text>
         </View>
 
         <View style={styles.searchBox}>
-          <Feather name="search" size={16} color="rgba(74,47,39,0.6)" />
           <TextInput
             style={styles.searchInput}
             value={query}
             onChangeText={setQuery}
-            placeholder={wo ? 'Seet term wala définition...' : 'Rechercher un terme ou une définition...'}
+            placeholder={
+              wo ? 'Seet term wala définition...' : 'Rechercher un terme ou une définition...'
+            }
             placeholderTextColor="rgba(74,47,39,0.45)"
           />
-          {oralMode ? <Feather name="volume-2" size={16} color={COLORS.copper} /> : null}
         </View>
 
         {suggestedTerms.length > 0 ? (
           <View style={styles.suggestionsBlock}>
-            <Text style={styles.suggestionsLabel}>
-              {wo ? 'Mën nga doon seet lii' : 'Suggestions les plus proches'}
+            <Text style={styles.sectionLabel}>
+              {wo ? 'Mën nga doon seet lii' : 'Suggestions proches'}
             </Text>
             <ScrollView
               horizontal
@@ -234,9 +263,10 @@ export default function GlossaireScreen() {
             {wo ? `${glossaryItems.length} waxi-kàddu` : `${glossaryItems.length} termes`}
           </Text>
           <Text style={styles.summaryText}>
-            {wo
-              ? `Theme bi ngay xool: ${highlightedThemeLabel}`
-              : `Thème affiché : ${highlightedThemeLabel}`}
+            {wo ? 'Theme:' : 'Thème :'} {highlightedThemeLabel}
+          </Text>
+          <Text style={styles.summaryText}>
+            {wo ? 'Melokaanu wax ji:' : 'Ton :'} {toneLabel}
           </Text>
         </View>
 
@@ -265,12 +295,13 @@ export default function GlossaireScreen() {
         <View style={styles.list}>
           {glossaryItems.length === 0 ? (
             <View style={styles.emptyCard}>
-              <Feather name="search" size={24} color="rgba(74,47,39,0.3)" />
-              <Text style={styles.emptyTitle}>{wo ? 'Amul dara ci seet bi' : 'Aucun terme trouvé'}</Text>
+              <Text style={styles.emptyTitle}>
+                {wo ? 'Amul dara ci seet bi' : 'Aucun terme trouvé'}
+              </Text>
               <Text style={styles.emptyText}>
                 {wo
                   ? 'Jéemaat ak beneen wax walla soppi theme bi.'
-                  : 'Essaie un autre mot-clé ou change de thème.'}
+                  : 'Essaie un autre mot-clé ou élargis le thème choisi.'}
               </Text>
             </View>
           ) : (
@@ -284,7 +315,9 @@ export default function GlossaireScreen() {
                   <Text style={styles.cardTerm}>{capitalizeGlossaryTerm(term)}</Text>
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>
-                      {wo ? GLOSSARY_CATEGORIES[entry.category].wo : GLOSSARY_CATEGORIES[entry.category].fr}
+                      {wo
+                        ? GLOSSARY_CATEGORIES[entry.category].wo
+                        : GLOSSARY_CATEGORIES[entry.category].fr}
                     </Text>
                   </View>
                 </View>
@@ -300,120 +333,59 @@ export default function GlossaireScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.bg },
-  content: { padding: 22, paddingBottom: 110 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 18 },
+  content: { padding: 20, paddingBottom: 110 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 18 },
   headerText: { flex: 1 },
   backBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(181,98,42,0.12)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: COLORS.deepGreen,
-    fontFamily: Platform.OS === 'ios' ? 'CormorantGaramond-Bold' : 'serif',
-  },
-  subtitle: { fontSize: 13, color: 'rgba(74,47,39,0.6)', marginTop: 4 },
-  heroCard: {
-    borderRadius: 28,
-    backgroundColor: COLORS.deepGreen,
-    paddingHorizontal: 24,
-    paddingVertical: 26,
-    marginBottom: 16,
-  },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    marginBottom: 18,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.softBorder,
   },
-  heroBadgeText: {
-    color: 'rgba(255,255,255,0.82)',
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  heroTitle: {
-    color: '#FFFFFF',
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: '700',
-    marginBottom: 10,
-    maxWidth: 760,
-    fontFamily: Platform.OS === 'ios' ? 'CormorantGaramond-Bold' : 'serif',
-  },
-  heroDescription: {
-    color: 'rgba(255,255,255,0.76)',
-    fontSize: 15,
-    lineHeight: 26,
-    maxWidth: 860,
-  },
-  searchBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
+  backBtnText: { color: COLORS.deepGreen, fontSize: 13, fontWeight: '700' },
+  title: { fontSize: 30, fontWeight: '700', color: COLORS.deepGreen, marginBottom: 6 },
+  subtitle: { fontSize: 14, lineHeight: 22, color: 'rgba(74,47,39,0.72)' },
+  heroCard: {
+    borderRadius: 26,
     borderWidth: 1,
     borderColor: COLORS.border,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    marginBottom: 14,
+    backgroundColor: COLORS.surface,
+    padding: 20,
+    marginBottom: 16,
   },
-  searchInput: { flex: 1, color: COLORS.cocoa, fontSize: 14, padding: 0 },
-  suggestionsBlock: {
-    marginTop: -4,
-    gap: 10,
-  },
-  suggestionsLabel: {
-    fontSize: 12,
+  heroEyebrow: {
+    fontSize: 10,
     fontWeight: '700',
-    color: 'rgba(74,47,39,0.72)',
+    letterSpacing: 1.1,
+    textTransform: 'uppercase',
+    color: COLORS.terracotta,
+    marginBottom: 8,
   },
-  suggestionsRow: {
-    gap: 8,
-    paddingRight: 8,
-  },
-  suggestionChip: {
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: 'rgba(181,98,42,0.16)',
-  },
-  suggestionChipText: {
-    fontSize: 13,
-    fontWeight: '600',
+  heroTitle: {
+    fontSize: 28,
+    lineHeight: 35,
+    fontWeight: '700',
     color: COLORS.deepGreen,
+    marginBottom: 10,
   },
-  summaryCard: {
-    backgroundColor: 'rgba(181,98,42,0.08)',
-    borderRadius: 22,
-    padding: 16,
+  heroDescription: {
+    fontSize: 15,
+    lineHeight: 24,
+    color: COLORS.cocoa,
+  },
+  searchBox: {
+    backgroundColor: COLORS.white,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(181,98,42,0.16)',
-    marginBottom: 18,
+    borderColor: COLORS.softBorder,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 16,
   },
-  summaryTitle: { fontSize: 16, fontWeight: '700', color: COLORS.deepGreen, marginBottom: 4 },
-  summaryText: { fontSize: 12, color: 'rgba(74,47,39,0.72)' },
+  searchInput: { color: COLORS.cocoa, fontSize: 14, padding: 0 },
+  suggestionsBlock: { marginBottom: 14 },
   sectionLabel: {
     fontSize: 10,
     fontWeight: '700',
@@ -422,59 +394,81 @@ const styles = StyleSheet.create({
     color: 'rgba(74,47,39,0.58)',
     marginBottom: 8,
   },
-  themesRow: { gap: 8, paddingBottom: 6, marginBottom: 14 },
-  themeChip: {
+  suggestionsRow: { gap: 8, paddingBottom: 4 },
+  suggestionChip: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(181,98,42,0.3)',
-    backgroundColor: COLORS.chipBg,
+    borderColor: COLORS.border,
+    backgroundColor: 'rgba(181,98,42,0.07)',
+  },
+  suggestionChipText: { fontSize: 12, color: COLORS.copper, fontWeight: '600' },
+  summaryCard: {
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+    padding: 16,
+    marginBottom: 16,
+  },
+  summaryTitle: { fontSize: 18, fontWeight: '700', color: COLORS.deepGreen, marginBottom: 6 },
+  summaryText: { fontSize: 13, color: 'rgba(74,47,39,0.72)', lineHeight: 20 },
+  themesRow: { gap: 8, paddingBottom: 6, marginBottom: 16 },
+  themeChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: COLORS.softBorder,
+    backgroundColor: COLORS.white,
   },
   themeChipActive: {
-    backgroundColor: COLORS.copper,
-    borderColor: COLORS.copper,
+    backgroundColor: 'rgba(181,98,42,0.10)',
+    borderColor: COLORS.border,
   },
-  themeChipText: { fontSize: 12, color: COLORS.copper, fontWeight: '600' },
-  themeChipTextActive: { color: COLORS.white },
+  themeChipText: { fontSize: 12, color: COLORS.cocoa, fontWeight: '600' },
+  themeChipTextActive: { color: COLORS.copper },
   list: { gap: 10 },
   card: {
     backgroundColor: COLORS.white,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.04)',
+    borderColor: COLORS.softBorder,
     padding: 16,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.04,
-    shadowRadius: 18,
-    elevation: 3,
   },
   cardTop: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: 10,
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  cardTerm: { flex: 1, fontSize: 18, fontWeight: '700', color: COLORS.deepGreen },
+  cardTerm: { flex: 1, fontSize: 22, lineHeight: 28, fontWeight: '700', color: COLORS.deepGreen },
   badge: {
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: 'rgba(26,60,52,0.08)',
+    backgroundColor: 'rgba(26,60,52,0.06)',
+    borderWidth: 1,
+    borderColor: COLORS.softBorder,
   },
   badgeText: { fontSize: 11, color: COLORS.deepGreen, fontWeight: '600' },
-  cardDefinition: { fontSize: 14, lineHeight: 21, color: 'rgba(74,47,39,0.82)' },
+  cardDefinition: { fontSize: 15, lineHeight: 24, color: 'rgba(74,47,39,0.84)' },
   emptyCard: {
     backgroundColor: COLORS.white,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.04)',
+    borderColor: COLORS.softBorder,
     paddingVertical: 28,
     paddingHorizontal: 18,
     alignItems: 'center',
   },
-  emptyTitle: { marginTop: 8, fontSize: 14, fontWeight: '700', color: COLORS.deepGreen },
-  emptyText: { marginTop: 6, fontSize: 12, color: 'rgba(74,47,39,0.55)', textAlign: 'center' },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: COLORS.deepGreen, marginBottom: 6 },
+  emptyText: {
+    fontSize: 13,
+    color: 'rgba(74,47,39,0.58)',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });

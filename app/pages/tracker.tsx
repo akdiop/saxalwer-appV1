@@ -49,6 +49,34 @@ function diffDays(a: Date, b: Date): number {
   return Math.floor((a.getTime() - b.getTime()) / 86400000);
 }
 
+function getDaysForMonth(currentDate: Date) {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startingDayOfWeek = firstDay.getDay();
+
+  const days: (Date | null)[] = [];
+
+  for (let i = 0; i < startingDayOfWeek; i += 1) {
+    days.push(null);
+  }
+
+  for (let i = 1; i <= daysInMonth; i += 1) {
+    days.push(new Date(year, month, i));
+  }
+
+  return days;
+}
+
+function formatMonthYear(date: Date) {
+  return new Intl.DateTimeFormat('fr-FR', {
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
 export default function TrackerScreen() {
   const router = useRouter();
   const { cycleData, updateCycleData, language, discreteMode } = useApp();
@@ -64,12 +92,17 @@ export default function TrackerScreen() {
   const [selectedFlow, setSelectedFlow] = useState<number | null>(null);
   const [showSymptomLogger, setShowSymptomLogger] = useState(false);
   const [showPeriodModal, setShowPeriodModal] = useState(false);
+  const [periodPickerMonth, setPeriodPickerMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [periodSelectedDateKey, setPeriodSelectedDateKey] = useState<string | null>(null);
 
   const cd = cycleData;
-  const cycleLength = cd.cycleLength || 28;
-  const periodLength = cd.periodLength || 5;
+  const cycleLength = cd.cycleLength > 0 ? cd.cycleLength : null;
+  const periodLength = cd.periodLength > 0 ? cd.periodLength : null;
   const lastPeriod = cd.lastPeriodDate ? new Date(cd.lastPeriodDate) : null;
-  const cycleDay = lastPeriod ? Math.max(1, diffDays(today, lastPeriod) + 1) : null;
+  const cycleDay =
+    lastPeriod && cycleLength
+      ? Math.max(1, (diffDays(today, lastPeriod) % cycleLength + cycleLength) % cycleLength + 1)
+      : null;
 
   const selectedDateKey = toDateKey(new Date(today.getFullYear(), today.getMonth(), selectedDay));
 
@@ -121,6 +154,8 @@ export default function TrackerScreen() {
     return rows;
   }, [today, wo]);
 
+  const periodPickerDays = useMemo(() => getDaysForMonth(periodPickerMonth), [periodPickerMonth]);
+
   const views: TrackerView[] = cd.pillTracking ? ['cycle', 'journal', 'pilule'] : ['cycle', 'journal'];
 
   return (
@@ -152,13 +187,45 @@ export default function TrackerScreen() {
 
         {view === 'cycle' ? (
           <View style={[styles.card, discreteMode && styles.blurred]}>
-            <Text style={styles.cardTitle}>{wo ? 'Resume du cycle' : 'Resume du cycle'}</Text>
-            <Text style={styles.cardLine}>{wo ? 'Bessu tey:' : 'Jour actuel :'} {cycleDay ?? '-'}</Text>
-            <Text style={styles.cardLine}>{wo ? 'Durée cycle:' : 'Duree cycle :'} {cycleLength} {wo ? 'fan' : 'jours'}</Text>
-            <Text style={styles.cardLine}>{wo ? 'Durée règles:' : 'Duree regles :'} {periodLength} {wo ? 'fan' : 'jours'}</Text>
+            <Text style={styles.cardTitle}>{wo ? 'Résumé du cycle' : 'Résumé du cycle'}</Text>
+            <Text style={styles.cardLine}>
+              {wo ? 'Dernière date enregistrée :' : 'Dernière date enregistrée :'}{' '}
+              {cd.lastPeriodDate ?? (wo ? 'Amul' : 'Aucune')}
+            </Text>
+            {cycleDay ? (
+              <Text style={styles.cardLine}>
+                {wo ? 'Bésu cycle bi tey:' : 'Jour actuel du cycle :'} {cycleDay}
+              </Text>
+            ) : null}
+            {cycleLength ? (
+              <Text style={styles.cardLine}>
+                {wo ? 'Durée du cycle :' : 'Durée du cycle :'} {cycleLength} {wo ? 'fan' : 'jours'}
+              </Text>
+            ) : null}
+            {periodLength ? (
+              <Text style={styles.cardLine}>
+                {wo ? 'Durée des règles :' : 'Durée des règles :'} {periodLength} {wo ? 'fan' : 'jours'}
+              </Text>
+            ) : null}
+            {!cycleLength && !periodLength ? (
+              <Text style={styles.helperText}>
+                {wo
+                  ? 'Duñu wone durée standard. Tannal sa date sur le calendrier pour commencer.'
+                  : "Aucune durée n'est affichée par défaut. Choisis une date sur le calendrier pour commencer."}
+              </Text>
+            ) : null}
             <View style={styles.rowGap}>
-              <Pressable style={styles.smallAction} onPress={() => setShowPeriodModal(true)}>
-                <Text style={styles.smallActionText}>{wo ? 'Definir dernieres regles' : 'Definir dernieres regles'}</Text>
+              <Pressable
+                style={styles.smallAction}
+                onPress={() => {
+                  setPeriodPickerMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+                  setPeriodSelectedDateKey(cd.lastPeriodDate ?? toDateKey(today));
+                  setShowPeriodModal(true);
+                }}
+              >
+                <Text style={styles.smallActionText}>
+                  {wo ? 'Tannal date ci kalandriye' : 'Choisir une date sur le calendrier'}
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -198,7 +265,7 @@ export default function TrackerScreen() {
 
             <Pressable style={styles.primaryBtn} onPress={saveJournal}>
               <Feather name="check" size={16} color="#fff" />
-              <Text style={styles.primaryText}>{wo ? 'Continuer vers symptomes' : 'Continuer vers symptomes'}</Text>
+              <Text style={styles.primaryText}>{wo ? 'Continuer vers symptomes' : 'Continuer vers symptômes'}</Text>
             </Pressable>
           </View>
         ) : null}
@@ -250,12 +317,68 @@ export default function TrackerScreen() {
       <Modal visible={showPeriodModal} transparent animationType="fade" onRequestClose={() => setShowPeriodModal(false)}>
         <View style={styles.modalBg}>
           <View style={styles.periodCard}>
-            <Text style={styles.cardTitle}>{wo ? 'Dernieres regles' : 'Dernieres regles'}</Text>
-            <Text style={styles.dateLabel}>{selectedDateKey}</Text>
+            <Text style={styles.cardTitle}>{wo ? 'Dernières règles' : 'Dernières règles'}</Text>
+            <View style={styles.monthPickerHeader}>
+              <Pressable
+                style={styles.monthNavBtn}
+                onPress={() =>
+                  setPeriodPickerMonth(
+                    (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
+                  )
+                }
+              >
+                <Feather name="chevron-left" size={18} color={BASE.deepGreen} />
+              </Pressable>
+              <Text style={styles.monthPickerTitle}>{formatMonthYear(periodPickerMonth)}</Text>
+              <Pressable
+                style={styles.monthNavBtn}
+                onPress={() =>
+                  setPeriodPickerMonth(
+                    (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+                  )
+                }
+              >
+                <Feather name="chevron-right" size={18} color={BASE.deepGreen} />
+              </Pressable>
+            </View>
+            <View style={styles.periodWeekRow}>
+              {(wo ? ['Dim', 'Alt', 'Tal', 'Ala', 'Alx', 'Ajj', 'Gaa'] : ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']).map((day) => (
+                <View key={day} style={styles.periodWeekCell}>
+                  <Text style={styles.periodWeekText}>{day}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={styles.periodDaysWrap}>
+              {periodPickerDays.map((day, index) => {
+                if (!day) {
+                  return <View key={`empty-${index}`} style={styles.periodEmptyCell} />;
+                }
+
+                const key = toDateKey(day);
+                const isSelected = key === periodSelectedDateKey;
+
+                return (
+                  <Pressable
+                    key={key}
+                    style={[styles.periodDayCell, isSelected && styles.periodDayCellSelected]}
+                    onPress={() => setPeriodSelectedDateKey(key)}
+                  >
+                    <Text style={[styles.periodDayText, isSelected && styles.periodDayTextSelected]}>
+                      {day.getDate()}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={styles.dateLabel}>{periodSelectedDateKey ?? selectedDateKey}</Text>
             <Pressable
               style={styles.primaryBtn}
               onPress={() => {
-                updateCycleData({ lastPeriodDate: selectedDateKey });
+                const nextDateKey = periodSelectedDateKey ?? selectedDateKey;
+                updateCycleData({
+                  lastPeriodDate: nextDateKey,
+                  periodDates: Array.from(new Set([...(cd.periodDates || []), nextDateKey])),
+                });
                 setShowPeriodModal(false);
               }}
             >
@@ -309,6 +432,7 @@ const styles = StyleSheet.create({
   blurred: { opacity: 0.35 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: BASE.deepGreen },
   cardLine: { fontSize: 14, color: BASE.cocoa },
+  helperText: { fontSize: 13, color: `${BASE.cocoa}AA`, lineHeight: 19 },
   dateLabel: { fontSize: 12, color: `${BASE.cocoa}99` },
   sectionTitle: { fontSize: 13, color: BASE.deepGreen, fontWeight: '700', marginTop: 8 },
   moodRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -384,6 +508,67 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     gap: 10,
+  },
+  monthPickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  monthNavBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: `${BASE.cocoa}08`,
+  },
+  monthPickerTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: BASE.deepGreen,
+    textTransform: 'capitalize',
+  },
+  periodWeekRow: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  periodWeekCell: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  periodWeekText: {
+    fontSize: 11,
+    color: `${BASE.cocoa}88`,
+    fontWeight: '600',
+  },
+  periodDaysWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  periodEmptyCell: {
+    width: '13.2%',
+    aspectRatio: 1,
+  },
+  periodDayCell: {
+    width: '13.2%',
+    aspectRatio: 1,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: `${BASE.cocoa}06`,
+  },
+  periodDayCellSelected: {
+    backgroundColor: BASE.deepGreen,
+  },
+  periodDayText: {
+    color: BASE.cocoa,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  periodDayTextSelected: {
+    color: '#fff',
   },
   ghostBtn: {
     marginTop: 4,

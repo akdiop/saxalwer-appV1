@@ -44,10 +44,10 @@ function adaptArticleText(
           ['plaisir sexuel', 'bien-etre intime'],
         ]
       : [
-          ['sexualité', 'sante intime'],
+          ['sexualité', 'santé intime'],
           ['rapport sexuel', 'rapport intime'],
           ['rapports sexuels', 'rapports intimes'],
-          ['plaisir sexuel', 'bien-etre intime'],
+          ['plaisir sexuel', 'bien-être intime'],
         ];
 
     replacements.forEach(([from, to]) => {
@@ -64,10 +64,10 @@ function adaptArticleText(
           ['ovulation', 'waxtu bi ovule bi di génne'],
         ]
       : [
-          ['dépistage', 'test de controle'],
-          ['diagnostic', 'avis medical precis'],
-          ['fertilité', 'capacite a concevoir'],
-          ['ovulation', "moment ou l'ovule sort"],
+          ['dépistage', 'test de contrôle'],
+          ['diagnostic', 'avis médical précis'],
+          ['fertilité', 'capacité à concevoir'],
+          ['ovulation', "moment où l'ovule sort"],
         ];
 
     replacements.forEach(([from, to]) => {
@@ -133,8 +133,12 @@ export default function ArticleDetailScreen() {
     if (cat.includes('cancer')) return ['Cancer', 'Oncologie', 'Radiotherapie'];
     if (cat.includes('ist')) return ['IST', 'Depistage'];
     if (cat.includes('contraception')) return ['Planning', 'Contraception'];
+    if (cat.includes('ménopause') || cat.includes('menopause')) return ['Gynecologie', 'Menopause', 'Endocrinologie'];
     if (cat.includes('grossesse') || cat.includes('post-partum')) return ['Maternite'];
     if (cat.includes('fertilite') || cat.includes('infertilite')) return ['Gynecologie', 'Fertilite'];
+    if (cat.includes('maladies chroniques')) return ['Gynecologie', 'Endocrinologie', 'Consultation'];
+    if (cat.includes('ssr')) return ['Gynecologie', 'Planning', 'Consultation'];
+    if (cat.includes('foi')) return ['Gynecologie', 'Planning', 'Consultation'];
     return [];
   }, [article?.category]);
 
@@ -153,7 +157,7 @@ export default function ArticleDetailScreen() {
             style={styles.notFoundButton}
           >
             <Text style={styles.notFoundButtonText}>
-              {wo ? 'Dellusi ci bibliotheque bi' : 'Retour a la bibliotheque'}
+              {wo ? 'Dellusi ci bibliotheque bi' : 'Retour à la bibliothèque'}
             </Text>
           </Pressable>
         </View>
@@ -347,6 +351,16 @@ export default function ArticleDetailScreen() {
             );
           })}
         </View>
+
+        <LocationFinder
+          language={language}
+          filterTags={locationFilterTags}
+          headline={
+            wo
+              ? 'Trouver un centre ou une professionnelle'
+              : 'Trouver un centre ou une professionnelle'
+          }
+        />
 
         {article.tags.length > 0 && (
           <View style={styles.tagsWrap}>

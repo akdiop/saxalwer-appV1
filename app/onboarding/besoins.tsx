@@ -24,6 +24,9 @@ type NeedOption = {
   subtitle: string;
   icon: React.ComponentProps<typeof Feather>['name'];
   tint: 'sage' | 'sand';
+  minAge?: string;
+  age50Label?: string;
+  age50Subtitle?: string;
 };
 
 const COLORS = {
@@ -69,6 +72,15 @@ const NEED_OPTIONS: NeedOption[] = [
     tint: 'sand' as const,
   },
   {
+    label: 'Ménopause',
+    subtitle: 'Bouffées de chaleur, sommeil, changements du corps',
+    icon: 'sunrise',
+    tint: 'sand' as const,
+    minAge: '50+',
+    age50Label: 'Infos ménopause 50+',
+    age50Subtitle: 'Pré, péri ou post-ménopause, symptômes et repères utiles',
+  },
+  {
     label: 'Protection & Urgence',
     subtitle: 'Aide, ressources, sécurité',
     icon: 'map-pin',
@@ -78,9 +90,14 @@ const NEED_OPTIONS: NeedOption[] = [
 
 export default function BesoinsScreen() {
   const router = useRouter();
-  const { needs, toggleNeed, navigationDirection, setNavigationDirection } = useOnboarding();
+  const { age, needs, toggleNeed, navigationDirection, setNavigationDirection } = useOnboarding();
   const screenWidth = Dimensions.get('window').width;
   const translateX = useRef(new Animated.Value(0)).current;
+
+  const visibleNeeds = React.useMemo(
+    () => NEED_OPTIONS.filter((item) => !item.minAge || item.minAge === age),
+    [age]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -117,6 +134,7 @@ export default function BesoinsScreen() {
   };
 
   const isDisabled = needs.length === 0;
+  const buttonLabel = isDisabled ? 'Choisis au moins un besoin' : 'Continuer';
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -144,17 +162,23 @@ export default function BesoinsScreen() {
             </Text>
 
             <View style={styles.list}>
-              {NEED_OPTIONS.map((item) => (
-                <NeedCard
-                  key={item.label}
-                  label={item.label}
-                  subtitle={item.subtitle}
-                  icon={item.icon}
-                  tint={item.tint}
-                  selected={needs.includes(item.label)}
-                  onPress={() => toggleNeed(item.label)}
-                />
-              ))}
+              {visibleNeeds.map((item) => {
+                const resolvedLabel = age === '50+' && item.age50Label ? item.age50Label : item.label;
+                const resolvedSubtitle =
+                  age === '50+' && item.age50Subtitle ? item.age50Subtitle : item.subtitle;
+
+                return (
+                  <NeedCard
+                    key={resolvedLabel}
+                    label={resolvedLabel}
+                    subtitle={resolvedSubtitle}
+                    icon={item.icon}
+                    tint={item.tint}
+                    selected={needs.includes(resolvedLabel)}
+                    onPress={() => toggleNeed(resolvedLabel)}
+                  />
+                );
+              })}
             </View>
           </View>
         </ScrollView>
@@ -166,7 +190,7 @@ export default function BesoinsScreen() {
             style={[styles.primaryButton, isDisabled && styles.primaryButtonDisabled]}
           >
             <Text style={[styles.primaryButtonText, isDisabled && styles.primaryButtonTextDisabled]}>
-              Choisis au moins un besoin
+              {buttonLabel}
             </Text>
           </Pressable>
         </View>
@@ -280,6 +304,8 @@ const styles = StyleSheet.create({
     height: 76,
     borderRadius: 24,
     backgroundColor: COLORS.sage,
+    borderWidth: 1,
+    borderColor: 'rgba(93,67,55,0.16)',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#C9B9A2',
@@ -289,7 +315,10 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   primaryButtonDisabled: {
-    backgroundColor: 'rgba(167,184,172,0.72)',
+    backgroundColor: '#CDD8D0',
+    borderColor: 'rgba(93,67,55,0.14)',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   primaryButtonText: {
     color: '#FFF9EF',
@@ -298,6 +327,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   primaryButtonTextDisabled: {
-    color: 'rgba(255,249,239,0.92)',
+    color: '#FFF9EF',
   },
 });

@@ -34,7 +34,8 @@ const QUESTIONS: Question[] = [
       { id: '15-19', fr: '15-19', wo: '15-19' },
       { id: '20-29', fr: '20-29', wo: '20-29' },
       { id: '30-39', fr: '30-39', wo: '30-39' },
-      { id: '40+', fr: '40+', wo: '40+' },
+      { id: '40-49', fr: '40-49', wo: '40-49' },
+      { id: '50+', fr: '50+', wo: '50+' },
     ],
   },
   {
@@ -47,6 +48,7 @@ const QUESTIONS: Question[] = [
       { id: 'fertility', fr: 'Fertilité', wo: 'Fertilité' },
       { id: 'pregnancy', fr: 'Grossesse', wo: 'Gàtt' },
       { id: 'prevention', fr: 'Prévention', wo: 'Jiitu' },
+      { id: 'menopause', fr: 'Pré ou post-ménopause', wo: 'Pré walla post-ménopause' },
     ],
   },
   {
@@ -136,6 +138,7 @@ export default function OrientationPage() {
       if (primaryConcern === 'fertility') setLifeSituation('trying');
       if (primaryConcern === 'pregnancy') setLifeSituation('pregnant');
       if (primaryConcern === 'prevention') setLifeSituation('contraception');
+      if (primaryConcern === 'menopause') setLifeSituation('menopause');
 
       saveOrientation({
         answers,
@@ -235,7 +238,7 @@ const styles = StyleSheet.create({
   progressWrap: {
     height: 8,
     borderRadius: 99,
-    backgroundColor: 'rgba(26,60,52,0.12)',
+    backgroundColor: '#E4ECE8',
     overflow: 'hidden',
     marginBottom: 12,
   },
@@ -245,9 +248,9 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: 'rgba(26,60,52,0.08)',
+    backgroundColor: '#EEF3F0',
   },
-  sectionBadgeActive: { backgroundColor: 'rgba(181,98,42,0.15)' },
+  sectionBadgeActive: { backgroundColor: '#F4E2D6' },
   sectionBadgeDone: { borderWidth: 1, borderColor: 'rgba(26,60,52,0.35)' },
   sectionBadgeText: { fontSize: 11, color: 'rgba(26,60,52,0.75)' },
   sectionBadgeTextActive: { color: COLORS.copper, fontWeight: '700' },
@@ -265,7 +268,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(26,60,52,0.12)',
-    backgroundColor: 'rgba(26,60,52,0.04)',
+    backgroundColor: '#F4F7F5',
     paddingHorizontal: 12,
     paddingVertical: 11,
     flexDirection: 'row',
@@ -274,7 +277,7 @@ const styles = StyleSheet.create({
   },
   optionActive: {
     borderColor: 'rgba(181,98,42,0.55)',
-    backgroundColor: 'rgba(181,98,42,0.12)',
+    backgroundColor: '#F8E8DE',
   },
   optionText: { fontSize: 14, color: COLORS.deepGreen, fontWeight: '600' },
   optionTextActive: { color: COLORS.copper },

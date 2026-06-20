@@ -15,7 +15,7 @@ import AgeCard from '../../components/onboarding/AgeCard';
 import StepIndicator from '../../components/onboarding/StepIndicator';
 import { useOnboarding } from '../../context/OnboardingContext';
 
-const AGE_OPTIONS = ['15-17', '18-24', '25-34', '35-49'];
+const AGE_OPTIONS = ['15-17', '18-24', '25-34', '35-49', '50+'];
 
 export default function AgeScreen() {
   const router = useRouter();

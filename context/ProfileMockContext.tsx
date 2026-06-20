@@ -1,7 +1,5 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 
-import { ARTICLES } from '../data/mockArticles';
-
 type Language = 'fr' | 'wo';
 type SensitiveLevel = 'priority' | 'recommended' | 'monitor';
 type NotificationFrequency = 'Quotidien' | 'Hebdo' | 'Mensuel';
@@ -77,102 +75,69 @@ type ProfileMockState = {
 
 const ProfileMockContext = createContext<ProfileMockState | undefined>(undefined);
 
+const defaultNotificationPreferences = {
+  cycle: { enabled: false, frequency: 'Hebdo' as NotificationFrequency },
+  medication: { enabled: false, frequency: 'Quotidien' as NotificationFrequency },
+  wellness: { enabled: false, frequency: 'Mensuel' as NotificationFrequency },
+};
+
+const defaultUserProfile: UserProfile = {
+  name: '',
+  birthdate: '',
+  location: '',
+  photoUrl: '',
+  personality: '',
+  maritalStatus: '',
+  childrenCount: 0,
+  desireChildren: '',
+  contraceptionActive: false,
+  contraceptionMethod: '',
+  healthConditions: [],
+  religiousFaith: '',
+  educationLevel: '',
+  hobbies: [],
+  aboutMe: '',
+  pregnancyStatus: '',
+  pregnancyWeeks: '',
+  pregnancyDueDate: '',
+};
+
+const defaultSensitiveOrientation = {
+  completedAt: null,
+  level: 'monitor' as SensitiveLevel,
+  answers: 0,
+  riskDimensions: [],
+};
+
 export function ProfileMockProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>('fr');
-  const [selectedAge, setSelectedAge] = useState<number | null>(24);
-  const [favorites, setFavorites] = useState<string[]>([
-    ARTICLES[0].id,
-    ARTICLES[2].id,
-  ]);
-  const [selectedNeeds, setSelectedNeeds] = useState<string[]>([
-    'Cycle & Regles',
-    'Douleurs & Symptomes',
-  ]);
-  const [selectedGoals, setSelectedGoals] = useState<string[]>(['Bien-etre general']);
+  const [selectedAge, setSelectedAge] = useState<number | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [discreteMode, setDiscreteMode] = useState(false);
   const [oralMode, setOralMode] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(3);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const [notificationPreferences, setNotificationPreferences] = useState({
-    cycle: { enabled: true, frequency: 'Hebdo' as NotificationFrequency },
-    medication: { enabled: false, frequency: 'Quotidien' as NotificationFrequency },
-    wellness: { enabled: true, frequency: 'Mensuel' as NotificationFrequency },
-  });
+  const [notificationPreferences, setNotificationPreferences] = useState(defaultNotificationPreferences);
 
-  const [cycleNotifications] = useState([
-    { id: 'n1', title: 'Rappel cycle demain', time: '18:00' },
-    { id: 'n2', title: 'Hydratation & confort', time: '20:30' },
-    { id: 'n3', title: 'Check-in bien-etre', time: '21:00' },
-  ]);
+  const [cycleNotifications] = useState<{ id: string; title: string; time: string }[]>([]);
 
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Aida',
-    birthdate: '1999-06-15',
-    location: 'Dakar - Point E',
-    photoUrl: '',
-    personality: 'Calme et curieuse',
-    maritalStatus: 'single',
-    childrenCount: 0,
-    desireChildren: 'maybe',
-    contraceptionActive: true,
-    contraceptionMethod: 'pilule',
-    healthConditions: ['Anemie legere', 'Cycle irregulier'],
-    religiousFaith: '',
-    educationLevel: '',
-    hobbies: [],
-    aboutMe: '',
-    pregnancyStatus: '',
-    pregnancyWeeks: '',
-    pregnancyDueDate: '',
-  });
+  const [userProfile, setUserProfile] = useState<UserProfile>(defaultUserProfile);
+  const [sensitiveOrientation, setSensitiveOrientation] = useState(defaultSensitiveOrientation);
 
   const resetProfileMockState = () => {
     setLanguage('fr');
-    setSelectedAge(24);
-    setFavorites([
-      ARTICLES[0].id,
-      ARTICLES[2].id,
-    ]);
-    setSelectedNeeds([
-      'Cycle & Regles',
-      'Douleurs & Symptomes',
-    ]);
-    setSelectedGoals(['Bien-etre general']);
+    setSelectedAge(null);
+    setFavorites([]);
+    setSelectedNeeds([]);
+    setSelectedGoals([]);
     setDiscreteMode(false);
     setOralMode(false);
-    setUnreadCount(3);
-    setNotificationPreferences({
-      cycle: { enabled: true, frequency: 'Hebdo' as NotificationFrequency },
-      medication: { enabled: false, frequency: 'Quotidien' as NotificationFrequency },
-      wellness: { enabled: true, frequency: 'Mensuel' as NotificationFrequency },
-    });
-    setUserProfile({
-      name: 'Aida',
-      birthdate: '1999-06-15',
-      location: 'Dakar - Point E',
-      photoUrl: '',
-      personality: 'Calme et curieuse',
-      maritalStatus: 'single',
-      childrenCount: 0,
-      desireChildren: 'maybe',
-      contraceptionActive: true,
-      contraceptionMethod: 'pilule',
-      healthConditions: ['Anemie legere', 'Cycle irregulier'],
-      religiousFaith: '',
-      educationLevel: '',
-      hobbies: [],
-      aboutMe: '',
-      pregnancyStatus: '',
-      pregnancyWeeks: '',
-      pregnancyDueDate: '',
-    });
-  };
-
-  const sensitiveOrientation = {
-    completedAt: '2026-02-11',
-    level: 'recommended' as SensitiveLevel,
-    answers: 16,
-    riskDimensions: ['Stress', 'Sommeil'],
+    setUnreadCount(0);
+    setNotificationPreferences(defaultNotificationPreferences);
+    setUserProfile(defaultUserProfile);
+    setSensitiveOrientation(defaultSensitiveOrientation);
   };
 
   const removeFavorite = (articleId: string) => {

@@ -1,3 +1,4 @@
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -14,17 +15,20 @@ import { useApp } from '../../context/appcontext';
 
 const VALUE_CARDS = [
   {
-    icon: '•',
+    icon: 'shield-lock-outline',
+    iconSet: 'mci',
     title: 'Confidentialité absolue',
     route: '/about',
   },
   {
-    icon: '•',
+    icon: 'heart-outline',
+    iconSet: 'mci',
     title: 'Accompagnement bienveillant',
     route: '/chat',
   },
   {
-    icon: '•',
+    icon: 'book-check-outline',
+    iconSet: 'mci',
     title: 'Informations fiables',
     route: '/bibliotheque',
   },
@@ -43,6 +47,14 @@ export default function IndexScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.topQuickActions}>
+          <View style={styles.topLogoBadge}>
+            <Image
+              source={require('../assets/images/logo-saxalwer.png')}
+              style={styles.topLogoImage}
+              resizeMode="contain"
+            />
+          </View>
+
           <Pressable
             style={({ pressed }) => [styles.quickLanguageButton, pressed && styles.pressed]}
             onPress={() => {
@@ -125,13 +137,13 @@ export default function IndexScreen() {
 
         <View style={styles.heroTextBlock}>
           <Text style={styles.title}>SAXALWER</Text>
-          <Text style={styles.subtitle}>Ton espace securise de sante reproductive</Text>
+          <Text style={styles.subtitle}>Ton espace sécurisé de santé reproductive</Text>
         </View>
 
         <View style={styles.privacyCard}>
-          <Text style={styles.cardTitle}>Confidentialite et protection des donnees</Text>
+          <Text style={styles.cardTitle}>Confidentialité et protection des données</Text>
           <Text style={styles.cardText}>
-            Tes informations sont utilisees uniquement pour personnaliser les contenus de l&apos;application. Elles ne sont jamais partagees sans ton consentement.
+            Tes informations sont utilisées uniquement pour personnaliser les contenus de l'application. Elles ne sont jamais partagées sans ton consentement.
           </Text>
 
           <Pressable
@@ -143,40 +155,16 @@ export default function IndexScreen() {
             <View style={[styles.checkbox, acceptedPrivacy && styles.checkboxChecked]}>
               {acceptedPrivacy ? <View style={styles.checkboxInner} /> : null}
             </View>
-            <Text style={styles.checkboxText}>J&apos;accepte les conditions de confidentialite</Text>
+            <Text style={styles.checkboxText}>J&apos;accepte les conditions de confidentialité</Text>
           </Pressable>
         </View>
 
         <View style={styles.infoCard}>
           <Text style={styles.infoText}>
-            Cette application fournit des informations generales sur la sante intime. Elle ne remplace pas une consultation medicale.
+            Cette application fournit des informations générales sur la santé intime. Elle ne remplace pas une consultation médicale.
           </Text>
         </View>
 
-        <View style={styles.accountCard}>
-          <Text style={styles.accountTitle}>Accéder à mon espace</Text>
-          <Text style={styles.accountText}>
-            Crée un compte pour retrouver ton parcours, ou connecte-toi si tu as déjà commencé.
-          </Text>
-
-          <View style={styles.accountActions}>
-            <Pressable
-              style={({ pressed }) => [styles.accountPrimaryButton, pressed && styles.pressed]}
-              onPress={() => router.push('/signup' as never)}
-              accessibilityRole="button"
-            >
-              <Text style={styles.accountPrimaryButtonText}>Créer un compte</Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [styles.accountSecondaryButton, pressed && styles.pressed]}
-              onPress={() => router.push('/login' as never)}
-              accessibilityRole="button"
-            >
-              <Text style={styles.accountSecondaryButtonText}>Se connecter</Text>
-            </Pressable>
-          </View>
-        </View>
 
         <View style={styles.valuesSection}>
           {VALUE_CARDS.map((item) => (
@@ -187,7 +175,15 @@ export default function IndexScreen() {
               accessibilityRole="button"
             >
               <View style={styles.valueIconWrap}>
-                <Text style={styles.valueIcon}>{item.icon}</Text>
+                {item.iconSet === 'mci' ? (
+                  <MaterialCommunityIcons
+                    name={item.icon as any}
+                    size={18}
+                    color="#A65D40"
+                  />
+                ) : (
+                  <Feather name={item.icon as any} size={18} color="#A65D40" />
+                )}
               </View>
               <Text style={styles.valueTitle}>{item.title}</Text>
             </Pressable>
@@ -212,21 +208,6 @@ export default function IndexScreen() {
           <Text style={styles.primaryButtonText}>ENTRER DANS L&apos;ESPACE SAXALWER</Text>
         </Pressable>
 
-        <View style={styles.aboutCard}>
-          <Text style={styles.aboutTitle}>À propos de SaxalWér</Text>
-          <Text style={styles.aboutText}>
-            Découvre les principes, l&apos;approche communautaire et la vision qui structurent l&apos;application.
-          </Text>
-
-          <Pressable
-            style={({ pressed }) => [styles.aboutButton, pressed && styles.pressed]}
-            onPress={() => router.push('/about' as never)}
-            accessibilityRole="button"
-          >
-            <Text style={styles.aboutButtonText}>Voir la section À propos</Text>
-          </Pressable>
-        </View>
-
         <Text style={styles.footerText}>Tu merites un espace qui te protege et s&apos;adapte à ta sensibilite</Text>
       </ScrollView>
     </SafeAreaView>
@@ -245,7 +226,24 @@ const styles = StyleSheet.create({
     gap: 22,
   },
   topQuickActions: {
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  topLogoBadge: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#D8CBB7',
+    backgroundColor: '#FFF9F1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  topLogoImage: {
+    width: 34,
+    height: 34,
   },
   quickLanguageButton: {
     borderRadius: 999,

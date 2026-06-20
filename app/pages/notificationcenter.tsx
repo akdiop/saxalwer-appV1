@@ -71,28 +71,28 @@ function getSmartSuggestions(
   const SITUATION_MAP: Partial<Record<LifeSituation, SmartSuggestion[]>> = {
     pregnant: [
       { category: 'cycles', frequency: 'daily', reasonFr: 'Suivi quotidien important pendant la grossesse', reasonWo: 'Samm bu epp bes ci tur gi' },
-      { category: 'symptomLog', frequency: 'daily', reasonFr: 'Documenter tes symptomes aide ton suivi prenatal', reasonWo: 'Bind sa metit yi mooy dimbali sa samm' },
-      { category: 'dailyTip', frequency: 'daily', reasonFr: 'Un conseil bien-etre chaque jour pour toi et bebe', reasonWo: 'Digalante bu weer epp bes' },
+      { category: 'symptomLog', frequency: 'daily', reasonFr: 'Documenter tes symptômes aide ton suivi prénatal', reasonWo: 'Bind sa metit yi mooy dimbali sa samm' },
+      { category: 'dailyTip', frequency: 'daily', reasonFr: 'Un conseil bien-être chaque jour pour toi et bébé', reasonWo: 'Digalante bu weer epp bes' },
     ],
     trying: [
-      { category: 'cycles', frequency: 'daily', reasonFr: 'Suivre ton cycle de pres aide a la conception', reasonWo: 'Samm sa weer gi mooy dimbali' },
-      { category: 'symptomLog', frequency: 'daily', reasonFr: 'Note tes signes de fertilite chaque jour', reasonWo: 'Bind sa mandarga epp bes' },
+      { category: 'cycles', frequency: 'daily', reasonFr: 'Suivre ton cycle de près aide à la conception', reasonWo: 'Samm sa weer gi mooy dimbali' },
+      { category: 'symptomLog', frequency: 'daily', reasonFr: 'Note tes signes de fertilité chaque jour', reasonWo: 'Bind sa mandarga epp bes' },
     ],
     contraception: [
       { category: 'contraception', frequency: 'daily', reasonFr: 'Rappel quotidien pour ne rien oublier', reasonWo: 'Fattali epp bes ngir bul fatte' },
-      { category: 'cycles', frequency: 'weekly', reasonFr: 'Garder un oeil sur ton cycle', reasonWo: 'Samm sa weer gi' },
+      { category: 'cycles', frequency: 'weekly', reasonFr: 'Garder un œil sur ton cycle', reasonWo: 'Samm sa weer gi' },
     ],
     postpartum: [
-      { category: 'symptomLog', frequency: 'daily', reasonFr: 'Ta recuperation merite une attention quotidienne', reasonWo: 'Sa weerum boppam dafa am solo' },
-      { category: 'dailyTip', frequency: 'daily', reasonFr: 'Des conseils adaptes au post-partum', reasonWo: 'Digalante yu baax' },
+      { category: 'symptomLog', frequency: 'daily', reasonFr: 'Ta récupération mérite une attention quotidienne', reasonWo: 'Sa weerum boppam dafa am solo' },
+      { category: 'dailyTip', frequency: 'daily', reasonFr: 'Des conseils adaptés au post-partum', reasonWo: 'Digalante yu baax' },
     ],
     menopause: [
-      { category: 'symptomLog', frequency: 'weekly', reasonFr: 'Suivre l evolution de tes symptomes', reasonWo: 'Samm sa metit yi' },
-      { category: 'orientation', frequency: 'monthly', reasonFr: 'Reevaluer ton bien-etre regulierement', reasonWo: 'Xool sa weer ci jamano' },
+      { category: 'symptomLog', frequency: 'weekly', reasonFr: "Suivre l'évolution de tes symptômes", reasonWo: 'Samm sa metit yi' },
+      { category: 'orientation', frequency: 'monthly', reasonFr: 'Réévaluer ton bien-être régulièrement', reasonWo: 'Xool sa weer ci jamano' },
     ],
     cycles: [
-      { category: 'cycles', frequency: 'weekly', reasonFr: 'Rester connectee a ton cycle', reasonWo: 'Samm sa weer gi' },
-      { category: 'symptomLog', frequency: 'weekly', reasonFr: 'Un rappel pour noter tes symptomes', reasonWo: 'Fattali ngir bind' },
+      { category: 'cycles', frequency: 'weekly', reasonFr: 'Rester connectée à ton cycle', reasonWo: 'Samm sa weer gi' },
+      { category: 'symptomLog', frequency: 'weekly', reasonFr: 'Un rappel pour noter tes symptômes', reasonWo: 'Fattali ngir bind' },
     ],
     curious: [
       { category: 'articleOfDay', frequency: 'daily', reasonFr: 'Apprendre quelque chose de nouveau chaque jour', reasonWo: 'Jang lenn epp bes' },
@@ -111,7 +111,7 @@ function getSmartSuggestions(
       suggestions.push({
         category: 'orientation',
         frequency: 'monthly',
-        reasonFr: 'Des dimensions a risque ont ete identifiees, un suivi regulier est recommande',
+        reasonFr: 'Des dimensions à risque ont été identifiées, un suivi régulier est recommandé',
         reasonWo: 'Ay xarit yu am solo lanu gis, samm bu yagg dafa am njarin',
       });
     }
@@ -119,7 +119,7 @@ function getSmartSuggestions(
       suggestions.push({
         category: 'symptomLog',
         frequency: 'weekly',
-        reasonFr: 'Documenter tes symptomes aide a surveiller les dimensions a risque',
+        reasonFr: 'Documenter tes symptômes aide à surveiller les dimensions à risque',
         reasonWo: 'Bind sa metit yi mooy dimbali ci samm',
       });
     }

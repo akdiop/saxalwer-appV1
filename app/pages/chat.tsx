@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
   SafeAreaView,
@@ -546,7 +547,11 @@ function ChatScreenContent() {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
-			<View style={styles.screen}>
+			<KeyboardAvoidingView
+				style={styles.screen}
+				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+				keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+			>
 				<View style={styles.heroCard}>
 					<View style={styles.heroGlowLarge} />
 					<View style={styles.heroGlowSmall} />
@@ -771,7 +776,7 @@ function ChatScreenContent() {
 						</View>
 					</View>
 				</View>
-			</View>
+			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
 }

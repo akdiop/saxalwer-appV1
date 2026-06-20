@@ -150,7 +150,7 @@ export default function LibraryScreen() {
 
   const introCopy = wo
     ? 'Jàngale yu dal, yu leer, te mën a topp sa xaalis ak sa sutura.'
-    : "Des lectures calmes, claires et adaptees a ton contexte, avec des definitions quand un terme demande plus d'explication.";
+    : "Des lectures calmes, claires et adaptées à ton contexte, avec des définitions quand un terme demande plus d'explication.";
 
   const toneCopy =
     personalization.socialNorms === 'conservative' || personalization.privacyLevel === 'very-high'
@@ -229,7 +229,7 @@ export default function LibraryScreen() {
           />
         </View>
 
-        <Text style={styles.filterLabel}>{wo ? 'Etape de vie' : 'Etape de vie'}</Text>
+        <Text style={styles.filterLabel}>{wo ? 'Étape de vie' : 'Étape de vie'}</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}

@@ -71,7 +71,7 @@ const QUESTIONS: Question<any>[] = [
       { value: '18-24', label: '18 à 24 ans', description: 'Jeunes adultes et nouvelles habitudes', icon: 'calendar' },
       { value: '25-34', label: '25 à 34 ans', description: 'Vie active, projets et équilibre', icon: 'calendar' },
       { value: '35-49', label: '35 à 49 ans', description: 'Transitions, stabilité et prévention', icon: 'calendar' },
-      { value: '50+', label: '50 ans et plus', description: 'Ménopause, bien-être et accompagnement', icon: 'calendar' },
+      { value: '50+', label: '50 ans et plus', description: 'Pré-ménopause, ménopause ou post-ménopause', icon: 'calendar' },
     ],
   },
   {
@@ -214,6 +214,9 @@ export default function PersonnalisationScreen() {
     setGoals,
     setPersonalization,
     setPrivacyConcern,
+    setLifeSituation,
+    saveOrientation,
+    completeOnboarding,
   } = useApp();
 
   const screenWidth = Dimensions.get('window').width;
@@ -289,19 +292,42 @@ export default function PersonnalisationScreen() {
     }));
   };
 
-  const goToOrientation = (nextPersonalization: PersonalizationContext) => {
+  const finishOnboarding = (nextPersonalization: PersonalizationContext) => {
     setNavigationDirection('forward');
     Animated.timing(translateX, {
       toValue: -screenWidth,
       duration: 360,
       useNativeDriver: true,
     }).start(() => {
+      const resolvedSituation =
+        primaryGoal === 'Cycle & Règles'
+          ? 'cycles'
+          : primaryGoal === 'Grossesse & Fertilité'
+            ? 'trying'
+            : primaryGoal === 'Ménopause & Transitions'
+              ? 'menopause'
+              : 'general';
+
       setPersonalization(nextPersonalization);
       setPrivacyConcern(
         nextPersonalization.privacyLevel === 'high' ||
           nextPersonalization.privacyLevel === 'very-high'
       );
-      router.replace('/orientation' as any);
+      setLifeSituation(resolvedSituation);
+      saveOrientation({
+        answers: {
+          ageRange: nextPersonalization.ageRange,
+          primaryGoal: primaryGoal ?? 'Bien-être général',
+          privacyLevel: nextPersonalization.privacyLevel,
+          preferredTone: nextPersonalization.preferredTone,
+          audioPreference: nextPersonalization.audioPreference,
+        },
+        currentStep: 3,
+        completedAt: Date.now(),
+        level: 'recommended',
+      });
+      completeOnboarding();
+      router.replace('/about' as any);
     });
   };
 
@@ -355,7 +381,7 @@ export default function PersonnalisationScreen() {
         answers.needsSupportChoice === 'sometimes',
     };
 
-    goToOrientation(nextPersonalization);
+    finishOnboarding(nextPersonalization);
   };
 
   const handleSkip = () => {
@@ -376,7 +402,7 @@ export default function PersonnalisationScreen() {
         currentPersonalization.needsSupport,
     };
 
-    goToOrientation(nextPersonalization);
+    finishOnboarding(nextPersonalization);
   };
 
   return (
@@ -593,7 +619,9 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   primaryButtonDisabled: {
-    backgroundColor: '#AAB8AE',
+    backgroundColor: '#B8C3BC',
+    borderWidth: 1,
+    borderColor: 'rgba(93,67,55,0.14)',
     shadowOpacity: 0,
     elevation: 0,
   },

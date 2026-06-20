@@ -70,21 +70,21 @@ const CONTACTS: Contact[] = [
     name: 'Centre Roi Baudouin',
     number: '33 837 00 00',
     telNumber: 'tel:+221338370000',
-    desc: 'Urgences gynecologiques, Guediawaye.',
+    desc: 'Urgences gynécologiques, Guédiawaye.',
     urgent: false,
   },
   {
     name: 'Clinique de la Paix',
     number: '33 821 12 12',
     telNumber: 'tel:+221338211212',
-    desc: "Plateau technique gynecologique d'urgence.",
+    desc: "Plateau technique gynécologique d'urgence.",
     urgent: false,
   },
   {
     name: 'Marie Stopes Senegal',
     number: '800 00 84 84',
     telNumber: 'tel:+221800008484',
-    desc: 'Ligne gratuite - conseils en sante reproductive.',
+    desc: 'Ligne gratuite - conseils en santé reproductive.',
     urgent: false,
   },
 ];
@@ -103,7 +103,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
     steps: {
       fr: [
         'Allonger la personne et surelever les jambes',
-        'Appeler le 1515 immediatement',
+        'Appeler le 1515 immédiatement',
         'Ne pas bouger, attendre les secours',
         'Rassurer, ne pas laisser seule',
       ],
@@ -128,8 +128,8 @@ const GUIDE_SECTIONS: GuideSection[] = [
     steps: {
       fr: [
         'Installer en position confortable',
-        'Appeler un centre de sante ou le 1515',
-        'Ne pas donner de medicament sans avis medical',
+        'Appeler un centre de santé ou le 1515',
+        'Ne pas donner de médicament sans avis médical',
         'Surveiller et rassurer',
       ],
       wo: [
