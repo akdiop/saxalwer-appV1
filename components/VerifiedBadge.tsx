@@ -4,10 +4,15 @@ import { colors } from '../constants/colors';
 
 interface VerifiedBadgeProps {
   size?: 'small' | 'medium' | 'large';
+  status?: 'verified' | 'pending';
   style?: any;
 }
 
-export default function VerifiedBadge({ size = 'small', style }: VerifiedBadgeProps) {
+export default function VerifiedBadge({
+  size = 'small',
+  status = 'verified',
+  style,
+}: VerifiedBadgeProps) {
   const sizeConfig = {
     small: {
       container: { paddingHorizontal: 6, paddingVertical: 2, gap: 3 },
@@ -27,11 +32,24 @@ export default function VerifiedBadge({ size = 'small', style }: VerifiedBadgePr
   };
 
   const config = sizeConfig[size];
+  const isPending = status === 'pending';
 
   return (
-    <View style={[styles.badge, config.container, style]}>
-      <MaterialCommunityIcons name="check-circle" size={config.iconSize} color={colors.deepGreen} />
-      <Text style={[styles.text, { fontSize: config.fontSize }]}>Vérifié</Text>
+    <View style={[styles.badge, isPending && styles.badgePending, config.container, style]}>
+      <MaterialCommunityIcons
+        name={isPending ? 'clock-outline' : 'check-circle'}
+        size={config.iconSize}
+        color={isPending ? colors.terracotta : colors.deepGreen}
+      />
+      <Text
+        style={[
+          styles.text,
+          isPending && styles.textPending,
+          { fontSize: config.fontSize },
+        ]}
+      >
+        {isPending ? 'En vérification' : 'Vérifié'}
+      </Text>
     </View>
   );
 }
@@ -45,8 +63,15 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: 'rgba(15, 61, 46, 0.2)',
   },
+  badgePending: {
+    backgroundColor: 'rgba(166, 93, 64, 0.08)',
+    borderColor: 'rgba(166, 93, 64, 0.2)',
+  },
   text: {
     color: colors.deepGreen,
     fontWeight: '600',
+  },
+  textPending: {
+    color: colors.terracotta,
   },
 });

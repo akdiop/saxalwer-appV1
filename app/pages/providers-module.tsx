@@ -89,7 +89,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Français', 'Wolof'],
     acceptsInsurance: true,
     themes: ['cycle', 'grossesse', 'contraception', 'ist'],
-    verified: true,
+    verified: false,
   },
   {
     id: 2,
@@ -103,7 +103,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Français', 'Wolof', 'Sérère'],
     acceptsInsurance: true,
     themes: ['grossesse', 'cycle', 'contraception'],
-    verified: true,
+    verified: false,
   },
   {
     id: 3,
@@ -117,7 +117,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Français'],
     acceptsInsurance: true,
     themes: ['menopause', 'fertilite', 'cycle'],
-    verified: true,
+    verified: false,
   },
   {
     id: 4,
@@ -131,7 +131,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof'],
     acceptsInsurance: false,
     themes: ['mental', 'grossesse'],
-    verified: true,
+    verified: false,
   },
   {
     id: 5,
@@ -159,7 +159,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof', 'Peul'],
     acceptsInsurance: true,
     themes: ['grossesse', 'menopause', 'fertilite'],
-    verified: true,
+    verified: false,
   },
   {
     id: 7,
@@ -173,7 +173,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof'],
     acceptsInsurance: true,
     themes: ['cycle', 'grossesse', 'ist', 'fertilite', 'contraception'],
-    verified: true,
+    verified: false,
   },
   {
     id: 8,
@@ -187,7 +187,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof', 'Anglais'],
     acceptsInsurance: true,
     themes: ['cycle', 'menopause'],
-    verified: true,
+    verified: false,
   },
 ];
 
@@ -586,7 +586,10 @@ function ProvidersModuleContent() {
                     <View style={styles.doctorHeaderContent}>
                       <View style={styles.doctorNameRow}>
                         <Text style={styles.doctorName}>{doctor.name}</Text>
-                        {doctor.verified && <VerifiedBadge size="small" />}
+                        <VerifiedBadge
+                          size="small"
+                          status={doctor.verified ? 'verified' : 'pending'}
+                        />
                       </View>
 
                       <View style={styles.specialtyTag}>

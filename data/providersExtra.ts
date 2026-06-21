@@ -45,7 +45,7 @@ export const PROVIDERS_EXTRA: ProviderExtra[] = [
     languages: ['Français', 'Wolof'],
     womanProvider: true,
     vbg: false,
-    verified: true,
+    verified: false,
     orientationNotes: 'Spécialiste en santé reproductive',
   },
   {
@@ -58,7 +58,7 @@ export const PROVIDERS_EXTRA: ProviderExtra[] = [
     languages: ['Français', 'Wolof'],
     womanProvider: true,
     vbg: true,
-    verified: true,
+    verified: false,
     orientationNotes: 'Psychologue clinicienne spécialisée en trauma',
   },
   {
@@ -71,7 +71,7 @@ export const PROVIDERS_EXTRA: ProviderExtra[] = [
     languages: ['Français'],
     womanProvider: false,
     vbg: false,
-    verified: true,
+    verified: false,
     orientationNotes: 'Cabinet privé avec équipement moderne',
   },
 ];
