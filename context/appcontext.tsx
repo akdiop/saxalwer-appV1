@@ -1,11 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import { AppState as RNAppState, Platform } from 'react-native';
 
 import { mapPersonalizationToProfile } from '@/utils/personalizationMapper';
-import { secureStorage } from '@/utils/secureStorage';
 
 export type GoalId = 'cycle' | 'grossesse' | 'menopause' | 'bienetre';
 export type Language = 'fr' | 'wo';
+export type ExperienceMode = 'guide' | 'complet';
 export type NetworkStatus = 'online' | 'offline' | 'unknown';
 export type LifeSituation =
 	| 'curious'
@@ -190,6 +191,7 @@ interface AppState {
 	lifeSituation: LifeSituation | null;
 	discreteMode: boolean;
 	oralMode: boolean;
+	experienceMode: ExperienceMode;
 	isOnboarded: boolean;
 	hasConsented: boolean;
 	hasCompletedTutorial: boolean;
@@ -215,9 +217,6 @@ export interface AppContextType extends AppState {
 	networkStatus: NetworkStatus;
 	isOffline: boolean;
 	isOnline: boolean;
-	appLockEnabled: boolean;
-	appLockReady: boolean;
-	isAppLocked: boolean;
 	refreshNetworkStatus: () => Promise<NetworkStatus>;
 	setAge: (age: string) => void;
 	setNeeds: (needs: string[]) => void;
@@ -229,6 +228,7 @@ export interface AppContextType extends AppState {
 	completeTutorial: () => void;
 	setConsent: (consented: boolean) => void;
 	setLanguage: (lang: Language) => void;
+	setExperienceMode: (mode: ExperienceMode) => void;
 	toggleFavorite: (articleId: number) => void;
 	isFavorite: (articleId: number) => boolean;
 	setPrivacyConcern: (concern: boolean) => void;
@@ -252,20 +252,10 @@ export interface AppContextType extends AppState {
 	trackGlossaryView: (term: string) => void;
 	updateCycleData: (data: Partial<CycleData>) => void;
 	setPersonalization: (context: PersonalizationContext) => void;
-	setAppLockCode: (code: string) => Promise<boolean>;
-	disableAppLock: (code: string) => Promise<boolean>;
-	unlockApp: (code: string) => Promise<boolean>;
-	lockApp: () => void;
 	resetAppState: () => Promise<void>;
 }
 
 const STORAGE_KEY = 'samawer_state';
-const APP_LOCK_SECRET_KEY = 'samawer_app_lock_secret';
-const APP_LOCK_CODE_LENGTH = 4;
-
-const normalizeAppLockCode = (code: string | null | undefined) => code?.replace(/\s+/g, '') ?? '';
-const isValidAppLockCode = (code: string) =>
-	new RegExp(`^[0-9]{${APP_LOCK_CODE_LENGTH}}$`).test(normalizeAppLockCode(code));
 
 const defaultState: AppState = {
 	selectedAge: null,
@@ -274,6 +264,7 @@ const defaultState: AppState = {
 	lifeSituation: null,
 	discreteMode: false,
 	oralMode: false,
+	experienceMode: 'complet',
 	isOnboarded: false,
 	hasConsented: false,
 	hasCompletedTutorial: false,
@@ -461,10 +452,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	const [state, setState] = React.useState<AppState>(defaultState);
 	const [isLoaded, setIsLoaded] = React.useState(false);
 	const [networkStatus, setNetworkStatus] = React.useState<NetworkStatus>('unknown');
-	const [appLockEnabled, setAppLockEnabled] = React.useState(false);
-	const [appLockReady, setAppLockReady] = React.useState(false);
-	const [isAppLocked, setIsAppLocked] = React.useState(false);
-	const appLockSecretRef = React.useRef<string | null>(null);
 
 	const refreshNetworkStatus = React.useCallback(async () => {
 		try {
@@ -494,10 +481,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			syncNetworkStatus().catch(() => undefined);
 		}, 20000);
 		const appStateSubscription = RNAppState.addEventListener('change', (nextState) => {
-			if (appLockSecretRef.current && (nextState === 'background' || nextState === 'inactive')) {
-				setIsAppLocked(true);
-			}
-
 			if (nextState === 'active') {
 				syncNetworkStatus().catch(() => undefined);
 			}
@@ -523,42 +506,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	React.useEffect(() => {
-		let active = true;
-
 		const loadState = async () => {
 			try {
-				const [parsed, storedAppLockCode] = await Promise.all([
-					secureStorage.getJSON<Partial<AppState>>(STORAGE_KEY),
-					secureStorage.getItem(APP_LOCK_SECRET_KEY),
-				]);
-
-				if (parsed && active) {
+				const saved = await AsyncStorage.getItem(STORAGE_KEY);
+				if (saved) {
+					const parsed = JSON.parse(saved) as Partial<AppState>;
 					setState(mergeLoadedState(parsed));
-				}
-
-				const normalizedAppLockCode = normalizeAppLockCode(storedAppLockCode);
-				const hasValidAppLockCode = isValidAppLockCode(normalizedAppLockCode);
-				appLockSecretRef.current = hasValidAppLockCode ? normalizedAppLockCode : null;
-
-				if (active) {
-					setAppLockEnabled(hasValidAppLockCode);
-					setIsAppLocked(hasValidAppLockCode);
 				}
 			} catch (error) {
 				console.error('Failed to load state', error);
 			} finally {
-				if (active) {
-					setIsLoaded(true);
-					setAppLockReady(true);
-				}
+				setIsLoaded(true);
 			}
 		};
 
 		loadState();
-
-		return () => {
-			active = false;
-		};
 	}, []);
 
 	React.useEffect(() => {
@@ -568,7 +530,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 		const persistState = async () => {
 			try {
-				await secureStorage.setJSON(STORAGE_KEY, state);
+				await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 			} catch (error) {
 				console.error('Failed to save state', error);
 			}
@@ -808,6 +770,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	const completeTutorial = () => setState((prev) => ({ ...prev, hasCompletedTutorial: true }));
 	const setConsent = (consented: boolean) => setState((prev) => ({ ...prev, hasConsented: consented }));
 	const setLanguage = (lang: Language) => setState((prev) => ({ ...prev, language: lang }));
+	const setExperienceMode = (mode: ExperienceMode) =>
+		setState((prev) => ({ ...prev, experienceMode: mode }));
 	const setPrivacyConcern = (concern: boolean) => setState((prev) => ({ ...prev, privacyConcern: concern }));
 
 	const toggleFavorite = (articleId: number) => {
@@ -1008,67 +972,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		});
 	};
 
-	const setAppLockCode = React.useCallback(async (code: string) => {
-		const normalizedCode = normalizeAppLockCode(code);
-
-		if (!isValidAppLockCode(normalizedCode)) {
-			return false;
-		}
-
-		try {
-			await secureStorage.setItem(APP_LOCK_SECRET_KEY, normalizedCode);
-			appLockSecretRef.current = normalizedCode;
-			setAppLockEnabled(true);
-			setIsAppLocked(false);
-			return true;
-		} catch (error) {
-			console.error('Failed to save app lock code', error);
-			return false;
-		}
-	}, []);
-
-	const disableAppLock = React.useCallback(async (code: string) => {
-		const normalizedCode = normalizeAppLockCode(code);
-
-		if (!appLockSecretRef.current || normalizedCode !== appLockSecretRef.current) {
-			return false;
-		}
-
-		try {
-			await secureStorage.removeItem(APP_LOCK_SECRET_KEY);
-			appLockSecretRef.current = null;
-			setAppLockEnabled(false);
-			setIsAppLocked(false);
-			return true;
-		} catch (error) {
-			console.error('Failed to disable app lock', error);
-			return false;
-		}
-	}, []);
-
-	const unlockApp = React.useCallback(async (code: string) => {
-		const normalizedCode = normalizeAppLockCode(code);
-
-		if (!appLockSecretRef.current || normalizedCode !== appLockSecretRef.current) {
-			return false;
-		}
-
-		setIsAppLocked(false);
-		return true;
-	}, []);
-
-	const lockApp = React.useCallback(() => {
-		if (appLockSecretRef.current) {
-			setIsAppLocked(true);
-		}
-	}, []);
-
 	const resetAppState = React.useCallback(async () => {
-		await secureStorage.removeItem(STORAGE_KEY);
-		await secureStorage.removeItem(APP_LOCK_SECRET_KEY);
-		appLockSecretRef.current = null;
-		setAppLockEnabled(false);
-		setIsAppLocked(false);
+		await AsyncStorage.removeItem(STORAGE_KEY);
 		setState(defaultState);
 	}, []);
 
@@ -1078,9 +983,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			networkStatus,
 			isOffline: networkStatus === 'offline',
 			isOnline: networkStatus === 'online',
-			appLockEnabled,
-			appLockReady,
-			isAppLocked,
 			refreshNetworkStatus,
 			setAge,
 			setNeeds,
@@ -1092,6 +994,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			completeTutorial,
 			setConsent,
 			setLanguage,
+			setExperienceMode,
 			toggleFavorite,
 			isFavorite,
 			setPrivacyConcern,
@@ -1115,27 +1018,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			trackGlossaryView,
 			updateCycleData,
 			setPersonalization,
-			setAppLockCode,
-			disableAppLock,
-			unlockApp,
-			lockApp,
 			resetAppState,
 		}),
-		[
-			state,
-			unreadCount,
-			isFavorite,
-			resetAppState,
-			networkStatus,
-			refreshNetworkStatus,
-			appLockEnabled,
-			appLockReady,
-			isAppLocked,
-			setAppLockCode,
-			disableAppLock,
-			unlockApp,
-			lockApp,
-		]
+		[state, unreadCount, isFavorite, resetAppState, networkStatus, refreshNetworkStatus]
 	);
 
 	return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

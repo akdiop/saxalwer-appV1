@@ -8,6 +8,7 @@ import {
     View,
 } from 'react-native';
 import { colors } from '../constants/colors';
+import type { Orientation, TrackedAction } from '../context/ActionTrackingContext';
 import { useActionTracking } from '../context/ActionTrackingContext';
 import UrgencyBadge from './UrgencyBadge';
 
@@ -31,13 +32,16 @@ export default function NextStep({ onPress }: NextStepProps) {
     );
   }
 
-  const isOrientation = 'urgencyLevel' in nextStep;
+  const isOrientation = nextStep && 'recommendation' in nextStep;
+  const orientation = isOrientation ? (nextStep as Orientation) : null;
+  const action = !isOrientation ? (nextStep as TrackedAction) : null;
+
   const title = isOrientation
-    ? nextStep.recommendation
-    : nextStep.details || nextStep.subject;
+    ? orientation?.recommendation || orientation?.subject
+    : action?.details || action?.subject;
   const subtitle = isOrientation
-    ? `Suite à: ${nextStep.subject}`
-    : new Date(nextStep.timestamp).toLocaleDateString('fr-FR');
+    ? `Suite à: ${orientation?.subject}`
+    : new Date(action?.timestamp || 0).toLocaleDateString('fr-FR');
 
   const handlePress = () => {
     if (isOrientation) {
@@ -75,9 +79,9 @@ export default function NextStep({ onPress }: NextStepProps) {
           <Text style={styles.title} numberOfLines={2}>
             {title}
           </Text>
-          {isOrientation && (
+          {isOrientation && orientation?.urgencyLevel && (
             <UrgencyBadge
-              urgencyLevel={nextStep.urgencyLevel}
+              urgencyLevel={orientation.urgencyLevel}
               size="small"
               showLabel={false}
             />

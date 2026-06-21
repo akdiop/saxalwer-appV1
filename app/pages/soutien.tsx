@@ -2,13 +2,13 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    Linking,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Linking,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import SensitiveContent from '../../components/SensitiveContent';
@@ -50,7 +50,7 @@ export default function SoutienScreen() {
           </Pressable>
           <View style={styles.headerText}>
             <Text style={styles.eyebrow}>Soutien & écoute</Text>
-            <Text style={styles.title}>Tu n&apos;es pas seule</Text>
+            <Text style={styles.title}>Tu n'es pas seule</Text>
             <Text style={styles.subtitle}>
               Information, écoute et orientation, en toute confidentialité. SaxalWér ne juge pas
               et ne remplace pas une professionnelle de santé.
@@ -123,7 +123,7 @@ export default function SoutienScreen() {
         >
           <Feather name="list" size={18} color={COLORS.deepGreen} />
           <Text style={styles.linkText}>
-            Voir l&apos;annuaire — volets Psychologue et Soutien VBG
+            Voir l'annuaire — volets Psychologue et Soutien VBG
           </Text>
           <Feather name="chevron-right" size={18} color={COLORS.copper} />
         </Pressable>

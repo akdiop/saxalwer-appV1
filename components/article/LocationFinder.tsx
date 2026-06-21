@@ -9,6 +9,7 @@ type LocationFinderProps = {
   filterTags?: string[];
   headline?: string;
   maxItems?: number;
+  compact?: boolean;
 };
 
 const CENTERS = Object.values(CENTERS_DATA);

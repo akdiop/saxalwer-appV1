@@ -248,7 +248,7 @@ export default function MapScreen() {
   }, []);
 
   const filteredCenters = React.useMemo(() => {
-    let centers = [...HEALTH_CENTERS];
+    let centers = HEALTH_CENTERS.filter((c) => c.country === 'Sénégal');
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();

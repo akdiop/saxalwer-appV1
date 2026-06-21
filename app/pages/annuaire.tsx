@@ -2,21 +2,22 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Linking,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 import { useApp } from '../../context/appcontext';
 import {
-    PROVIDERS_EXTRA,
-    PROVIDER_REGIONS,
-    PROVIDER_SPECIALTIES,
-    type ProviderExtra,
-    type ProviderSpecialty,
+  PROVIDERS_EXTRA,
+  PROVIDER_REGIONS,
+  PROVIDER_SPECIALTIES,
+  type ProviderExtra,
+  type ProviderSpecialty,
 } from '../../data/providersExtra';
 
 const COLORS = {
@@ -38,7 +39,8 @@ type SpecFilter = 'Toutes' | ProviderSpecialty;
 
 export default function AnnuaireScreen() {
   const router = useRouter();
-  useApp();
+  const { language } = useApp();
+  const wo = language === 'wo';
 
   const [region, setRegion] = React.useState<RegionFilter>('Toutes');
   const [spec, setSpec] = React.useState<SpecFilter>('Toutes');
@@ -73,7 +75,7 @@ export default function AnnuaireScreen() {
             <Text style={styles.title}>Trouver une professionnelle</Text>
             <Text style={styles.subtitle}>
               Psychologue, soutien VBG, gynécologie. Les fiches « À vérifier » ne sont pas
-              encore confirmées : aucune coordonnée n&apos;est diffusée sans validation.
+              encore confirmées : aucune coordonnée n'est diffusée sans validation.
             </Text>
           </View>
         </View>
@@ -179,7 +181,7 @@ export default function AnnuaireScreen() {
         </View>
 
         <Text style={styles.footerNote}>
-          SaxalWér oriente et n&apos;établit aucun diagnostic. En cas d&apos;urgence : SAMU 1515 ·
+          SaxalWér oriente et n'établit aucun diagnostic. En cas d'urgence : SAMU 1515 ·
           Pompiers 18 · Police 17.
         </Text>
       </ScrollView>

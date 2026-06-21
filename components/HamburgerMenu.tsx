@@ -33,6 +33,7 @@ const menuSections = [
       { icon: <Feather name="message-square" size={22} color={C.deepGreen} />, label: 'Assistant IA', subtitle: 'Pose tes questions', route: '/chat' },
       { icon: <Feather name="bell" size={22} color={C.terracotta} />, label: 'Notifications', subtitle: 'Centre de notifications', route: '/notifications' },
       { icon: <Feather name="book-open" size={22} color={C.copper} />, label: 'Tutoriel', subtitle: 'Découvre comment utiliser l\'app', route: '/tutoriel' },
+      { icon: <Feather name="headphones" size={22} color={C.copper} />, label: 'Écouter (audio)', subtitle: 'Contenus audio éducatifs', route: '/audio' },
     ],
   },
   {
@@ -82,6 +83,8 @@ const menuSections = [
       { icon: <Feather name="settings" size={22} color={C.cocoa} />, label: 'Modifier mon profil', subtitle: '', route: '/edit-profile' },
       { icon: <Feather name="heart" size={22} color={C.terracotta} />, label: 'Donner un avis', subtitle: '', route: '/feedback' },
       { icon: <Feather name="info" size={22} color={C.deepGreen} />, label: 'À propos', subtitle: '', route: '/about' },
+      { icon: <Feather name="sliders" size={22} color={C.cocoa} />, label: 'Préférences', subtitle: 'Mode guidé/complet, discret', route: '/preferences' },
+      { icon: <Feather name="bar-chart-2" size={22} color={C.terracotta} />, label: 'Profil numérique', subtitle: 'Autonomie & contexte', route: '/profil-numerique' },
     ],
   },
 ];
