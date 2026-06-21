@@ -2,13 +2,13 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    View,
 } from 'react-native';
 
 import ExperienceModeToggle from '../../components/ExperienceModeToggle';
@@ -50,7 +50,7 @@ export default function PreferencesScreen() {
           </View>
         </View>
 
-        <Text style={styles.sectionLabel}>Mode d'expérience</Text>
+        <Text style={styles.sectionLabel}>Mode d&apos;expérience</Text>
         <ExperienceModeToggle />
 
         <Text style={styles.sectionLabel}>Confidentialité</Text>

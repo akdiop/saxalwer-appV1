@@ -2,9 +2,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { LifeStagePoster } from '../../components/article/LifeStagePoster';
 import HamburgerMenu from '../../components/HamburgerMenu';
 import { HorizontalScroll } from '../../components/HorizontalScroll';
-import LifeStagePoster from '../../components/LifeStagePoster';
 import ModeToggle from '../../components/ModeToggle';
 import NextStep from '../../components/NextStep';
 import SensitiveContent from '../../components/SensitiveContent';
@@ -449,22 +449,18 @@ export default function HomeMainScreen() {
             <LifeStagePoster
               title="Découvrir mon rythme"
               stage={lifeStage}
-              accent={situationTheme?.accent ?? BASE.deepGreen}
-              showBaobabWatermark
             />
           </Pressable>
           <Pressable onPress={() => router.push('/ressources?focus=consultation' as never)}>
             <LifeStagePoster
               title="Préparer ma consultation"
               stage="young"
-              accent={BASE.terracotta}
             />
           </Pressable>
           <Pressable onPress={() => router.push('/ressources-de-faith' as never)}>
             <LifeStagePoster
               title="Corps, foi et équilibre"
               stage="mature"
-              accent={BASE.gold}
             />
           </Pressable>
         </HorizontalScroll>

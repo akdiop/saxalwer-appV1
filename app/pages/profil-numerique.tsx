@@ -2,12 +2,12 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 
 import { useApp } from '../../context/appcontext';
@@ -141,7 +141,7 @@ export default function ProfilNumeriqueScreen() {
         </View>
 
         <Text style={styles.footerNote}>
-          SaxalWér n'établit aucun diagnostic. Ces réglages restent modifiables dans les
+          SaxalWér n&apos;établit aucun diagnostic. Ces réglages restent modifiables dans les
           préférences.
         </Text>
       </ScrollView>

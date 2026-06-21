@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import { AppState as RNAppState, Platform } from 'react-native';
+import { Platform, AppState as RNAppState } from 'react-native';
 
 import { mapPersonalizationToProfile } from '@/utils/personalizationMapper';
 
@@ -253,6 +253,13 @@ export interface AppContextType extends AppState {
 	updateCycleData: (data: Partial<CycleData>) => void;
 	setPersonalization: (context: PersonalizationContext) => void;
 	resetAppState: () => Promise<void>;
+	appLockEnabled: boolean;
+	appLockReady: boolean;
+	isAppLocked: boolean;
+	lockApp: () => void;
+	unlockApp: (code: string) => Promise<boolean>;
+	setAppLockCode: (code: string) => Promise<boolean>;
+	disableAppLock: (code: string) => Promise<boolean>;
 }
 
 const STORAGE_KEY = 'samawer_state';
@@ -452,6 +459,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	const [state, setState] = React.useState<AppState>(defaultState);
 	const [isLoaded, setIsLoaded] = React.useState(false);
 	const [networkStatus, setNetworkStatus] = React.useState<NetworkStatus>('unknown');
+	const [appLockCode, setAppLockCodeState] = React.useState<string | null>(null);
+	const [isAppLocked, setIsAppLocked] = React.useState(false);
+	const [appLockReady, setAppLockReady] = React.useState(false);
 
 	const refreshNetworkStatus = React.useCallback(async () => {
 		try {
@@ -977,6 +987,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		setState(defaultState);
 	}, []);
 
+	const lockApp = () => {
+		setIsAppLocked(true);
+	};
+
+	const unlockApp = async (code: string): Promise<boolean> => {
+		if (appLockCode === null) {
+			setIsAppLocked(false);
+			return true;
+		}
+		if (code === appLockCode) {
+			setIsAppLocked(false);
+			return true;
+		}
+		return false;
+	};
+
+	const setAppLockCode = async (code: string): Promise<boolean> => {
+		try {
+			setAppLockCodeState(code);
+			setAppLockReady(true);
+			return true;
+		} catch {
+			return false;
+		}
+	};
+
+	const disableAppLock = async (code: string): Promise<boolean> => {
+		if (code === appLockCode) {
+			setAppLockCodeState(null);
+			setIsAppLocked(false);
+			setAppLockReady(false);
+			return true;
+		}
+		return false;
+	};
+
 	const value = React.useMemo<AppContextType>(
 		() => ({
 			...state,
@@ -1019,8 +1065,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			updateCycleData,
 			setPersonalization,
 			resetAppState,
+			appLockEnabled: appLockCode !== null,
+			appLockReady,
+			isAppLocked,
+			lockApp,
+			unlockApp,
+			setAppLockCode,
+			disableAppLock,
 		}),
-		[state, unreadCount, isFavorite, resetAppState, networkStatus, refreshNetworkStatus]
+		[state, unreadCount, isFavorite, resetAppState, networkStatus, refreshNetworkStatus, appLockCode, appLockReady, isAppLocked]
 	);
 
 	return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

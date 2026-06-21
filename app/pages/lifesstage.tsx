@@ -15,10 +15,10 @@ import {
     Text,
     View,
 } from 'react-native';
-import LifeStagePoster from '../../components/LifeStagePoster';
-import { useSpeak } from '../../hooks/usespeak';
+import { LifeStagePoster } from '../../components/article/LifeStagePoster';
 import { useApp } from '../../context/appcontext';
 import { ARTICLES, type Article } from '../../data/articles';
+import { useSpeak } from '../../hooks/usespeak';
 
 type StageKey = 'young' | 'pregnant' | 'mature';
 
@@ -173,7 +173,7 @@ export default function LifeStageDetailScreen() {
       >
         {/* Hero */}
         <View style={{ height: 200 }}>
-          <LifeStagePoster title="" stage={stage} height={200} showBaobabWatermark />
+          <LifeStagePoster title="" stage={stage} height={200} />
           <View style={styles.heroOverlay} />
           {/* Back */}
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
