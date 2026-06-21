@@ -23,6 +23,9 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
   },
+  web: {
+    output: 'single',
+  },
   plugins: [
     'expo-router',
     'expo-secure-store',
