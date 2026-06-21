@@ -10,8 +10,12 @@ import {
     View,
 } from 'react-native';
 
+import ActionPicker from '../components/ActionPicker';
 import { GlossaryText } from '../components/article/GlossaryText';
 import { LocationFinder } from '../components/article/LocationFinder';
+import ConsultationPrep from '../components/ConsultationPrep';
+import SavedQuestions from '../components/SavedQuestions';
+import UrgencyBadge from '../components/UrgencyBadge';
 import VerifiedBadge from '../components/VerifiedBadge';
 import type { PersonalizationContext } from '../context/appcontext';
 import { useApp } from '../context/appcontext';
@@ -257,6 +261,7 @@ export default function ArticleDetailScreen() {
           <View style={styles.titleRow}>
             <Text style={styles.title}>{displayTitle}</Text>
             {article.verified && <VerifiedBadge size="small" />}
+            {article.urgencyLevel && <UrgencyBadge urgencyLevel={article.urgencyLevel} size="small" />}
           </View>
           <Text style={styles.description}>{displayDescription}</Text>
 
@@ -364,6 +369,21 @@ export default function ArticleDetailScreen() {
               ? 'Trouver un centre ou une professionnelle'
               : 'Trouver un centre ou une professionnelle'
           }
+        />
+
+        <ActionPicker
+          articleId={article.id}
+          articleTitle={article.title}
+        />
+
+        <SavedQuestions
+          topicId={article.id}
+          topicTitle={article.title}
+        />
+
+        <ConsultationPrep
+          articleTitle={article.title}
+          articleId={article.id}
         />
 
         {article.tags.length > 0 && (
