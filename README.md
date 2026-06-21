@@ -1,308 +1,137 @@
-**SAXALWER - Application de Santé Reproductive**
+# SaxalWér — Application officielle
 
-_Ton sanctuaire de santé reproductive en Afrique de l'Ouest_
+**Ton corps, ton rythme, ta paix.**
 
-SaxalWér signifie "prendre soin de sa santé" en Wolof
+SaxalWér est une application de santé numérique féminine, pensée depuis le Sénégal, pour améliorer l’accès à l’information et à l’orientation en santé sexuelle et reproductive dans un cadre confidentiel, culturellement sensible et non diagnostique.
 
-**Mission**
+Le nom **SaxalWér** vient du wolof : **Saxal** renvoie à l’idée d’éclairer, faire comprendre et rendre durable ; **Wér** signifie santé. L’usage commercial retenu est **SaxalWér**, avec accent.
 
-Démocratiser l'accès à l'information sur la santé reproductive pour les femmes d'Afrique de l'Ouest, dans un espace intelligent, sécurisé, confidentiel et culturellement sensible.
+## Positionnement
 
-**Fonctionnalités Principales**
-- Confidentialité & Sécurité
-- Mode Discret : Flou automatique sur 17 pages sensibles
-- Données Locales : Stockage chiffré sur ton appareil
-- Anonymat : Option mode anonyme dans la communauté
-- Education & Information
-- Bibliothèque : 150+ articles validés par experts
-- Chat IA : Assistant Ndeye pour réponses personnalisées
-- Glossaire : Termes médicaux expliqués simplement
-- FAQ : Réponses aux questions fréquentes
-- Suivi de Santé
-- Tracker Cycle : Suivi personnalisé de tes règles
-- Journal Intime : Espace privé pour tes pensées
-- Statistiques : Graphiques détaillés de ton cycle 
-- Calendrier : Gestion de tes rendez-vous médicaux 
-- Orientation & Support
-- Carte Interactive : Centres de santé au Sénégal
-- Annuaire Médecins : Professionnels sensibilisés
-- Urgence : Numéros disponibles 24h/24
-- Orientation Personnalisée : Parcours adapté à ta situation
-- Communauté : 6 Salons Thématiques : Endométriose, contraception, maternité... / Matching Intelligent : Connexion avec profils similaires / Espace Sécurisé : Modération active
+SaxalWér n’est pas seulement une application de santé sexuelle et reproductive. C’est une plateforme d’information, d’orientation, d’autonomie féminine et de production de connaissances anonymisées utiles à la recherche et aux politiques publiques.
 
-**Langues & Pays**
-**Langues**
-Français
-Wolof
-Peulh, serere, dioula etc. (prochainement)
+Le périmètre actuel est le **Sénégal**. Les langues prioritaires sont le **français** et le **wolof**.
 
-Pays Couverts
-Sénégal - sous région éventuellement 
+## Cadre médical
 
-**Démarrage Rapide**
+SaxalWér fournit des informations éducatives et une orientation générale. L’application :
 
-Prérequis
-_bash
-Node.js 18+
-npm ou pnpm
-Installation_
+- ne pose aucun diagnostic médical ;
+- ne prescrit aucun traitement ;
+- ne remplace pas une consultation avec une professionnelle de santé ;
+- ne donne pas d’avis médical personnalisé ;
+- encourage la consultation en cas de doute ou de symptôme inquiétant.
 
-bash
-# Cloner le repo
-git clone https://github.com/saxalwer/app.git
+En cas d’urgence au Sénégal :
 
-# Installer les dépendances
-cd app
-npm install
+- **SAMU National : 1515** ;
+- **Sapeurs-pompiers : 18** ;
+- **Police secours : 17**.
 
-# Lancer en développement
-npm run dev
-```
+## Fonctionnalités principales
 
-### Accès
-```
-http://localhost:5173
-```
+- Accueil personnalisé.
+- Bibliothèque santé.
+- Assistant conversationnel.
+- Orientation santé non diagnostique.
+- Orientation sensible intégrant tabous, normes sociales et contraintes d’accès aux soins.
+- Mode discret.
+- Mode écouter.
+- Mode guidé / mode complet.
+- Suivi du cycle.
+- Journal intime.
+- Calendrier santé.
+- Carte des structures de santé au Sénégal.
+- Annuaire de professionnelles et professionnels de santé.
+- Pages juridiques : CGU, politique de confidentialité, mentions légales, avertissement médical.
 
----
+## Confidentialité et données
 
-## Structure du Projet
-```
-saxalwer/
-├── src/
-│   ├── app/
-│   │   ├── components/      # Composants réutilisables
-│   │   ├── context/         # AppContext (state global)
-│   │   ├── layouts/         # RootLayout
-│   │   ├── pages/           # 29 pages de l'app
-│   │   │   ├── Welcome.tsx
-│   │   │   ├── WelcomeImproved.tsx  
-│   │   │   ├── HealthStats.tsx      
-│   │   │   ├── CalendarPage.tsx     
-│   │   │   └── ...
-│   │   └── utils/           # Utilitaires
-│   ├── styles/              # CSS global
-│   └── imports/             # Assets Figma
-├── supabase/                # Backend (Edge Functions)
-├── docs/                    # Documentation
-│   ├── INDEX.md             # Index de toute la doc
-│   ├── WELCOME_DESIGN.md    # Design écran d'accueil
-│   ├── NAVIGATION_GUIDE.md  # Guide de navigation
-│   ├── VERIFICATION.md      # Tests et vérification
-│   └── ...
-├── package.json
-└── README.md                # Ce fichier
-Design System
+SaxalWér applique une logique de minimisation des données. La version actuelle privilégie les préférences locales et les données de démonstration. Aucune donnée de santé sensible ou nominative ne doit être collectée sans consentement explicite et cadre spécifique.
 
-**Palette de Couleurs**
-css
-**/* Palette Principale */**
+Les données personnelles ne doivent jamais être vendues, louées ou cédées à des annonceurs ou partenaires commerciaux.
+
+## Identité visuelle
+
+Palette officielle :
+
+```css
 --beige: #F5F1E6;
 --deep-green: #1A3C34;
 --terracotta: #A65D40;
 --copper: #B5622A;
 --cocoa: #4A2F27;
 --gold: #D4AF37;
+```
 
-**Typographie**
-Serif : Cormorant Garamond (titres)
-Sans-serif : Inter (corps de texte)
+Typographies de référence :
 
-**Icônes**
-Lucide React (open-source)
+- Titres : Cormorant Garamond, Playfair ou serif élégante.
+- Corps : Inter, Lato, Poppins ou sans-serif lisible.
 
-**Nouveautés (Mars 2026)**
-- Page Statistiques de Santé
-- Graphique d'évolution du flux menstruel (30 jours)
-- Répartition de l'humeur (graphique circulaire)
-- Top 5 des symptômes fréquents
-- Observance contraception
-- Vue d'ensemble du cycle actuel
-- Page Calendrier
-- Calendrier mensuel interactif
-- Ajout/suppression de rendez-vous
-- 4 types : Médical, Contraception, Cycle, Autre
-- Rappels activables
-- Intégration avec les données de cycle
-- Ecran d'Accueil Amélioré
-- Sélection de langue en première position (FR/Wolof)
-- Illustration culturelle : Silhouette africaine + symboles
+L’univers visuel doit rester sobre, intime, africain, non hypersexualisé et non médicalisé de manière froide.
 
-**Palette ajustée**
+## Installation
 
-#0F3D2E, 
-#E8DCC8, 
-#C26A3D
+```bash
+npm install
+```
 
-Design minimal : Focus sur confidentialité et sécurité
-3 valeurs clés : Confidentialité, Accompagnement, Fiabilité
+## Développement web
 
-**Documentation**
+```bash
+npm run web
+```
 
-_Pour Commencer_
-INDEX.md - Index complet de la documentation
-SUMMARY.md - Résumé exécutif du projet
+## Build web
 
-_Design_
-WELCOME_DESIGN.md - Design écran d'accueil amélioré
-WELCOME_VISUAL_GUIDE.md - Guide visuel développeurs
-WELCOME_ASCII_ART.md - Aperçu visuel ASCII
-Navigation
-NAVIGATION_GUIDE.md - Guide de navigation complet
-VERIFICATION.md - Vérification des 29 pages
-
-_Tests_
-TEST_CHECKLIST.md - Checklist de tests détaillée
-
-_Technologies_
-Frontend
-React 18.3.1
-React Router 7.13.0
-Motion (Framer Motion fork) 12.23.24
-Tailwind CSS 4
-Recharts 2.15.2
-Lucide React
-Backend
-Supabase (PostgreSQL)
-Supabase Edge Functions (Deno)
-Supabase Storage
-Supabase Auth
-Dev Tools
-TypeScript
-Vite
-pnpm
-
-Pages (29 au total)
-
-**Principales**
-Dashboard (/)
-Bibliothèque (/bibliotheque)
-Chat IA (/chat)
-Carte (/carte)
-Profil (/parcours)
-Santé
-Tracker (/suivi)
-Journal (/journal)
-Statistiques (/stats-sante) - nouveau
-Calendrier (/calendrier) - nouveau
-Orientation (/orientation)
-Orientation Sensible (/orientation-sensible)
-Communauté
-Communauté (/communaute)
-Médecins (/medecins)
-Urgence (/urgence)
-Contenu
-FAQ (/faq)
-Glossaire (/glossaire)
-Ressources (/ressources)
-A propos (/a-propos)
-Tutoriel (/tutoriel)
-... et 10 autres pages
-
-Tests
-Lancer les Tests
-bash
-
-# Tests manuels
-npm run dev
-# Suivre TEST_CHECKLIST.md
-
-# Tests de build
+```bash
 npm run build
-Checklist
- Navigation fonctionnelle
- Mode discret actif
- Traductions FR/Wolof
- Graphiques s'affichent
- Calendrier interactif
- Responsive mobile
-Déploiement
-Build Production
-bash
-npm run build
-Preview
-bash
+```
+
+## Preview du build
+
+```bash
 npm run preview
-Environnements
-Staging : A configurer
+```
 
-**Guidelines**
-Code TypeScript strict
-Respect de la palette de couleurs
-Tests manuels obligatoires
-Documentation des nouvelles features
-Statistiques
-Métrique	Valeur
-Pages	29
-Lignes de Code	~15,000
-Composants React	~40
-Langues	2 (FR, WO)
-Pays Couverts	8
-Articles	150+
-Centres de Santé	100+
-Roadmap
+## Déploiement Vercel
 
-Q3 2026 - Complété
- Statistiques de santé
- Calendrier rendez-vous
- Ecran d'accueil amélioré
- Documentation complète
- 
-Q2 2027
- Export PDF statistiques
- Notifications push
- Synchronisation cloud
- Mode hors ligne
- 
-Q3 2027
- Langues supplémentaires 
- Extension autres pays
- Téléconsultation intégrée
- 
-Q4 2027
- Intégration wearables
- Marketplace produits santé
- Programme ambassadrices
- 
-Support
-Utilisatrices
-FAQ : Voir /faq dans l'app
-Feedback : Formulaire dans l'app (/feedback)
+Build command :
 
-Email : contact@saxalwer.com 
+```bash
+npm run build
+```
 
-Développeurs
-Issues : GitHub Issues
+Output directory :
 
-Docs : INDEX.md
+```text
+dist
+```
 
-Licence
-Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+## Structure simplifiée
 
-Remerciements
-Merci à :
-Toutes les femmes d'Afrique de l'Ouest qui ont inspiré ce projet
-Les professionnels de santé pour leur validation médicale
-La communauté open-source pour les outils utilisés
-Les bêta-testeuses pour leurs retours précieux
+```text
+app/            Routes Expo Router
+components/     Composants réutilisables
+context/        État global et préférences
+data/           Contenus éducatifs et données mockées
+utils/          Logiques d’orientation et personnalisation
+assets/         Images et logo
+```
 
-Soutenir le Projet
-Si SaxalWér t'aide, tu peux soutenir le projet :
-Star le repo GitHub
-Partager avec d'autres femmes
-Contribuer au code ou à la doc
-Donner (lien Patreon/Ko-fi fictif)
-Contact
-Website : saxalwer.com 
-Email : contact@saxalwer.com 
-Twitter : @SaxalWer 
-Instagram : @saxalwer 
+## Statut
 
-_**Avec Amour
-"Chaque femme mérite de comprendre et célébrer son corps."**_
+Version de travail officielle basée sur la V1 préférée, avec intégration progressive du référentiel final SaxalWér 2026.
 
-Créé avec amour pour les femmes d'Afrique de l'Ouest
-Par des femmes, pour des femmes
+## Propriété intellectuelle
 
-Date : Mars 2026 Version : 1.2 Statut : Production
-Made with love in Senegal and beyond
+Le projet SaxalWér, son concept, son architecture fonctionnelle, ses contenus, ses logiques d’orientation, son identité visuelle et ses éléments de marque sont protégés. Toute reproduction, distribution, modification, exploitation commerciale ou création d’un produit dérivé nécessite une autorisation écrite préalable de SaxalWér.
+
+## Contact
+
+Aïdalaye Diop  
+Fondatrice — SaxalWér  
+www.saxalwer.com  
+contact@saxalwer.com  
+Dakar, Sénégal
