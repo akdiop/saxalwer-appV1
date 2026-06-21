@@ -11,12 +11,8 @@ import {
 import { colors } from '../constants/colors';
 import { useModes } from '../context/ModesContext';
 
-interface ModeToggleProps {
-  showModal?: boolean;
-}
-
 export default function ModeToggle() {
-  const { mode, setMode, toggleMode } = useModes();
+  const { mode, setMode } = useModes();
   const [showInfo, setShowInfo] = React.useState(false);
 
   const handleModeChange = () => {
@@ -63,7 +59,7 @@ export default function ModeToggle() {
         <View style={styles.overlay}>
           <View style={styles.modal}>
             <View style={styles.header}>
-              <Text style={styles.title}>Modes d'expérience</Text>
+              <Text style={styles.title}>Modes d&apos;expérience</Text>
               <TouchableOpacity onPress={() => setShowInfo(false)}>
                 <MaterialCommunityIcons
                   name="close"

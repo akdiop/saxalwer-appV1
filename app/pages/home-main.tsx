@@ -1,14 +1,16 @@
-import React, { useMemo, useState } from 'react';
-import { Modal, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { Modal, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import HamburgerMenu from '../../components/HamburgerMenu';
 import { HorizontalScroll } from '../../components/HorizontalScroll';
 import LifeStagePoster from '../../components/LifeStagePoster';
+import ModeToggle from '../../components/ModeToggle';
+import NextStep from '../../components/NextStep';
 import SensitiveContent from '../../components/SensitiveContent';
 import { useApp, type QuickAccessId } from '../../context/appcontext';
-import { GLOSSARY } from '../../data/glossary';
 import { ARTICLES } from '../../data/articles';
+import { GLOSSARY } from '../../data/glossary';
 import { getSituationTheme } from '../../utils/situationAdaptation';
 import { getContextualMessage } from '../../utils/situationMessages';
 
@@ -366,6 +368,13 @@ export default function HomeMainScreen() {
             </Text>
           </View>
         </SensitiveContent>
+
+
+        <View style={styles.modeToggleRow}>
+          <ModeToggle />
+        </View>
+
+        <NextStep onPress={() => router.push('/suivi' as never)} />
 
         <Text style={styles.sectionTitle}>Suggestions pour aujourd’hui</Text>
         <HorizontalScroll itemMinWidth={270} gap={14}>
@@ -1093,4 +1102,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-});
+  modeToggleRow: {
+    paddingHorizontal: 2,
+    paddingVertical: 8,
+    marginBottom: 12,
+  },
+  });

@@ -21,7 +21,7 @@ export default function ConsultationPrep({
   articleTitle,
   articleId,
 }: ConsultationPrepProps) {
-  const { savedQuestions, actions, orientations, getQuestionsByTopic } =
+  const { actions, orientations, getQuestionsByTopic } =
     useActionTracking();
   const [isGenerating, setIsGenerating] = useState(false);
 

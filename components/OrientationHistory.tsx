@@ -98,7 +98,7 @@ export default function OrientationHistory({ maxItems }: OrientationHistoryProps
   return (
     <View style={styles.container}>
       <View style={styles.titleBar}>
-        <Text style={styles.title}>Historique d'orientation</Text>
+        <Text style={styles.title}>Historique d&apos;orientation</Text>
         <Text style={styles.count}>{displayedOrientations.length}</Text>
       </View>
       <FlatList
