@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     opacity: 0.08,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   privacyPattern: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     gap: 18,
     opacity: 0.65,

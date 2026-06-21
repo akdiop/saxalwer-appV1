@@ -2787,7 +2787,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(74,47,39,0.3)',
   },
   discreteOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(245,241,230,0.68)',
     alignItems: 'center',
     justifyContent: 'center',

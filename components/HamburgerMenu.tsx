@@ -152,12 +152,12 @@ export default function HamburgerMenu({ isOpen = true, onClose, onNavigate, disc
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 60,
     justifyContent: 'flex-start',
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(15, 61, 46, 0.18)',
   },
   panel: {

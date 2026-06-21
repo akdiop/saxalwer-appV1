@@ -967,7 +967,7 @@ const styles = StyleSheet.create({
     color: COMMUNITY_COLORS.warmWhite,
   },
   discreteVeil: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(253,250,245,0.52)',
   },
   inputArea: {

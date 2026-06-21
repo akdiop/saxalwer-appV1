@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
 		backgroundColor: BASE.beige,
 	},
 	textureLayer: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		opacity: 0.22,
 	},
 	blobTop: {
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
 		opacity: 0.08,
 	},
 	gridOverlay: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		borderColor: 'rgba(181,98,42,0.08)',
 		borderWidth: Platform.OS === 'web' ? StyleSheet.hairlineWidth : 0,
 	},

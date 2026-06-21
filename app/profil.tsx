@@ -799,11 +799,11 @@ const styles = StyleSheet.create({
     paddingBottom: 34,
   },
   menuLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 40,
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'transparent',
   },
   headerCard: {
@@ -1162,12 +1162,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   lockLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 60,
     justifyContent: 'flex-end',
   },
   lockBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(26,60,52,0.18)',
   },
   lockSheet: {

@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   mapGridVerticals: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     flexDirection: 'row',
     opacity: 0.06,
   },
@@ -687,7 +687,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   paperTexture: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: BASE.cocoa,
     opacity: 0.015,
   },

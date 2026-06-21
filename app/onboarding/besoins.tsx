@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     Animated,
     Dimensions,

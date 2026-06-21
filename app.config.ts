@@ -4,11 +4,11 @@ const config: ExpoConfig = {
   name: 'SaxalWér',
   slug: 'saxalwer-app-v1',
   version: '1.0.0',
+  sdkVersion: '56.0.0',
   orientation: 'portrait',
   icon: './app/assets/images/icon.png',
   scheme: 'saxalwer',
   userInterfaceStyle: 'automatic',
-  newArchEnabled: false,
   ios: {
     supportsTablet: true,
     config: {
@@ -20,7 +20,6 @@ const config: ExpoConfig = {
       backgroundColor: '#F5F1E6',
       foregroundImage: './app/assets/images/adaptive-icon.png',
     },
-    edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
   },
   web: {

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import { AppState as RNAppState, Platform } from 'react-native';
+import { Platform, AppState as RNAppState } from 'react-native';
 
 import { mapPersonalizationToProfile } from '@/utils/personalizationMapper';
 
@@ -229,7 +229,7 @@ export interface AppContextType extends AppState {
 	setConsent: (consented: boolean) => void;
 	setLanguage: (lang: Language) => void;
 	setExperienceMode: (mode: ExperienceMode) => void;
-	toggleFavorite: (articleId: number) => void;
+	toggleFavorite: (articleId: number) => boolean;
 	isFavorite: (articleId: number) => boolean;
 	setPrivacyConcern: (concern: boolean) => void;
 	addCycleNotification: (msg: string, metaphor: string, category: NotifCategory) => void;
@@ -253,6 +253,13 @@ export interface AppContextType extends AppState {
 	updateCycleData: (data: Partial<CycleData>) => void;
 	setPersonalization: (context: PersonalizationContext) => void;
 	resetAppState: () => Promise<void>;
+	appLockEnabled: boolean;
+	appLockReady: boolean;
+	isAppLocked: boolean;
+	lockApp: () => Promise<boolean>;
+	unlockApp: (code: string) => Promise<boolean>;
+	setAppLockCode: (code: string) => Promise<boolean>;
+	disableAppLock: (code: string) => Promise<boolean>;
 }
 
 const STORAGE_KEY = 'samawer_state';
@@ -452,6 +459,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 	const [state, setState] = React.useState<AppState>(defaultState);
 	const [isLoaded, setIsLoaded] = React.useState(false);
 	const [networkStatus, setNetworkStatus] = React.useState<NetworkStatus>('unknown');
+	const [appLockCode, setAppLockCodeState] = React.useState<string | null>(null);
+	const [isAppLocked, setIsAppLocked] = React.useState(false);
+	const [appLockReady, setAppLockReady] = React.useState(false);
+	const appLockEnabled = appLockCode !== null;
 
 	const refreshNetworkStatus = React.useCallback(async () => {
 		try {
@@ -780,13 +791,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		setState((prev) => ({ ...prev, experienceMode: mode }));
 	const setPrivacyConcern = (concern: boolean) => setState((prev) => ({ ...prev, privacyConcern: concern }));
 
-	const toggleFavorite = (articleId: number) => {
-		setState((prev) => ({
-			...prev,
-			favorites: prev.favorites.includes(articleId)
-				? prev.favorites.filter((id) => id !== articleId)
-				: [...prev.favorites, articleId],
-		}));
+	const toggleFavorite = (articleId: number): boolean => {
+		let isFav = false;
+		setState((prev) => {
+			isFav = !prev.favorites.includes(articleId);
+			return {
+				...prev,
+				favorites: isFav
+					? [...prev.favorites, articleId]
+					: prev.favorites.filter((id) => id !== articleId),
+			};
+		});
+		return isFav;
 	};
 
 	const isFavorite = React.useCallback(
@@ -1025,8 +1041,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			updateCycleData,
 			setPersonalization,
 			resetAppState,
+			appLockEnabled,
+			appLockReady,
+			isAppLocked,
+			lockApp: async () => {
+				setIsAppLocked(true);
+				return true;
+			},
+			unlockApp: async (code: string) => {
+				if (code === appLockCode) {
+					setIsAppLocked(false);
+					return true;
+				}
+				return false;
+			},
+			setAppLockCode: async (code: string) => {
+				setAppLockCodeState(code);
+				setAppLockReady(true);
+				return true;
+			},
+			disableAppLock: async (code: string) => {
+				if (code === appLockCode) {
+					setAppLockCodeState(null);
+					setIsAppLocked(false);
+					setAppLockReady(false);
+					return true;
+				}
+				return false;
+			},
 		}),
-		[state, unreadCount, isFavorite, resetAppState, networkStatus, refreshNetworkStatus]
+		[state, unreadCount, isFavorite, resetAppState, networkStatus, refreshNetworkStatus, appLockEnabled, appLockReady, isAppLocked, appLockCode]
 	);
 
 	return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

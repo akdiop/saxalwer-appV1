@@ -97,7 +97,7 @@ export default function AppLockOverlay({ language, onUnlock }: AppLockOverlayPro
 
 const styles = StyleSheet.create({
 	overlay: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		zIndex: 120,
 		backgroundColor: 'rgba(245,241,230,0.98)',
 		paddingHorizontal: 24,

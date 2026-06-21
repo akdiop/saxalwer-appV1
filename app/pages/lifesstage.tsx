@@ -395,7 +395,7 @@ function Section({
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#FDFAF5' },
-  heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(26,60,52,0.45)' },
+  heroOverlay: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(26,60,52,0.45)' },
   backBtn: {
     position: 'absolute', top: 16, left: 20,
     width: 40, height: 40, borderRadius: 20,
