@@ -2,9 +2,9 @@ import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Alert, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
-import NoticeCard from "../components/NoticeCard";
 import { useApp } from "../context/appcontext";
 import { CENTERS_DATA, type Center } from "../data/centers";
+import NoticeCard from "./NoticeCard";
 
 const BASE = {
   deepGreen: "#1A3C34",

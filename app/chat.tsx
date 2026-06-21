@@ -5,40 +5,40 @@ import { useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  Animated,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    Animated,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 
-import { LocationFinder } from '../components/LocationFinder';
+import { LocationFinder } from '../components/article/LocationFinder';
 import {
-  useApp,
-  type GoalId,
-  type LifeSituation,
-  type PersonalizationContext,
-  type SensitiveOrientationSession,
-  type UserProfile,
+    useApp,
+    type GoalId,
+    type LifeSituation,
+    type PersonalizationContext,
+    type SensitiveOrientationSession,
+    type UserProfile,
 } from '../context/appcontext';
 import { ARTICLES, type Article } from '../data/articles';
 import {
-  requestChatAssistantReply,
-  type ChatAssistantReply,
+    requestChatAssistantReply,
+    type ChatAssistantReply,
 } from '../utils/chatAssistantApi';
 import {
-  detectSensitiveChatIntent,
-  getSensitiveChatFollowUpOptions,
-  getSensitiveChatSupportLines,
-  getSensitiveLocationTags,
+    detectSensitiveChatIntent,
+    getSensitiveChatFollowUpOptions,
+    getSensitiveChatSupportLines,
+    getSensitiveLocationTags,
 } from '../utils/sensitiveOrientation';
 
 const C = {
