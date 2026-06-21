@@ -10,8 +10,8 @@ import {
     View,
 } from 'react-native';
 
-import VerifiedBadge from '../../components/VerifiedBadge';
 import UrgencyBadge from '../../components/UrgencyBadge';
+import VerifiedBadge from '../../components/VerifiedBadge';
 import { useApp } from '../../context/appcontext';
 import { ARTICLES, type Article } from '../../data/articles';
 
