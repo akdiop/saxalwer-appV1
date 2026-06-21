@@ -61,8 +61,8 @@ export function AccountChoice({ language, onCreateAccount, onContinueAsGuest, on
             </View>
             <Text style={styles.descText}>
               {wo
-                ? 'Mën nga sos sa tëral bu boroom walla xool appli bi ci sa jëkk.'
-                : 'Tu peux créer un espace personnel ou explorer librement l\'application.'}
+                ? 'Mën nga tann sa pseudonyme bu local walla xool appli bi ci sa jëkk.'
+                : 'Tu peux choisir un pseudonyme local ou explorer librement l\'application.'}
             </Text>
           </View>
           <View style={styles.benefitsList}>
@@ -98,7 +98,7 @@ export function AccountChoice({ language, onCreateAccount, onContinueAsGuest, on
           >
             <Feather name="user-plus" size={22} color="white" style={{ marginRight: 10 }} />
             <Text style={styles.primaryBtnText}>
-              {wo ? 'Sos konte' : 'Créer un compte'}
+              {wo ? 'Tann pseudonyme' : 'Choisir un pseudonyme'}
             </Text>
           </Pressable>
           <Pressable
@@ -115,7 +115,7 @@ export function AccountChoice({ language, onCreateAccount, onContinueAsGuest, on
             </Text>
           </Pressable>
           <Text style={styles.helperText}>
-            {wo ? 'Amul lu faral' : 'Aucun compte nécessaire'}
+            {wo ? 'Amul compte mbaa email' : 'Aucun compte ni email nécessaire'}
           </Text>
         </View>
         <View style={{ height: 24 }} />

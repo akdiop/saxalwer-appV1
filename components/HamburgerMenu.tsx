@@ -59,7 +59,7 @@ const menuSections = [
   {
     title: 'COMMUNAUTÉ',
     items: [
-      { icon: <Feather name="users" size={22} color={C.copper} />, label: 'Espace discussion', subtitle: "Connecte-toi avec d'autres femmes", route: '/communaute' },
+      { icon: <Feather name="users" size={22} color={C.copper} />, label: 'Espace discussion', subtitle: "Échange sous pseudonyme", route: '/communaute' },
     ],
   },
   {

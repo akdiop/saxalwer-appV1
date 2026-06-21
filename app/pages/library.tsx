@@ -1,15 +1,17 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 
+import UrgencyBadge from '../../components/UrgencyBadge';
+import VerifiedBadge from '../../components/VerifiedBadge';
 import { useApp } from '../../context/appcontext';
 import { ARTICLES, type Article } from '../../data/articles';
 
@@ -76,6 +78,10 @@ function ArticleRow({
       </View>
 
       <Text style={styles.articleTitle}>{wo ? article.titleWo : article.title}</Text>
+      <View style={styles.badgeRow}>
+        {article.verified && <View style={styles.badgeItem}><VerifiedBadge size="small" /></View>}
+        {article.urgencyLevel && <View style={styles.badgeItem}><UrgencyBadge urgencyLevel={article.urgencyLevel} size="small" /></View>}
+      </View>
       <Text style={styles.articleDesc}>{wo ? article.descriptionWo : article.description}</Text>
 
       <View style={styles.articleFooter}>
@@ -596,4 +602,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
-});
+  badgeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 10,
+    flexWrap: 'wrap',
+  },
+  badgeItem: {
+    marginBottom: 0,
+  },
+  });

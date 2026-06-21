@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {
   CommunityMessage,
   CommunityProfile,
@@ -7,11 +5,14 @@ import {
   THEMATIC_ROOMS,
 } from '../data/community';
 import { supabaseConfig } from '../lib/supabase';
+import { secureStorage } from './secureStorage';
 
 const COMMUNITY_PROFILE_KEY = 'saxalwer_community_profile';
 const COMMUNITY_USER_ID_KEY = 'saxalwer_community_user_id';
 const COMMUNITY_MESSAGES_KEY = 'saxalwer_community_messages';
 const COMMUNITY_QUEUE_KEY = 'saxalwer_community_message_queue';
+const PSEUDONYM_PREFIXES = ['Baobab', 'Teranga', 'Sutura', 'Jamm', 'Xale', 'Ndanane'];
+const PSEUDONYM_SUFFIXES = ['Calme', 'Soleil', 'Lune', 'Espoir', 'Safir', 'Racine'];
 
 const publicAnonKey = supabaseConfig.publicKey;
 const functionsBaseUrl = supabaseConfig.functionsBaseUrl;
@@ -42,6 +43,15 @@ const buildApiUrl = (path: string) => {
 };
 
 const makeId = () => `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+const normalizePseudonym = (value: string) => value.trim().replace(/\s+/g, ' ').slice(0, 32);
+
+export const generateCommunityPseudonym = () => {
+  const prefix = PSEUDONYM_PREFIXES[Math.floor(Math.random() * PSEUDONYM_PREFIXES.length)];
+  const suffix = PSEUDONYM_SUFFIXES[Math.floor(Math.random() * PSEUDONYM_SUFFIXES.length)];
+  const number = Math.floor(100 + Math.random() * 900);
+
+  return normalizePseudonym(`${prefix}${suffix}${number}`);
+};
 
 const normalizeRemoteMessage = (message: CommunityMessage): CommunityMessage => ({
   ...message,
@@ -100,27 +110,27 @@ const getSeedMessages = (): MessageStore => {
 };
 
 const ensureMessageStore = async (): Promise<MessageStore> => {
-  const raw = await AsyncStorage.getItem(COMMUNITY_MESSAGES_KEY);
+  const raw = await secureStorage.getItem(COMMUNITY_MESSAGES_KEY);
   if (raw) {
     try {
       const parsed = JSON.parse(raw) as MessageStore;
       return parsed;
     } catch {
-      await AsyncStorage.removeItem(COMMUNITY_MESSAGES_KEY);
+      await secureStorage.removeItem(COMMUNITY_MESSAGES_KEY);
     }
   }
 
   const seeded = getSeedMessages();
-  await AsyncStorage.setItem(COMMUNITY_MESSAGES_KEY, JSON.stringify(seeded));
+  await secureStorage.setItem(COMMUNITY_MESSAGES_KEY, JSON.stringify(seeded));
   return seeded;
 };
 
 const saveMessageStore = async (store: MessageStore) => {
-  await AsyncStorage.setItem(COMMUNITY_MESSAGES_KEY, JSON.stringify(store));
+  await secureStorage.setItem(COMMUNITY_MESSAGES_KEY, JSON.stringify(store));
 };
 
 const getQueuedMessages = async (): Promise<QueuedMessage[]> => {
-  const raw = await AsyncStorage.getItem(COMMUNITY_QUEUE_KEY);
+  const raw = await secureStorage.getItem(COMMUNITY_QUEUE_KEY);
 
   if (!raw) {
     return [];
@@ -129,13 +139,13 @@ const getQueuedMessages = async (): Promise<QueuedMessage[]> => {
   try {
     return JSON.parse(raw) as QueuedMessage[];
   } catch {
-    await AsyncStorage.removeItem(COMMUNITY_QUEUE_KEY);
+    await secureStorage.removeItem(COMMUNITY_QUEUE_KEY);
     return [];
   }
 };
 
 const saveQueuedMessages = async (queue: QueuedMessage[]) => {
-  await AsyncStorage.setItem(COMMUNITY_QUEUE_KEY, JSON.stringify(queue));
+  await secureStorage.setItem(COMMUNITY_QUEUE_KEY, JSON.stringify(queue));
 };
 
 const upsertRoomMessages = async (roomId: string, nextMessages: CommunityMessage[]) => {
@@ -205,7 +215,7 @@ const sendRemoteMessage = async (input: SendMessageInput) => {
 };
 
 export const getCommunityProfile = async (): Promise<CommunityProfile> => {
-  const raw = await AsyncStorage.getItem(COMMUNITY_PROFILE_KEY);
+  const raw = await secureStorage.getItem(COMMUNITY_PROFILE_KEY);
   if (!raw) {
     return DEFAULT_COMMUNITY_PROFILE;
   }
@@ -221,17 +231,46 @@ export const getCommunityProfile = async (): Promise<CommunityProfile> => {
 };
 
 export const saveCommunityProfile = async (profile: CommunityProfile) => {
-  await AsyncStorage.setItem(COMMUNITY_PROFILE_KEY, JSON.stringify(profile));
+  const nextProfile = {
+    ...DEFAULT_COMMUNITY_PROFILE,
+    ...profile,
+    pseudonym: normalizePseudonym(profile.pseudonym),
+  };
+
+  await secureStorage.setItem(COMMUNITY_PROFILE_KEY, JSON.stringify(nextProfile));
+  return nextProfile;
+};
+
+export const ensureCommunityProfile = async (): Promise<CommunityProfile> => {
+  const profile = await getCommunityProfile();
+  const pseudonym = normalizePseudonym(profile.pseudonym);
+
+  if (pseudonym) {
+    if (pseudonym !== profile.pseudonym) {
+      return saveCommunityProfile({ ...profile, pseudonym });
+    }
+
+    return {
+      ...profile,
+      pseudonym,
+    };
+  }
+
+  return saveCommunityProfile({
+    ...profile,
+    pseudonym: generateCommunityPseudonym(),
+  });
 };
 
 export const getCommunityUserId = async (fallbackName: string) => {
-  const raw = await AsyncStorage.getItem(COMMUNITY_USER_ID_KEY);
+  const raw = await secureStorage.getItem(COMMUNITY_USER_ID_KEY);
   if (raw) {
     return raw;
   }
 
-  const generated = `${fallbackName || 'user'}_${Math.random().toString(36).slice(2, 11)}`;
-  await AsyncStorage.setItem(COMMUNITY_USER_ID_KEY, generated);
+  const base = normalizePseudonym(fallbackName).replace(/\s+/g, '_') || 'user';
+  const generated = `${base}_${Math.random().toString(36).slice(2, 11)}`;
+  await secureStorage.setItem(COMMUNITY_USER_ID_KEY, generated);
   return generated;
 };
 
@@ -389,7 +428,7 @@ export const reportMessage = async (
   }
 
   const key = `saxalwer_reported_${messageId}`;
-  await AsyncStorage.setItem(key, JSON.stringify({ reportedAt: Date.now(), userId }));
+  await secureStorage.setItem(key, JSON.stringify({ reportedAt: Date.now(), userId }));
 };
 
 export const roomById = (roomId: string) => THEMATIC_ROOMS.find((room) => room.id === roomId);

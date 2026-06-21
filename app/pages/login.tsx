@@ -12,60 +12,82 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
 import BackButton from '../../components/BackButton';
 import NoticeCard from '../../components/NoticeCard';
-import { useApp } from '../../context/appcontext';
-import { useSupabaseAuth } from '../../context/SupabaseAuthContext';
+import { DEFAULT_COMMUNITY_PROFILE } from '../../data/community';
+import {
+  ensureCommunityProfile,
+  generateCommunityPseudonym,
+  saveCommunityProfile,
+} from '../../utils/communityApi';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { isOffline } = useApp();
-  const {
-    configurationError,
-    initialized,
-    isConfigured,
-    signInWithPassword,
-    user,
-  } = useSupabaseAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [communityProfile, setCommunityProfile] = useState(DEFAULT_COMMUNITY_PROFILE);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (initialized && user) {
-      router.replace('/profile-selection' as never);
-    }
-  }, [initialized, router, user]);
+    let active = true;
 
-  const handleLogin = async () => {
-    if (isSubmitting) {
-      return;
-    }
+    ensureCommunityProfile()
+      .then((profile) => {
+        if (active) {
+          setCommunityProfile(profile);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCommunityProfile(DEFAULT_COMMUNITY_PROFILE);
+          setErrorMessage('Impossible de charger ton pseudonyme pour le moment.');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setIsLoading(false);
+        }
+      });
 
-    if (isOffline) {
-      setErrorMessage(null);
-      return;
-    }
+    return () => {
+      active = false;
+    };
+  }, []);
 
-    if (!email.trim() || !password) {
-      setErrorMessage('Renseigne ton email et ton mot de passe.');
+  const handleGenerate = () => {
+    setCommunityProfile((prev) => ({
+      ...prev,
+      pseudonym: generateCommunityPseudonym(),
+    }));
+    setErrorMessage(null);
+  };
+
+  const handleContinue = async () => {
+    if (isSaving) {
       return;
     }
 
     setErrorMessage(null);
-    setIsSubmitting(true);
+    setIsSaving(true);
 
-    const { error } = await signInWithPassword(email, password);
+    try {
+      const nextProfile = await saveCommunityProfile({
+        ...communityProfile,
+        pseudonym: communityProfile.pseudonym.trim() || generateCommunityPseudonym(),
+      });
 
-    if (error) {
-      setErrorMessage(error);
-      setIsSubmitting(false);
-      return;
+      setCommunityProfile(nextProfile);
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/communaute' as never);
+      }
+    } catch {
+      setErrorMessage("Impossible d'enregistrer ton pseudonyme pour le moment.");
+    } finally {
+      setIsSaving(false);
     }
-
-    setIsSubmitting(false);
-    router.replace('/profile-selection' as never);
   };
 
   return (
@@ -81,61 +103,46 @@ export default function LoginScreen() {
         >
           <BackButton />
 
-          {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Connexion</Text>
+            <Text style={styles.title}>Pseudonyme</Text>
             <Text style={styles.subtitle}>
-              Entre dans ton espace en toute confidentialité.
+              Aucun compte, aucun email. Choisis simplement le pseudo que tu veux
+              utiliser dans la communauté.
             </Text>
           </View>
 
-          {/* Form */}
           <View style={styles.form}>
             <View style={styles.field}>
-              <Text style={styles.label}>Adresse email</Text>
+              <Text style={styles.label}>Ton pseudonyme</Text>
               <TextInput
                 style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="ton@email.com"
+                value={communityProfile.pseudonym}
+                onChangeText={(value) =>
+                  setCommunityProfile((prev) => ({
+                    ...prev,
+                    pseudonym: value,
+                  }))
+                }
+                placeholder="Ex: BaobabCalme247"
                 placeholderTextColor="#4A2F2745"
-                keyboardType="email-address"
-                autoCapitalize="none"
+                autoCapitalize="words"
                 autoCorrect={false}
               />
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Mot de passe</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="********"
-                placeholderTextColor="#4A2F2745"
-                secureTextEntry
-              />
-            </View>
-
-            {!initialized ? (
+            {isLoading ? (
               <View style={styles.feedbackRow}>
                 <ActivityIndicator size="small" color="#1A3C34" />
-                <Text style={styles.feedbackInfo}>Chargement de la session...</Text>
+                <Text style={styles.feedbackInfo}>Chargement du pseudonyme...</Text>
               </View>
             ) : null}
 
-            {configurationError ? (
-              <Text style={styles.feedbackError}>{configurationError}</Text>
-            ) : null}
-
-            {isOffline ? (
-              <NoticeCard
-                title="Mode hors ligne"
-                description="Une connexion internet est nécessaire pour se connecter."
-                iconName="cloud-offline-outline"
-                style={styles.noticeCard}
-              />
-            ) : null}
+            <NoticeCard
+              title="Confidentialité locale"
+              description="Ton pseudo est conservé sur cet appareil et sert uniquement à t'identifier dans la communauté."
+              iconName="shield-checkmark-outline"
+              style={styles.noticeCard}
+            />
 
             {errorMessage ? (
               <Text style={styles.feedbackError}>{errorMessage}</Text>
@@ -144,32 +151,33 @@ export default function LoginScreen() {
             <Pressable
               style={({ pressed }) => [
                 styles.primaryBtn,
-                (!isConfigured || isSubmitting || isOffline) && styles.primaryBtnDisabled,
-                pressed && isConfigured && !isSubmitting && !isOffline && styles.btnPressed,
+                (isLoading || isSaving) && styles.primaryBtnDisabled,
+                pressed && !isLoading && !isSaving && styles.btnPressed,
               ]}
-              onPress={handleLogin}
-              disabled={!isConfigured || isSubmitting || isOffline}
+              onPress={handleContinue}
+              disabled={isLoading || isSaving}
               accessibilityRole="button"
             >
               <Text
                 style={[
                   styles.primaryBtnText,
-                  (!isConfigured || isSubmitting || isOffline) && styles.primaryBtnTextDisabled,
+                  (isLoading || isSaving) && styles.primaryBtnTextDisabled,
                 ]}
               >
-                {isSubmitting ? 'Connexion...' : 'Se connecter'}
+                {isSaving ? 'Enregistrement...' : 'Continuer'}
               </Text>
             </Pressable>
-          </View>
 
-          {/* Secondary link */}
-          <View style={styles.secondaryRow}>
-            <Text style={styles.secondaryNote}>Pas encore de compte ?</Text>
             <Pressable
-              onPress={() => router.push('/signup' as never)}
+              onPress={handleGenerate}
+              style={({ pressed }) => [
+                styles.secondaryBtn,
+                pressed && !isSaving && styles.btnPressed,
+              ]}
+              disabled={isSaving}
               accessibilityRole="button"
             >
-              <Text style={styles.secondaryLink}>Créer un compte</Text>
+              <Text style={styles.secondaryBtnText}>Générer un autre pseudo</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -190,8 +198,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     justifyContent: 'space-between',
   },
-
-  /* Header */
   header: {
     marginBottom: 44,
     gap: 10,
@@ -207,10 +213,8 @@ const styles = StyleSheet.create({
     color: '#4A2F27',
     lineHeight: 24,
     opacity: 0.8,
-    maxWidth: 300,
+    maxWidth: 320,
   },
-
-  /* Form */
   form: {
     gap: 20,
     marginBottom: 32,
@@ -240,8 +244,23 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
   },
-
-  /* Primary button */
+  feedbackRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  feedbackInfo: {
+    fontSize: 14,
+    color: '#1A3C34',
+  },
+  feedbackError: {
+    fontSize: 13,
+    color: '#A0442D',
+    lineHeight: 20,
+  },
+  noticeCard: {
+    marginTop: -4,
+  },
   primaryBtn: {
     marginTop: 8,
     height: 56,
@@ -273,41 +292,18 @@ const styles = StyleSheet.create({
   primaryBtnTextDisabled: {
     color: '#4A2F2760',
   },
-  feedbackRow: {
-    flexDirection: 'row',
+  secondaryBtn: {
+    height: 54,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: '#1A3C3422',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    gap: 10,
-  },
-  feedbackInfo: {
-    fontSize: 14,
-    color: '#1A3C34',
-  },
-  feedbackError: {
-    fontSize: 13,
-    color: '#A0442D',
-    lineHeight: 20,
-  },
-  noticeCard: {
-    marginTop: -4,
-  },
-
-  /* Secondary */
-  secondaryRow: {
-    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: 6,
-    paddingTop: 8,
   },
-  secondaryNote: {
-    fontSize: 14,
-    color: '#4A2F27',
-    opacity: 0.6,
-  },
-  secondaryLink: {
-    fontSize: 14,
+  secondaryBtnText: {
+    fontSize: 15,
     fontWeight: '700',
     color: '#1A3C34',
-    textDecorationLine: 'underline',
   },
 });

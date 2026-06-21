@@ -1,3 +1,4 @@
+import type { UrgencyLevel } from '../constants/urgency';
 import type { LifeSituation } from '../context/appcontext';
 
 export interface ArticleSection {
@@ -33,6 +34,8 @@ export interface Article {
 	tags: string[];
 	tagsWo: string[];
 	content: ArticleSection[];
+	verified?: boolean;
+	urgencyLevel?: UrgencyLevel;
 }
 
 const BASE_ARTICLES: Article[] = [
@@ -1871,6 +1874,30 @@ function buildArticleExtras(article: Article): ArticleSection[] {
 	}
 }
 
+function getUrgencyByCategory(category: string): UrgencyLevel {
+	// Map categories to urgency levels
+	const urgencyMap: Record<string, UrgencyLevel> = {
+		'Urgence': 'urgence',
+		'Symptômes graves': 'prioritaire',
+		'Infections': 'prioritaire',
+		'Douleurs': 'consultation',
+		'Contraception': 'prevention',
+		'Cycle': 'information',
+		'Santé': 'prevention',
+		'Bien-être': 'information',
+		'Éducation': 'information',
+	};
+	
+	// Check for matches (case-insensitive partial match)
+	for (const [key, level] of Object.entries(urgencyMap)) {
+		if (category.toLowerCase().includes(key.toLowerCase())) {
+			return level;
+		}
+	}
+	
+	return 'information';
+}
+
 function enrichArticle(article: Article): Article {
 	const extraSections = buildArticleExtras(article);
 	const extraReadTime = Math.max(2, Math.ceil(extraSections.length / 2));
@@ -1879,6 +1906,8 @@ function enrichArticle(article: Article): Article {
 		...article,
 		readTime: `${parseInt(article.readTime, 10) + extraReadTime} min`,
 		content: [...article.content, ...extraSections],
+		verified: true,
+		urgencyLevel: getUrgencyByCategory(article.category),
 	};
 }
 

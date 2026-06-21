@@ -22,7 +22,8 @@ import {
 } from '../../data/community';
 import {
   communityHasRemoteApi,
-  getCommunityProfile,
+  ensureCommunityProfile,
+  generateCommunityPseudonym,
   saveCommunityProfile,
 } from '../../utils/communityApi';
 import { useApp } from '../../context/appcontext';
@@ -31,7 +32,7 @@ import { useSpeak } from '../../hooks/usespeak';
 const TEXT = {
   fr: {
     title: 'Espace de discussion',
-    subtitle: 'Connecte-toi avec des femmes qui te comprennent',
+    subtitle: 'Échange avec des femmes qui te comprennent',
     secureTitle: 'Espace sécurisé et confidentiel',
     secureDesc:
       "Tes échanges sont privés. Tu peux choisir d'être anonyme. Signale tout message inapproprié.",
@@ -39,9 +40,9 @@ const TEXT = {
     profileTitle: 'Profil communautaire',
     profileDesc: 'Choisis ce que tu partages avec la communauté',
     pseudoLabel: 'Pseudonyme (optionnel)',
-    pseudoPlaceholder: 'Ex: Fatoumata_2024, Khady, etc.',
+    pseudoPlaceholder: 'Ex: BaobabCalme247',
     pseudoHint:
-      "Si tu ne choisis pas de pseudonyme, ton nom de profil sera utilisé. Tu peux basculer en mode anonyme à tout moment.",
+      'Si tu laisses ce champ vide, un pseudonyme local sera généré automatiquement. Tu peux le modifier à tout moment.',
     visibleInfo: 'Informations visibles',
     showAge: 'Afficher mon âge',
     showSituation: 'Afficher ma situation',
@@ -88,9 +89,9 @@ const TEXT = {
     profileTitle: 'Profil communautaire',
     profileDesc: 'Tannal lu nga begg wax ak communaute bi',
     pseudoLabel: 'Pseudonyme (bu nekk)',
-    pseudoPlaceholder: 'Misaal: Fatoumata_2024, Khady...',
+    pseudoPlaceholder: 'Misaal: BaobabCalme247',
     pseudoHint:
-      'Su tannalee pseudonyme, sa tur ci profil bi dina nu jefandikoo. Men nga soppi ci anonyme wakhtukoy.',
+      'Su féexee binduloo dara, app bi dina la sosal pseudonyme bu local. Men nga ko soppi sa saa sa.',
     visibleInfo: 'Xetu yu gem',
     showAge: 'Wone sama at',
     showSituation: 'Wone sama waxtu',
@@ -150,7 +151,9 @@ export default function CommunityRoomsScreen() {
   const [communityProfile, setCommunityProfile] = useState<CommunityProfile>(DEFAULT_COMMUNITY_PROFILE);
 
   useEffect(() => {
-    getCommunityProfile().then(setCommunityProfile).catch(() => setCommunityProfile(DEFAULT_COMMUNITY_PROFILE));
+    ensureCommunityProfile()
+      .then(setCommunityProfile)
+      .catch(() => setCommunityProfile(DEFAULT_COMMUNITY_PROFILE));
   }, []);
 
   const needsSummary = useMemo(() => {
@@ -255,7 +258,11 @@ export default function CommunityRoomsScreen() {
   }, [copy.ageLabel, copy.empty, copy.needsLabel, copy.situationLabel, localizedSituation, needsSummary, selectedAge]);
 
   const saveProfile = async () => {
-    await saveCommunityProfile(communityProfile);
+    const nextProfile = await saveCommunityProfile({
+      ...communityProfile,
+      pseudonym: communityProfile.pseudonym.trim() || generateCommunityPseudonym(),
+    });
+    setCommunityProfile(nextProfile);
     setShowProfileSettings(false);
   };
 

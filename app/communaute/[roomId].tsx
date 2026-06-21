@@ -17,13 +17,12 @@ import NoticeCard from '../../components/NoticeCard';
 import { COMMUNITY_COLORS, CommunityMessage } from '../../data/community';
 import {
     communityHasRemoteApi,
-    getCommunityProfile,
+    ensureCommunityProfile,
     getCommunityUserId,
     joinCommunityRoom,
     loadRoomMessages,
     reportMessage,
     roomById,
-    saveCommunityProfile,
     sendRoomMessage,
     syncQueuedRoomMessages,
 } from '../../utils/communityApi';
@@ -200,7 +199,7 @@ function getPendingQueueText(language: 'fr' | 'wo', count: number) {
 export default function CommunityRoomScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
   const router = useRouter();
-  const { language, oralMode, userProfile, discreteMode, isOffline, isOnline } = useApp();
+  const { language, oralMode, discreteMode, isOffline, isOnline } = useApp();
   const { speak } = useSpeak();
 
   const copy = TEXT[language];
@@ -224,9 +223,8 @@ export default function CommunityRoomScreen() {
       return copy.anonymous;
     }
 
-    const fromProfile = userProfile.name?.trim();
-    return communityPseudo || fromProfile || copy.anonymous;
-  }, [communityPseudo, copy.anonymous, isAnonymous, userProfile.name]);
+    return communityPseudo || copy.anonymous;
+  }, [communityPseudo, copy.anonymous, isAnonymous]);
 
   const pendingMessagesCount = useMemo(
     () => messages.filter((message) => message.syncStatus === 'pending').length,
@@ -292,9 +290,8 @@ export default function CommunityRoomScreen() {
     let mounted = true;
 
     const bootstrap = async () => {
-      const profile = await getCommunityProfile();
-      const fallbackName = userProfile.name?.trim() || 'user';
-      const nextUserId = await getCommunityUserId(fallbackName);
+      const profile = await ensureCommunityProfile();
+      const nextUserId = await getCommunityUserId(profile.pseudonym);
 
       if (!mounted) {
         return;
@@ -310,7 +307,7 @@ export default function CommunityRoomScreen() {
     return () => {
       mounted = false;
     };
-  }, [userProfile.name]);
+  }, []);
 
   useEffect(() => {
     if (!selectedRoomId || !isLoaded) {
@@ -376,9 +373,9 @@ export default function CommunityRoomScreen() {
       return;
     }
 
-    const nameToJoin = isAnonymous ? copy.anonymous : userProfile.name || copy.anonymous;
+    const nameToJoin = isAnonymous ? copy.anonymous : communityPseudo || copy.anonymous;
     joinCommunityRoom(selectedRoomId, userId, nameToJoin, { offline: isOffline }).catch(() => undefined);
-  }, [copy.anonymous, isAnonymous, isOffline, selectedRoomId, userId, userProfile.name]);
+  }, [communityPseudo, copy.anonymous, isAnonymous, isOffline, selectedRoomId, userId]);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -437,14 +434,9 @@ export default function CommunityRoomScreen() {
     const next = !isAnonymous;
     setIsAnonymous(next);
 
-    const profile = await getCommunityProfile();
-    if (!profile.pseudonym && userProfile.name?.trim()) {
-      const nextProfile = {
-        ...profile,
-        pseudonym: userProfile.name.trim(),
-      };
-      await saveCommunityProfile(nextProfile);
-      setCommunityPseudo(nextProfile.pseudonym);
+    if (!next && !communityPseudo.trim()) {
+      const profile = await ensureCommunityProfile();
+      setCommunityPseudo(profile.pseudonym);
     }
   };
 
@@ -976,7 +968,7 @@ const styles = StyleSheet.create({
   },
   discreteVeil: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(253,250,245,0.58)',
+    backgroundColor: 'rgba(253,250,245,0.52)',
   },
   inputArea: {
     borderTopWidth: 1,

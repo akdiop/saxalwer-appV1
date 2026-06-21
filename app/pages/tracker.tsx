@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     borderColor: `${BASE.copper}22`,
     gap: 10,
   },
-  blurred: { opacity: 0.35 },
+  blurred: { opacity: 0.42 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: BASE.deepGreen },
   cardLine: { fontSize: 14, color: BASE.cocoa },
   helperText: { fontSize: 13, color: `${BASE.cocoa}AA`, lineHeight: 19 },

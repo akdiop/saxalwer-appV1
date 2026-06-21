@@ -31,6 +31,10 @@ import {
 } from '../context/appcontext';
 import { ARTICLES, type Article } from '../data/articles';
 import {
+  requestChatAssistantReply,
+  type ChatAssistantReply,
+} from '../utils/chatAssistantApi';
+import {
   detectSensitiveChatIntent,
   getSensitiveChatFollowUpOptions,
   getSensitiveChatSupportLines,
@@ -1155,6 +1159,7 @@ export default function ChatScreen() {
   const [pendingBotSpeechId, setPendingBotSpeechId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<ScrollView | null>(null);
+  const messagesRef = useRef<Message[]>([]);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const symptomFlowRef = useRef<{ flow: SymptomFlow; step: number; answers: string[] } | null>(null);
@@ -1290,6 +1295,10 @@ export default function ChatScreen() {
   }, [messages, isTyping]);
 
   useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
     return () => {
       Speech.stop();
       if (recordingTimerRef.current) {
@@ -1350,7 +1359,7 @@ export default function ChatScreen() {
     setPendingBotSpeechId(null);
   }, [messages, oralMode, pendingBotSpeechId, speakMessage]);
 
-  const generateResponse = useCallback(
+  const generateLocalResponse = useCallback(
     (userText: string, imageUri?: string): Message => {
       const adaptText = (
         text: string,
@@ -1768,6 +1777,166 @@ export default function ChatScreen() {
     ]
   );
 
+  const buildRecentMessagesForAssistant = useCallback(
+    (currentUserText: string, imageUri?: string) => {
+      const recentMessages: { role: 'user' | 'assistant'; text: string }[] = messagesRef.current
+        .slice(-5)
+        .map((message) => {
+          const role: 'user' | 'assistant' =
+            message.role === 'bot' ? 'assistant' : 'user';
+
+          if (message.audioUri) {
+            return {
+              role,
+              text: message.text || (wo ? '[Message vocal]' : '[Message vocal]'),
+            };
+          }
+
+          if (message.imageUri) {
+            return {
+              role,
+              text: `${message.text}\n${wo ? '[Nataal]' : '[Photo]'}`,
+            };
+          }
+
+          return {
+            role,
+            text: message.text,
+          };
+        })
+        .filter((message) => message.text.trim().length > 0);
+
+      recentMessages.push({
+        role: 'user',
+        text: imageUri
+          ? `${currentUserText || (wo ? 'Nataal yonnee' : 'Photo envoyee')}\n${wo ? '[Nataal]' : '[Photo]'}`
+          : currentUserText,
+      });
+
+      return recentMessages.slice(-6);
+    },
+    [wo]
+  );
+
+  const buildGenerativeMessage = useCallback(
+    (
+      reply: ChatAssistantReply,
+      fallbackArticles: Article[],
+      fallbackLocationTags: string[] | null
+    ): Message => {
+      const matchedArticles = reply.articleIds
+        .map((id) => ARTICLES.find((article) => article.id === id))
+        .filter((article): article is Article => Boolean(article));
+      const articles =
+        matchedArticles.length > 0
+          ? matchedArticles
+          : fallbackArticles.slice(0, Math.min(2, fallbackArticles.length));
+      const baseLocationTags =
+        reply.locationTags.length > 0
+          ? reply.locationTags
+          : reply.referToProfessional
+            ? fallbackLocationTags ?? ['Gynecologie']
+            : fallbackLocationTags;
+      const locationTags = baseLocationTags
+        ? getSensitiveLocationTags(sensitiveOrientation, baseLocationTags)
+        : undefined;
+      const followUpOptions =
+        reply.followUpOptions.length > 0
+          ? reply.followUpOptions
+          : getAdaptiveFollowUpOptions(
+              reply.topic,
+              personalization,
+              lifeStage,
+              sensitiveOrientation
+            );
+
+      return {
+        id: `bot-${Date.now()}`,
+        role: 'bot',
+        text: buildAdaptiveText(
+          {
+            text: reply.answer,
+            topic: reply.topic,
+            severity: reply.severity,
+          },
+          personalization,
+          userProfile,
+          discreteMode,
+          sensitiveOrientation,
+          wo
+        ),
+        articles: articles.length > 0 ? articles : undefined,
+        showLocation: Boolean(locationTags?.length),
+        locationTags,
+        referToProfessional: reply.referToProfessional || reply.severity === 'urgent',
+        followUpOptions,
+      };
+    },
+    [discreteMode, lifeStage, personalization, sensitiveOrientation, userProfile, wo]
+  );
+
+  const generateResponse = useCallback(
+    async (userText: string, imageUri?: string): Promise<Message> => {
+      const sensitiveIntent = detectSensitiveChatIntent(userText);
+      const matchedFlow = SYMPTOM_FLOWS.find((flow) => flow.trigger.test(userText));
+      const definition = findDefinition(userText);
+      const isDirectLocationRequest =
+        /\b(trouver.*professionnel|centre.*santé|tabax|médecin|gynéco|hôpital|seet.*kër|seet.*tabax)\b/i.test(
+          userText
+        );
+
+      if (
+        imageUri ||
+        hasUrgentSignal(userText) ||
+        Boolean(sensitiveIntent) ||
+        Boolean(symptomFlowRef.current) ||
+        Boolean(pendingTopicRef.current) ||
+        Boolean(matchedFlow) ||
+        Boolean(definition) ||
+        isDirectLocationRequest
+      ) {
+        return generateLocalResponse(userText, imageUri);
+      }
+
+      const fallbackArticles = findRelevantArticles(userText);
+      const fallbackLocationTags = detectLocationTags(userText);
+
+      try {
+        const reply = await requestChatAssistantReply({
+          message: userText,
+          language: wo ? 'wo' : 'fr',
+          lifeStage,
+          discreteMode,
+          recentMessages: buildRecentMessagesForAssistant(userText, imageUri),
+          articleCandidates: fallbackArticles,
+          personalization,
+          userProfile,
+          sensitiveOrientation,
+        });
+
+        if (reply) {
+          return buildGenerativeMessage(reply, fallbackArticles, fallbackLocationTags);
+        }
+      } catch (error) {
+        console.error('Failed to generate remote chat response', error);
+      }
+
+      return generateLocalResponse(userText, imageUri);
+    },
+    [
+      buildGenerativeMessage,
+      buildRecentMessagesForAssistant,
+      discreteMode,
+      findRelevantArticles,
+      generateLocalResponse,
+      lifeStage,
+      personalization,
+      sensitiveOrientation,
+      userProfile,
+      wo,
+    ]
+  );
+
   const appendUserMessage = useCallback(
     (text: string, imageUri?: string) => {
       const userMessage: Message = {
@@ -1782,10 +1951,12 @@ export default function ChatScreen() {
       setIsTyping(true);
 
       setTimeout(() => {
-        const botMessage = generateResponse(text, imageUri);
-        setPendingBotSpeechId(botMessage.id);
-        setMessages((prev) => [...prev, botMessage]);
-        setIsTyping(false);
+        void (async () => {
+          const botMessage = await generateResponse(text, imageUri);
+          setPendingBotSpeechId(botMessage.id);
+          setMessages((prev) => [...prev, botMessage]);
+          setIsTyping(false);
+        })();
       }, 1100 + Math.random() * 500);
     },
     [generateResponse, wo]
@@ -2617,7 +2788,7 @@ const styles = StyleSheet.create({
   },
   discreteOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(245,241,230,0.76)',
+    backgroundColor: 'rgba(245,241,230,0.68)',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,

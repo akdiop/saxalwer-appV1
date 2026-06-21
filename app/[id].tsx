@@ -2,19 +2,24 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { useMemo, useState } from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 
+import ActionPicker from '../components/ActionPicker';
 import { GlossaryText } from '../components/article/GlossaryText';
 import { LocationFinder } from '../components/article/LocationFinder';
-import { ARTICLES } from '../data/articles';
-import { useApp } from '../context/appcontext';
+import ConsultationPrep from '../components/ConsultationPrep';
+import SavedQuestions from '../components/SavedQuestions';
+import UrgencyBadge from '../components/UrgencyBadge';
+import VerifiedBadge from '../components/VerifiedBadge';
 import type { PersonalizationContext } from '../context/appcontext';
+import { useApp } from '../context/appcontext';
+import { ARTICLES } from '../data/articles';
 
 const BASE = {
   beige: '#F5F1E6',
@@ -253,7 +258,11 @@ export default function ArticleDetailScreen() {
           </View>
 
           <Text style={styles.authorLine}>{displayAuthor}</Text>
-          <Text style={styles.title}>{displayTitle}</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>{displayTitle}</Text>
+            {article.verified && <VerifiedBadge size="small" />}
+            {article.urgencyLevel && <UrgencyBadge urgencyLevel={article.urgencyLevel} size="small" />}
+          </View>
           <Text style={styles.description}>{displayDescription}</Text>
 
           <View style={styles.contextStrip}>
@@ -360,6 +369,21 @@ export default function ArticleDetailScreen() {
               ? 'Trouver un centre ou une professionnelle'
               : 'Trouver un centre ou une professionnelle'
           }
+        />
+
+        <ActionPicker
+          articleId={article.id}
+          articleTitle={article.title}
+        />
+
+        <SavedQuestions
+          topicId={article.id}
+          topicTitle={article.title}
+        />
+
+        <ConsultationPrep
+          articleTitle={article.title}
+          articleId={article.id}
         />
 
         {article.tags.length > 0 && (
@@ -546,6 +570,12 @@ const styles = StyleSheet.create({
     lineHeight: 38,
     fontWeight: '700',
     color: BASE.deepGreen,
+    marginBottom: 12,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
     marginBottom: 12,
   },
   description: {

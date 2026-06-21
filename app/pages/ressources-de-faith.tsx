@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     backgroundColor: BASE.beige,
   },
   discreteWrap: {
-    opacity: 0.82,
+    opacity: 0.84,
   },
   header: {
     paddingHorizontal: 24,

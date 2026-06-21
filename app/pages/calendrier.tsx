@@ -1,5 +1,4 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -16,6 +15,7 @@ import {
 
 import { useApp } from '../../context/appcontext';
 import { colors } from '../../constants/colors';
+import { secureStorage } from '../../utils/secureStorage';
 type AppointmentType = 'medical' | 'contraception' | 'cycle' | 'other';
 
 type Appointment = {
@@ -136,9 +136,8 @@ export default function CalendrierScreen() {
 
     const loadAppointments = async () => {
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (!raw || cancelled) return;
-        const parsed = JSON.parse(raw) as Appointment[];
+        const parsed = await secureStorage.getJSON<Appointment[]>(STORAGE_KEY);
+        if (!parsed || cancelled) return;
         if (Array.isArray(parsed)) {
           setAppointments(parsed.slice(0, 1000));
         }
@@ -156,7 +155,7 @@ export default function CalendrierScreen() {
   useEffect(() => {
     const saveAppointments = async () => {
       try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+        await secureStorage.setJSON(STORAGE_KEY, appointments);
       } catch {
       }
     };
@@ -681,7 +680,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.beige,
   },
   discreteBlur: {
-    opacity: 0.78,
+    opacity: 0.82,
   },
   scrollContent: {
     paddingBottom: 120,

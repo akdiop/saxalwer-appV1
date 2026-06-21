@@ -1,16 +1,19 @@
 import type { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
-  name: 'saxalwer-expo-clean',
-  slug: 'saxalwer-expo-clean',
+  name: 'SaxalWér',
+  slug: 'saxalwer-app-v1',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './app/assets/images/icon.png',
-  scheme: 'saxalwerexpoclean',
+  scheme: 'saxalwer',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
+    config: {
+      usesNonExemptEncryption: false,
+    },
   },
   android: {
     adaptiveIcon: {
@@ -20,8 +23,12 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
   },
+  web: {
+    output: 'single',
+  },
   plugins: [
     'expo-router',
+    'expo-secure-store',
     [
       'expo-splash-screen',
       {
