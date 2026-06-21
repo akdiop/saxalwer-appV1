@@ -1,17 +1,16 @@
 import { Feather } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
-  Animated,
-  Dimensions,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Animated,
+    Dimensions,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 
 import BackButton from '../../components/onboarding/BackButton';
@@ -235,17 +234,15 @@ export default function PersonnalisationScreen() {
     needsSupportChoice: currentPersonalization.needsSupport ? 'yes' : null,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      const fromValue = navigationDirection === 'back' ? -screenWidth : screenWidth;
-      translateX.setValue(fromValue);
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: 360,
-        useNativeDriver: true,
-      }).start();
-    }, [navigationDirection, screenWidth, translateX])
-  );
+  useEffect(() => {
+    const fromValue = navigationDirection === 'back' ? -screenWidth : screenWidth;
+    translateX.setValue(fromValue);
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 360,
+      useNativeDriver: true,
+    }).start();
+  }, [navigationDirection, screenWidth, translateX]);
 
   const currentQuestion = QUESTIONS[currentQuestionIndex];
   const currentValue =

@@ -1,7 +1,6 @@
 import { Feather } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
     Animated,
     Dimensions,
@@ -90,17 +89,15 @@ export default function ObjectifsScreen() {
     }
   }, [age, primaryGoal, setPrimaryGoal]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fromValue = navigationDirection === 'back' ? -screenWidth : screenWidth;
-      translateX.setValue(fromValue);
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
-    }, [navigationDirection, screenWidth, translateX])
-  );
+  useEffect(() => {
+    const fromValue = navigationDirection === 'back' ? -screenWidth : screenWidth;
+    translateX.setValue(fromValue);
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  }, [navigationDirection, screenWidth, translateX]);
 
   const handleBack = () => {
     setNavigationDirection('back');

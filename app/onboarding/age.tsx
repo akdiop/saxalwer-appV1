@@ -1,6 +1,5 @@
-import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
     Animated,
     Dimensions,
@@ -23,17 +22,15 @@ export default function AgeScreen() {
   const screenWidth = Dimensions.get('window').width;
   const translateX = useRef(new Animated.Value(0)).current;
 
-  useFocusEffect(
-    useCallback(() => {
-      const fromValue = navigationDirection === 'back' ? -screenWidth : screenWidth;
-      translateX.setValue(fromValue);
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
-      }).start();
-    }, [navigationDirection, screenWidth, translateX])
-  );
+  useEffect(() => {
+    const fromValue = navigationDirection === 'back' ? -screenWidth : screenWidth;
+    translateX.setValue(fromValue);
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  }, [navigationDirection, screenWidth, translateX]);
 
   const handleSelectAge = (value: string) => {
     setAge(value);

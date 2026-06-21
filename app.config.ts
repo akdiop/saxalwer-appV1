@@ -8,7 +8,7 @@ const config: ExpoConfig = {
   icon: './app/assets/images/icon.png',
   scheme: 'saxalwer',
   userInterfaceStyle: 'automatic',
-  newArchEnabled: true,
+  newArchEnabled: false,
   ios: {
     supportsTablet: true,
     config: {

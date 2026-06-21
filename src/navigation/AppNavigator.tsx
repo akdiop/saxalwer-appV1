@@ -1,14 +1,6 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from '../screens/HomeScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
-
-const Stack = createNativeStackNavigator();
+// This file is no longer used - Expo Router handles navigation
+// Kept for reference only
 
 export default function AppNavigator() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-    </Stack.Navigator>
-  );
+  return null;
 }

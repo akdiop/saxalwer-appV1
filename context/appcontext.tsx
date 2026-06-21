@@ -527,6 +527,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 				console.error('Failed to load state', error);
 			} finally {
 				setIsLoaded(true);
+				setAppLockReady(true);
 			}
 		};
 
