@@ -54,12 +54,24 @@ const menuSections = [
         subtitle: 'Annuaire de professionnels',
         route: '/medecins',
       },
+      {
+        icon: <Feather name="list" size={22} color={C.deepGreen} />,
+        label: 'Annuaire (à vérifier)',
+        subtitle: 'Psychologue, soutien VBG, femme',
+        route: '/annuaire',
+      },
+      {
+        icon: <Feather name="heart" size={22} color={C.terracotta} />,
+        label: 'Soutien & écoute',
+        subtitle: 'VBG et santé mentale',
+        route: '/soutien',
+      },
     ],
   },
   {
     title: 'COMMUNAUTÉ',
     items: [
-      { icon: <Feather name="users" size={22} color={C.copper} />, label: 'Espace discussion', subtitle: "Échange sous pseudonyme", route: '/communaute' },
+      { icon: <Feather name="users" size={22} color={C.copper} />, label: 'Espace discussion', subtitle: "Connecte-toi avec d'autres femmes", route: '/communaute' },
     ],
   },
   {
