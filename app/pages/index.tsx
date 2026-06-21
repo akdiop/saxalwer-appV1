@@ -2,13 +2,13 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Image,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Image,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 
 import { useApp } from '../../context/appcontext';
@@ -49,7 +49,7 @@ export default function IndexScreen() {
         <View style={styles.topQuickActions}>
           <View style={styles.topLogoBadge}>
             <Image
-              source={require('../assets/images/logo-saxalwer.png')}
+              source={require('../../assets/brand/SAXALWER_Logo_fond-transparent.png')}
               style={styles.topLogoImage}
               resizeMode="contain"
             />
@@ -110,7 +110,7 @@ export default function IndexScreen() {
 
         <View style={styles.logoCard}>
           <Image
-            source={require('../assets/images/logo-saxalwer.png')}
+            source={require('../../assets/brand/SAXALWER_Logo_fond-transparent.png')}
             style={styles.logo}
             resizeMode="contain"
           />

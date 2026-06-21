@@ -1,19 +1,19 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import {
-  Animated,
-  Easing,
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
+    Animated,
+    Easing,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { getPostSplashRoute, markSplashAsShown } from '../../utils/splashUtils';
 
-const LOGO_SOURCE = require('../assets/images/logo-saxalwer.png');
+const LOGO_SOURCE = require('../../assets/brand/SAXALWER_Logo_fond-transparent.png');
 
 export default function SplashScreen() {
   const router = useRouter();
