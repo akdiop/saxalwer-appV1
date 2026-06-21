@@ -4,7 +4,6 @@ import * as Speech from 'expo-speech';
 import { useEffect, useRef } from 'react';
 import {
     Animated,
-    Platform,
     Pressable,
     SafeAreaView,
     ScrollView,
@@ -13,6 +12,7 @@ import {
     useWindowDimensions,
     View,
 } from 'react-native';
+import { Fonts } from '../../constants/theme';
 import { useApp } from '../../context/appcontext';
 
 const BASE = {
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
     lineHeight: 38,
     fontWeight: '700',
     color: BASE.deepGreen,
-    fontFamily: Platform.OS === 'ios' ? 'CormorantGaramond-Bold' : 'serif',
+    fontFamily: Fonts.serif,
   },
   headerTitleCompact: {
     fontSize: 30,
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
     marginBottom: 14,
-    fontFamily: Platform.OS === 'ios' ? 'CormorantGaramond-Bold' : 'serif',
+    fontFamily: Fonts.serif,
   },
   heroTitleCompact: {
     fontSize: 33,
@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
     color: BASE.deepGreen,
     fontWeight: '700',
     marginBottom: 10,
-    fontFamily: Platform.OS === 'ios' ? 'CormorantGaramond-Bold' : 'serif',
+    fontFamily: Fonts.serif,
   },
   sectionTitleCompact: {
     fontSize: 30,
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     color: BASE.deepGreen,
     marginBottom: 10,
     textAlign: 'center',
-    fontFamily: Platform.OS === 'ios' ? 'CormorantGaramond-Bold' : 'serif',
+    fontFamily: Fonts.serif,
   },
   ctaDescription: {
     fontSize: 14,
