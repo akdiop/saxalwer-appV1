@@ -1,18 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 
 import { useApp } from '../../context/appcontext';
-import { getDiscreetTitle } from '../../utils/discreetTitles';
 import { ARTICLES, type Article } from '../../data/articles';
+import { getDiscreetTitle } from '../../utils/discreetTitles.ts';
 
 const BASE = {
   bg: '#F5F1E6',

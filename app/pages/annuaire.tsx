@@ -38,7 +38,7 @@ type SpecFilter = 'Toutes' | ProviderSpecialty;
 
 export default function AnnuaireScreen() {
   const router = useRouter();
-  const { language: _language } = useApp();
+  useApp();
 
   const [region, setRegion] = React.useState<RegionFilter>('Toutes');
   const [spec, setSpec] = React.useState<SpecFilter>('Toutes');
