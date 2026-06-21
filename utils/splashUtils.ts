@@ -1,6 +1,10 @@
 let splashShown = false;
 
 export function shouldShowSplash(): boolean {
+  // Temporarily disabled for debugging - always skip splash during web dev
+  if (typeof window !== 'undefined') {
+    return false;
+  }
   return !splashShown;
 }
 

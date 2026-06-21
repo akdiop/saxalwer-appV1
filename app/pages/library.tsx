@@ -1,18 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 
 import { useApp } from '../../context/appcontext';
-import { getDiscreetTitle } from '../../utils/discreetTitles';
 import { ARTICLES, type Article } from '../../data/articles';
+import { getDiscreetTitle } from '../../utils/discreetTitles';
 
 const BASE = {
   bg: '#F5F1E6',
@@ -33,6 +33,8 @@ const LIFE_STAGES = [
   { label: 'Maternité', filter: 'Maternité' },
   { label: 'Plénitude', filter: 'Plénitude' },
 ] as const;
+
+const ARTICLE_VERIFICATION_STATUS = 'Vérification en cours';
 
 const CATEGORIES = [
   { fr: 'Tout', wo: 'Yépp', value: 'Tout' },
@@ -66,7 +68,7 @@ function ArticleRow({
         <View style={styles.articleTopLeft}>
           <Text style={styles.articleCategory}>{wo ? article.categoryWo : article.category}</Text>
           <Text style={styles.articleMeta}>
-            {article.readTime} • {article.author}
+            {article.readTime} • {ARTICLE_VERIFICATION_STATUS}
           </Text>
         </View>
         <Pressable onPress={onToggleFavorite} style={styles.savePill}>
@@ -194,12 +196,12 @@ export default function LibraryScreen() {
 
         <View style={styles.disclaimerCard}>
           <Text style={styles.disclaimerTitle}>
-            {wo ? 'Leeral bu am solo' : 'Contenus en cours de validation'}
+            {wo ? 'Leeral bu am solo' : 'Statut: vérification en cours'}
           </Text>
           <Text style={styles.disclaimerText}>
             {wo
               ? 'Jàngale yii ñu ngi leen di yokk te seetaat. Dinañu leen jox validation ak médecins ak professionnels de santé ci kanam.'
-              : 'Les contenus de cette bibliothèque sont encore en cours de développement et seront progressivement relus et validés par des médecins et professionnels de santé.'}
+              : 'Les contenus de cette bibliothèque sont encore en cours de vérification. Ils seront progressivement relus et validés par des professionnels de santé.'}
           </Text>
         </View>
 
@@ -282,7 +284,7 @@ export default function LibraryScreen() {
               {wo ? featuredArticle.descriptionWo : featuredArticle.description}
             </Text>
             <View style={styles.featuredMetaRow}>
-              <Text style={styles.featuredMetaText}>{featuredArticle.author}</Text>
+              <Text style={styles.featuredMetaText}>{ARTICLE_VERIFICATION_STATUS}</Text>
               <Text style={styles.featuredMetaDivider}>•</Text>
               <Text style={styles.featuredMetaText}>{featuredArticle.readTime}</Text>
             </View>

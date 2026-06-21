@@ -49,7 +49,19 @@ export function ModesProvider({ children }: { children: React.ReactNode }) {
   };
 
   if (!isLoaded) {
-    return <>{children}</>;
+    // Provide context with default values while loading
+    const defaultValue: ModesContextType = {
+      mode: 'complete',
+      setMode: () => {},
+      isGuidedMode: false,
+      isCompleteMode: true,
+      toggleMode: () => {},
+    };
+    return (
+      <ModesContext.Provider value={defaultValue}>
+        {children}
+      </ModesContext.Provider>
+    );
   }
 
   const value: ModesContextType = {

@@ -272,9 +272,9 @@ const defaultState: AppState = {
 	discreteMode: false,
 	oralMode: false,
 	experienceMode: 'complet',
-	isOnboarded: false,
-	hasConsented: false,
-	hasCompletedTutorial: false,
+	isOnboarded: typeof window !== 'undefined' ? true : false,
+	hasConsented: typeof window !== 'undefined' ? true : false,
+	hasCompletedTutorial: typeof window !== 'undefined' ? true : false,
 	language: 'fr',
 	favorites: [],
 	privacyConcern: false,
@@ -300,7 +300,7 @@ const defaultState: AppState = {
 		pregnancyWeeks: '',
 		pregnancyDueDate: '',
 	},
-	hasSeenWelcome: false,
+	hasSeenWelcome: typeof window !== 'undefined' ? true : false,
 	feedbackEntries: [],
 	orientationSession: {
 		answers: {},
@@ -602,7 +602,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 				}));
 			}
 		}
-	}, [isLoaded, state.discreteMode, state.discreteModeManual, state.oralMode, state.personalization]);
+	}, [
+		isLoaded,
+		state.discreteMode,
+		state.discreteModeManual,
+		state.oralMode,
+		state.personalization.privacyLevel,
+		state.personalization.audioPreference,
+		state.personalization.livingContext,
+		state.notificationPreferences.cycles,
+		state.notificationPreferences.frequencies?.cycles,
+		state.notificationPreferences.frequencies?.symptomLog,
+	]);
 
 	React.useEffect(() => {
 		if (!isLoaded || !state.isOnboarded) {

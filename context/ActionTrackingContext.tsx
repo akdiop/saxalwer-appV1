@@ -188,7 +188,25 @@ export function ActionTrackingProvider({ children }: { children: React.ReactNode
   };
 
   if (!isLoaded) {
-    return <>{children}</>;
+    // Provide context with default values while loading
+    const defaultValue: ActionTrackingContextType = {
+      actions: [],
+      addAction: () => {},
+      orientations: [],
+      addOrientation: () => {},
+      completeOrientation: () => {},
+      savedQuestions: [],
+      addQuestion: () => {},
+      removeQuestion: () => {},
+      getQuestionsByTopic: () => [],
+      nextStep: null,
+      clearHistory: () => {},
+    };
+    return (
+      <ActionTrackingContext.Provider value={defaultValue}>
+        {children}
+      </ActionTrackingContext.Provider>
+    );
   }
 
   const value: ActionTrackingContextType = {

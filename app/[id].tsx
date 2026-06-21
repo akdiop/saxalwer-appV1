@@ -16,7 +16,6 @@ import { LocationFinder } from '../components/article/LocationFinder';
 import ConsultationPrep from '../components/ConsultationPrep';
 import SavedQuestions from '../components/SavedQuestions';
 import UrgencyBadge from '../components/UrgencyBadge';
-import VerifiedBadge from '../components/VerifiedBadge';
 import type { PersonalizationContext } from '../context/appcontext';
 import { useApp } from '../context/appcontext';
 import { ARTICLES } from '../data/articles';
@@ -177,7 +176,8 @@ export default function ArticleDetailScreen() {
     personalization,
     language
   );
-  const displayAuthor = language === 'wo' ? article.authorWo : article.author;
+  const displaySource = '...';
+  const verificationStatus = wo ? 'Vérification en cours' : 'Vérification en cours';
   const displayCategory = language === 'wo' ? article.categoryWo : article.category;
   const displaySensitivity = getSensitivityLabel(personalization, language);
 
@@ -257,10 +257,12 @@ export default function ArticleDetailScreen() {
             </Text>
           </View>
 
-          <Text style={styles.authorLine}>{displayAuthor}</Text>
+          <Text style={styles.authorLine}>{displaySource}</Text>
           <View style={styles.titleRow}>
             <Text style={styles.title}>{displayTitle}</Text>
-            {article.verified && <VerifiedBadge size="small" />}
+            <View style={styles.verificationPill}>
+              <Text style={styles.verificationPillText}>{verificationStatus}</Text>
+            </View>
             {article.urgencyLevel && <UrgencyBadge urgencyLevel={article.urgencyLevel} size="small" />}
           </View>
           <Text style={styles.description}>{displayDescription}</Text>
@@ -564,6 +566,20 @@ const styles = StyleSheet.create({
     color: BASE.cocoa,
     opacity: 0.72,
     marginBottom: 14,
+  },
+  verificationPill: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(181,98,42,0.28)',
+    backgroundColor: 'rgba(181,98,42,0.12)',
+  },
+  verificationPillText: {
+    color: BASE.copper,
+    fontSize: 11,
+    fontWeight: '700',
   },
   title: {
     fontSize: 30,
