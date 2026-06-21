@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
   headerTitle: { color: 'white', fontSize: 24, fontWeight: '700', flex: 1 },
   headerSub: { color: 'rgba(255,255,255,0.75)', fontSize: 12 },
   content: { padding: 16, paddingBottom: 100 },
-  discreteContent: { opacity: 0.15 },
+  discreteContent: { opacity: 0.28 },
 
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   sectionHeadText: {

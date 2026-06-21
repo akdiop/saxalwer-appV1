@@ -1,6 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
+
+import { secureStorageAdapter } from '../utils/secureStorage';
 
 const fallbackSupabaseUrl = 'https://placeholder.supabase.co';
 const fallbackSupabaseKey = 'placeholder-publishable-key';
@@ -66,7 +67,7 @@ export const supabase = createClient(
   supabaseConfig.publicKey ?? fallbackSupabaseKey,
   {
     auth: {
-      storage: AsyncStorage,
+      storage: secureStorageAdapter,
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,

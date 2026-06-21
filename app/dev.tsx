@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import { Fonts } from '@/constants/theme';
+import { secureStorage } from '@/utils/secureStorage';
 
 const BASE = {
   beige: '#F5F1E6',
@@ -100,7 +101,7 @@ export default function DevNavigationScreen() {
   const handleResetState = async () => {
     try {
       await AsyncStorage.removeItem('splash_shown');
-      await AsyncStorage.removeItem('samawer_state');
+      await secureStorage.removeItem('samawer_state');
       // If you use other keys for onboarding, add them here
       // Reset in-memory flag if needed
       if (typeof markSplashAsShown === 'function') {

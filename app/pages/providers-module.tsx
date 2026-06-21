@@ -1,22 +1,23 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import {
-  Alert,
-  LayoutAnimation,
-  Linking,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  UIManager,
-  View,
+    Alert,
+    LayoutAnimation,
+    Linking,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    UIManager,
+    View,
 } from 'react-native';
 
 import BackButton from '../../components/BackButton';
 import NoticeCard from '../../components/NoticeCard';
+import VerifiedBadge from '../../components/VerifiedBadge';
 import { colors } from '../../constants/colors';
 import { useApp } from '../../context/appcontext';
 import { useProfileMock } from '../../context/ProfileMockContext';
@@ -48,6 +49,7 @@ type Doctor = {
   languages: string[];
   acceptsInsurance: boolean;
   themes: string[];
+  verified?: boolean;
 };
 
 const SPECIALTIES: SpecialtyOption[] = [
@@ -87,6 +89,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Français', 'Wolof'],
     acceptsInsurance: true,
     themes: ['cycle', 'grossesse', 'contraception', 'ist'],
+    verified: true,
   },
   {
     id: 2,
@@ -100,6 +103,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Français', 'Wolof', 'Sérère'],
     acceptsInsurance: true,
     themes: ['grossesse', 'cycle', 'contraception'],
+    verified: true,
   },
   {
     id: 3,
@@ -113,6 +117,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Français'],
     acceptsInsurance: true,
     themes: ['menopause', 'fertilite', 'cycle'],
+    verified: true,
   },
   {
     id: 4,
@@ -126,6 +131,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof'],
     acceptsInsurance: false,
     themes: ['mental', 'grossesse'],
+    verified: true,
   },
   {
     id: 5,
@@ -139,6 +145,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof'],
     acceptsInsurance: true,
     themes: ['cycle', 'ist', 'contraception'],
+    verified: false,
   },
   {
     id: 6,
@@ -152,6 +159,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof', 'Peul'],
     acceptsInsurance: true,
     themes: ['grossesse', 'menopause', 'fertilite'],
+    verified: true,
   },
   {
     id: 7,
@@ -165,6 +173,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof'],
     acceptsInsurance: true,
     themes: ['cycle', 'grossesse', 'ist', 'fertilite', 'contraception'],
+    verified: true,
   },
   {
     id: 8,
@@ -178,6 +187,7 @@ const DOCTORS: Doctor[] = [
     languages: ['Francais', 'Wolof', 'Anglais'],
     acceptsInsurance: true,
     themes: ['cycle', 'menopause'],
+    verified: true,
   },
 ];
 
@@ -574,7 +584,10 @@ function ProvidersModuleContent() {
                     </View>
 
                     <View style={styles.doctorHeaderContent}>
-                      <Text style={styles.doctorName}>{doctor.name}</Text>
+                      <View style={styles.doctorNameRow}>
+                        <Text style={styles.doctorName}>{doctor.name}</Text>
+                        {doctor.verified && <VerifiedBadge size="small" />}
+                      </View>
 
                       <View style={styles.specialtyTag}>
                         <Text style={styles.specialtyTagText}>{doctor.specialty}</Text>
@@ -976,7 +989,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   discreteBlur: {
-    opacity: 0.35,
+    opacity: 0.42,
   },
   emptyCard: {
     alignItems: 'center',
@@ -1043,6 +1056,12 @@ const styles = StyleSheet.create({
     color: colors.deepGreen,
     fontSize: 16,
     fontWeight: '700',
+    marginBottom: 4,
+  },
+  doctorNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 4,
   },
   specialtyTag: {

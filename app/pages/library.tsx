@@ -1,15 +1,16 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from 'react-native';
 
+import VerifiedBadge from '../../components/VerifiedBadge';
 import { useApp } from '../../context/appcontext';
 import { ARTICLES, type Article } from '../../data/articles';
 
@@ -76,6 +77,7 @@ function ArticleRow({
       </View>
 
       <Text style={styles.articleTitle}>{wo ? article.titleWo : article.title}</Text>
+      {article.verified && <View style={styles.verifiedBadgeWrap}><VerifiedBadge size="small" /></View>}
       <Text style={styles.articleDesc}>{wo ? article.descriptionWo : article.description}</Text>
 
       <View style={styles.articleFooter}>
@@ -553,6 +555,9 @@ const styles = StyleSheet.create({
     lineHeight: 31,
     fontWeight: '700',
     color: BASE.deepGreen,
+    marginBottom: 10,
+  },
+  verifiedBadgeWrap: {
     marginBottom: 10,
   },
   articleDesc: {

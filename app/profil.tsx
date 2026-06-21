@@ -11,6 +11,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   UIManager,
   View,
 } from 'react-native';
@@ -55,12 +56,17 @@ function ProfilContent() {
     firstName,
     resetProfileMockState,
   } = useProfileMock();
-  const { resetAppState } = useApp();
+  const { resetAppState, appLockEnabled, setAppLockCode, disableAppLock, lockApp } = useApp();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
   const [notificationsOpen, setNotificationsOpen] = useState(true);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [lockSheetOpen, setLockSheetOpen] = useState(false);
+  const [lockCode, setLockCode] = useState('');
+  const [lockConfirmCode, setLockConfirmCode] = useState('');
+  const [lockError, setLockError] = useState('');
+  const [lockBusy, setLockBusy] = useState(false);
 
   const menuAnim = useRef(new Animated.Value(0)).current;
   const favChevron = useRef(new Animated.Value(1)).current;
@@ -140,6 +146,75 @@ function ProfilContent() {
   const closeMenuAndNavigate = (path: string) => {
     setMenuOpen(false);
     router.push(path as never);
+  };
+
+  const openLockSheet = () => {
+    setLockCode('');
+    setLockConfirmCode('');
+    setLockError('');
+    setLockSheetOpen(true);
+  };
+
+  const closeLockSheet = () => {
+    if (lockBusy) {
+      return;
+    }
+
+    setLockSheetOpen(false);
+    setLockCode('');
+    setLockConfirmCode('');
+    setLockError('');
+  };
+
+  const handleEnableAppLock = async () => {
+    const normalizedCode = lockCode.replace(/\D/g, '');
+    const normalizedConfirmCode = lockConfirmCode.replace(/\D/g, '');
+
+    if (normalizedCode.length !== 4) {
+      setLockError('Choisis un code a 4 chiffres.');
+      return;
+    }
+
+    if (normalizedCode !== normalizedConfirmCode) {
+      setLockError('Les deux codes ne correspondent pas.');
+      return;
+    }
+
+    setLockBusy(true);
+    const success = await setAppLockCode(normalizedCode);
+    setLockBusy(false);
+
+    if (!success) {
+      setLockError("Impossible d'activer le code pour le moment.");
+      return;
+    }
+
+    closeLockSheet();
+  };
+
+  const handleDisableAppLock = async () => {
+    const normalizedCode = lockCode.replace(/\D/g, '');
+
+    if (normalizedCode.length !== 4) {
+      setLockError('Entre ton code actuel a 4 chiffres.');
+      return;
+    }
+
+    setLockBusy(true);
+    const success = await disableAppLock(normalizedCode);
+    setLockBusy(false);
+
+    if (!success) {
+      setLockError('Le code actuel est incorrect.');
+      return;
+    }
+
+    closeLockSheet();
+  };
+
+  const handleLockNow = () => {
+    closeLockSheet();
+    lockApp();
   };
 
   return (
@@ -309,6 +384,39 @@ function ProfilContent() {
               <View style={[styles.discreteStatusPill, discreteMode && styles.discreteStatusPillActive]}>
                 <Text style={[styles.discreteStatusText, discreteMode && styles.discreteStatusTextActive]}>
                   {discreteMode ? 'Actif' : 'Off'}
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+
+          <View style={styles.section}>
+            <Pressable
+              onPress={openLockSheet}
+              style={[styles.discreteCard, appLockEnabled && styles.appLockCardActive]}
+            >
+              <View style={styles.discreteLeft}>
+                <View style={[styles.discreteIconWrap, appLockEnabled && styles.appLockIconWrapActive]}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={18}
+                    color={appLockEnabled ? colors.white : colors.deepGreen}
+                  />
+                </View>
+                <View style={styles.discreteTextWrap}>
+                  <Text style={[styles.discreteTitle, appLockEnabled && styles.appLockTitleActive]}>
+                    Code de l&apos;application
+                  </Text>
+                  <Text style={[styles.discreteDesc, appLockEnabled && styles.appLockDescActive]}>
+                    {appLockEnabled
+                      ? "Un code secret protege maintenant l'ouverture de l'app"
+                      : "Ajoute un code secret a 4 chiffres pour ouvrir l'app"}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={[styles.discreteStatusPill, appLockEnabled && styles.appLockStatusPillActive]}>
+                <Text style={[styles.discreteStatusText, appLockEnabled && styles.appLockStatusTextActive]}>
+                  {appLockEnabled ? 'Actif' : 'Off'}
                 </Text>
               </View>
             </Pressable>
@@ -553,9 +661,9 @@ function ProfilContent() {
                 onPress={() => closeMenuAndNavigate('/onboarding/age')}
               />
               <ProfileRowItem
-                icon="log-in-outline"
-                title="Connexion / compte"
-                subtitle="Se connecter ou créer un compte"
+                icon="at-outline"
+                title="Pseudonyme communauté"
+                subtitle="Choisir ou modifier mon pseudo"
                 onPress={() => closeMenuAndNavigate('/login')}
               />
               <ProfileRowItem
@@ -569,6 +677,102 @@ function ProfilContent() {
                 }}
               />
             </Animated.View>
+          </View>
+        ) : null}
+
+        {lockSheetOpen ? (
+          <View pointerEvents="box-none" style={styles.lockLayer}>
+            <Pressable style={styles.lockBackdrop} onPress={closeLockSheet} />
+            <View style={styles.lockSheet}>
+              <View style={styles.lockHandle} />
+              <Text style={styles.lockSheetTitle}>
+                {appLockEnabled ? "Verrouillage de l'app" : 'Ajouter un code secret'}
+              </Text>
+              <Text style={styles.lockSheetSubtitle}>
+                {appLockEnabled
+                  ? 'Entre ton code actuel pour retirer le verrou, ou verrouille immediatement l application.'
+                  : "Choisis un code secret a 4 chiffres pour proteger l'ouverture de l'app sur cet appareil."}
+              </Text>
+
+              <View style={styles.lockInputGroup}>
+                <Text style={styles.lockInputLabel}>{appLockEnabled ? 'Code actuel' : 'Code secret'}</Text>
+                <TextInput
+                  editable={!lockBusy}
+                  keyboardType="number-pad"
+                  maxLength={4}
+                  onChangeText={(value) => {
+                    setLockCode(value.replace(/[^0-9]/g, ''));
+                    if (lockError) {
+                      setLockError('');
+                    }
+                  }}
+                  placeholder="0000"
+                  placeholderTextColor="rgba(74,47,39,0.35)"
+                  secureTextEntry
+                  style={styles.lockInput}
+                  textContentType="oneTimeCode"
+                  value={lockCode}
+                />
+              </View>
+
+              {!appLockEnabled ? (
+                <View style={styles.lockInputGroup}>
+                  <Text style={styles.lockInputLabel}>Confirmer le code</Text>
+                  <TextInput
+                    editable={!lockBusy}
+                    keyboardType="number-pad"
+                    maxLength={4}
+                    onChangeText={(value) => {
+                      setLockConfirmCode(value.replace(/[^0-9]/g, ''));
+                      if (lockError) {
+                        setLockError('');
+                      }
+                    }}
+                    placeholder="0000"
+                    placeholderTextColor="rgba(74,47,39,0.35)"
+                    secureTextEntry
+                    style={styles.lockInput}
+                    textContentType="oneTimeCode"
+                    value={lockConfirmCode}
+                  />
+                </View>
+              ) : null}
+
+              {lockError ? <Text style={styles.lockErrorText}>{lockError}</Text> : null}
+
+              <View style={styles.lockButtonsRow}>
+                <Pressable
+                  onPress={closeLockSheet}
+                  style={({ pressed }) => [styles.lockSecondaryButton, pressed && styles.lockSecondaryButtonPressed]}
+                >
+                  <Text style={styles.lockSecondaryButtonText}>Annuler</Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => void (appLockEnabled ? handleDisableAppLock() : handleEnableAppLock())}
+                  style={({ pressed }) => [
+                    styles.lockPrimaryButton,
+                    lockBusy && styles.lockPrimaryButtonDisabled,
+                    pressed && !lockBusy ? styles.lockPrimaryButtonPressed : null,
+                  ]}
+                >
+                  <Text style={styles.lockPrimaryButtonText}>
+                    {appLockEnabled ? 'Retirer le code' : 'Activer le code'}
+                  </Text>
+                </Pressable>
+              </View>
+
+              {appLockEnabled ? (
+                <Pressable
+                  onPress={handleLockNow}
+                  style={({ pressed }) => [styles.lockNowButton, pressed && styles.lockNowButtonPressed]}
+                >
+                  <Ionicons name="lock-closed" size={14} color={colors.deepGreen} />
+                  <Text style={styles.lockNowButtonText}>Verrouiller maintenant</Text>
+                </Pressable>
+              ) : null}
+
+              <Text style={styles.lockHintText}>Le code reste stocke localement sur cet appareil.</Text>
+            </View>
           </View>
         ) : null}
 
@@ -774,6 +978,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.terracotta,
     borderColor: colors.terracotta,
   },
+  appLockCardActive: {
+    backgroundColor: colors.deepGreen,
+    borderColor: colors.deepGreen,
+  },
   discreteLeft: {
     flex: 1,
     flexDirection: 'row',
@@ -792,6 +1000,9 @@ const styles = StyleSheet.create({
   discreteIconWrapActive: {
     backgroundColor: 'rgba(255,255,255,0.24)',
   },
+  appLockIconWrapActive: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
   discreteTextWrap: {
     flex: 1,
   },
@@ -804,6 +1015,9 @@ const styles = StyleSheet.create({
   discreteTitleActive: {
     color: colors.white,
   },
+  appLockTitleActive: {
+    color: colors.white,
+  },
   discreteDesc: {
     color: colors.mutedSage,
     fontSize: 12,
@@ -811,6 +1025,9 @@ const styles = StyleSheet.create({
   },
   discreteDescActive: {
     color: '#FFF7F2',
+  },
+  appLockDescActive: {
+    color: 'rgba(255,255,255,0.84)',
   },
   discreteStatusPill: {
     minWidth: 54,
@@ -824,12 +1041,18 @@ const styles = StyleSheet.create({
   discreteStatusPillActive: {
     backgroundColor: '#9B4E34',
   },
+  appLockStatusPillActive: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
   discreteStatusText: {
     color: colors.cocoa,
     fontSize: 12,
     fontWeight: '800',
   },
   discreteStatusTextActive: {
+    color: colors.white,
+  },
+  appLockStatusTextActive: {
     color: colors.white,
   },
   expandHeaderCard: {
@@ -937,6 +1160,139 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  lockLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 60,
+    justifyContent: 'flex-end',
+  },
+  lockBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(26,60,52,0.18)',
+  },
+  lockSheet: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    backgroundColor: '#FFF9F2',
+    paddingHorizontal: 18,
+    paddingTop: 12,
+    paddingBottom: 28,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#E9DCCB',
+    gap: 12,
+  },
+  lockHandle: {
+    alignSelf: 'center',
+    width: 42,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#D7C9B8',
+    marginBottom: 4,
+  },
+  lockSheetTitle: {
+    color: colors.cocoaDark,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  lockSheetSubtitle: {
+    color: colors.mutedSage,
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  lockInputGroup: {
+    gap: 6,
+  },
+  lockInputLabel: {
+    color: colors.cocoaDark,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  lockInput: {
+    height: 50,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.khaki,
+    backgroundColor: colors.white,
+    paddingHorizontal: 16,
+    color: colors.deepGreen,
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    letterSpacing: 6,
+  },
+  lockErrorText: {
+    color: '#8F3529',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  lockButtonsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 2,
+  },
+  lockSecondaryButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.khaki,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFDFC',
+  },
+  lockSecondaryButtonPressed: {
+    opacity: 0.86,
+  },
+  lockSecondaryButtonText: {
+    color: colors.cocoaDark,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  lockPrimaryButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.deepGreen,
+  },
+  lockPrimaryButtonDisabled: {
+    opacity: 0.58,
+  },
+  lockPrimaryButtonPressed: {
+    opacity: 0.9,
+  },
+  lockPrimaryButtonText: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  lockNowButton: {
+    height: 46,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#DCE8E1',
+    backgroundColor: '#E8F0EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  lockNowButtonPressed: {
+    opacity: 0.88,
+  },
+  lockNowButtonText: {
+    color: colors.deepGreen,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  lockHintText: {
+    color: colors.mutedSage,
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   notifItem: {
     flexDirection: 'row',

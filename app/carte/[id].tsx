@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   discreteLayer: {
-    opacity: 0.28,
+    opacity: 0.38,
   },
   hero: {
     position: 'relative',

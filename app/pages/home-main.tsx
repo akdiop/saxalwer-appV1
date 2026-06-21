@@ -919,7 +919,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
   discreteMask: {
-    opacity: 0.25,
+    opacity: 0.36,
   },
   cardPressed: {
     transform: [{ scale: 0.98 }],

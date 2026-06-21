@@ -17,6 +17,7 @@ export { default as PersonalGoals } from "./PersonalGoals";
 export { default as PrivacyCommitment } from "./PrivacyCommitment";
 export { default as SaxalwerLogo } from "./SaxalwerLogo";
 export { default as SymptomLogger } from "./SymptomLogger";
+export { default as VerifiedBadge } from "./VerifiedBadge";
 
 // Article components
 export { default as GlossaryText } from "./article/GlossaryText";

@@ -11,8 +11,10 @@ import {
     View,
 } from 'react-native';
 
+import AppLockOverlay from '../../components/AppLockOverlay';
 import HamburgerMenu from '../../components/HamburgerMenu';
 import OfflineBanner from '../../components/OfflineBanner';
+import SensitiveContent from '../../components/SensitiveContent';
 import { shouldShowSplash } from '../../utils/splashUtils';
 import { useApp } from '../../context/appcontext';
 
@@ -87,6 +89,11 @@ export function RootLayout() {
 		hasCompletedTutorial,
 		language,
 		oralMode,
+		appLockEnabled,
+		appLockReady,
+		isAppLocked,
+		lockApp,
+		unlockApp,
 	} =
 		useApp();
 	const pathname = usePathname();
@@ -94,6 +101,18 @@ export function RootLayout() {
 	const [menuOpen, setMenuOpen] = React.useState(false);
 	const wo = language === 'wo';
 	const isLegalRoute = pathname === '/legal';
+	const canShowPrivacyControls = pathname !== '/splash' && !isAppLocked;
+	const shouldApplyGlobalDiscreteMask = discreteMode && pathname !== '/splash' && !isAppLocked;
+
+	React.useEffect(() => {
+		if (isAppLocked) {
+			setMenuOpen(false);
+		}
+	}, [isAppLocked]);
+
+	if (!appLockReady) {
+		return <SafeAreaView style={styles.safeArea} />;
+	}
 
 	if (shouldShowSplash() && pathname !== '/splash') {
 		return <Redirect href={"/splash" as any} />;
@@ -126,6 +145,7 @@ export function RootLayout() {
 		pathname !== '/tutoriel' &&
 		pathname !== '/orientation' &&
 		!isLegalRoute;
+	const privacyControlsBottom = isNavVisible ? (oralMode ? 112 : 102) : 18;
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -164,35 +184,56 @@ export function RootLayout() {
 				<View
 					style={[
 						styles.main,
-						discreteMode && !isNavVisible ? styles.mainBlur : null,
 						isNavVisible ? styles.mainWithNav : null,
 					]}
 				>
 					<OfflineBanner topOffset={isNavVisible && !menuOpen ? 62 : 14} />
-					<Slot />
+					<SensitiveContent
+						actionLabel={wo ? 'Wone' : 'Afficher'}
+						label={wo ? 'Xët bi sutura na' : 'Écran masqué'}
+						masked={shouldApplyGlobalDiscreteMask}
+						resetKey={`${pathname}:${shouldApplyGlobalDiscreteMask}`}
+						strength="strong"
+						style={styles.slotMask}
+					>
+						<Slot />
+					</SensitiveContent>
 				</View>
 
-			{isNavVisible && (
-				<Pressable
-					style={[styles.discreteButton, discreteMode ? styles.discreteOn : styles.discreteOff]}
-					onPress={toggleDiscreteMode}
-					accessibilityRole="button"
-					accessibilityLabel={
-						discreteMode
-							? wo
-								? 'Fann mode bu nebb'
-								: 'Desactiver mode discret'
-							: wo
-								? 'Taal mode bu nebb'
-								: 'Activer mode discret'
-					}
-				>
-					<Ionicons
-						name={discreteMode ? 'eye-off' : 'eye'}
-						size={20}
-						color={discreteMode ? '#FFFFFF' : BASE.deepGreen}
-					/>
-				</Pressable>
+			{canShowPrivacyControls && !menuOpen && (
+				<View style={[styles.privacyActions, { bottom: privacyControlsBottom }]}>
+					{appLockEnabled ? (
+						<Pressable
+							style={styles.lockButton}
+							onPress={lockApp}
+							accessibilityRole="button"
+							accessibilityLabel={wo ? 'Téj app bi léegi' : "Verrouiller l'application maintenant"}
+						>
+							<Ionicons name="lock-closed" size={18} color={BASE.deepGreen} />
+						</Pressable>
+					) : null}
+
+					<Pressable
+						style={[styles.discreteButton, discreteMode ? styles.discreteOn : styles.discreteOff]}
+						onPress={toggleDiscreteMode}
+						accessibilityRole="button"
+						accessibilityLabel={
+							discreteMode
+								? wo
+									? 'Fann mode bu nebb'
+									: 'Desactiver mode discret'
+								: wo
+									? 'Taal mode bu nebb'
+									: 'Activer mode discret'
+						}
+					>
+						<Ionicons
+							name={discreteMode ? 'eye-off' : 'eye'}
+							size={20}
+							color={discreteMode ? '#FFFFFF' : BASE.deepGreen}
+						/>
+					</Pressable>
+				</View>
 			)}
 
 			{isNavVisible && (
@@ -232,6 +273,10 @@ export function RootLayout() {
 					})}
 				</View>
 			)}
+
+			{appLockEnabled && isAppLocked ? (
+				<AppLockOverlay language={language} onUnlock={unlockApp} />
+			) : null}
 		</SafeAreaView>
 	);
 }
@@ -290,13 +335,17 @@ const styles = StyleSheet.create({
 	mainWithNav: {
 		paddingBottom: 90,
 	},
-	mainBlur: {
-		opacity: 0.25,
+	slotMask: {
+		flex: 1,
+	},
+	privacyActions: {
+		position: 'absolute',
+		right: 16,
+		zIndex: 46,
+		alignItems: 'center',
+		gap: 10,
 	},
 	discreteButton: {
-		position: 'absolute',
-		bottom: 102,
-		right: 16,
 		width: 44,
 		height: 44,
 		borderRadius: 22,
@@ -314,6 +363,21 @@ const styles = StyleSheet.create({
 	},
 	discreteOff: {
 		backgroundColor: '#FFFFFF',
+	},
+	lockButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(255,255,255,0.94)',
+		borderWidth: 1,
+		borderColor: 'rgba(26,60,52,0.12)',
+		shadowColor: '#000000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.12,
+		shadowRadius: 8,
+		elevation: 4,
 	},
 	navBar: {
 		position: 'absolute',

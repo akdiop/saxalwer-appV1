@@ -33,6 +33,7 @@ export interface Article {
 	tags: string[];
 	tagsWo: string[];
 	content: ArticleSection[];
+	verified?: boolean;
 }
 
 const BASE_ARTICLES: Article[] = [
@@ -1879,6 +1880,7 @@ function enrichArticle(article: Article): Article {
 		...article,
 		readTime: `${parseInt(article.readTime, 10) + extraReadTime} min`,
 		content: [...article.content, ...extraSections],
+		verified: true,
 	};
 }
 

@@ -562,9 +562,9 @@ function ProfilContent() {
                 onPress={() => closeMenuAndNavigate('/onboarding/age')}
               />
               <ProfileRowItem
-                icon="log-in-outline"
-                title="Connexion / compte"
-                subtitle="Se connecter ou créer un compte"
+                icon="at-outline"
+                title="Pseudonyme communauté"
+                subtitle="Choisir ou modifier mon pseudo"
                 onPress={() => closeMenuAndNavigate('/login')}
               />
               <ProfileRowItem
