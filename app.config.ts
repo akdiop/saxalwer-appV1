@@ -1,12 +1,12 @@
 import type { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
-  name: 'saxalwer-expo-clean',
-  slug: 'saxalwer-expo-clean',
+  name: 'SaxalWér',
+  slug: 'saxalwer-app-v1',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './app/assets/images/icon.png',
-  scheme: 'saxalwerexpoclean',
+  scheme: 'saxalwer',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
