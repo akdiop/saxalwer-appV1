@@ -47,6 +47,14 @@ const CATEGORIES = [
   { fr: 'Post-partum', wo: 'Ginnaaw doom', value: 'Post-partum' },
   { fr: 'Ménopause', wo: 'Ménopause', value: 'Ménopause' },
   { fr: 'Infertilité', wo: 'Ñàkk doom', value: 'Infertilité' },
+  { fr: 'Douleurs gynécologiques', wo: 'Metit yu jigéen', value: 'Douleurs gynécologiques' },
+  { fr: 'Pertes vaginales', wo: 'Setu jigéen', value: 'Pertes vaginales' },
+  { fr: 'Sexualité & rapports', wo: 'Séy ak jëkkër', value: 'Sexualité & rapports' },
+  { fr: 'Col & dépistage', wo: 'Bopp matrice ak saytu', value: 'Col & dépistage' },
+  { fr: 'Vulve & santé intime', wo: 'Vulve ak setal yaram', value: 'Vulve & santé intime' },
+  { fr: 'Urgences gynécologiques', wo: 'Aajo yu jigéen', value: 'Urgences gynécologiques' },
+  { fr: 'Prévention & dépistage', wo: 'Fagaru ak saytu', value: 'Prévention & dépistage' },
+  { fr: 'Bien-être & corps', wo: 'Jàmm ak yaram', value: 'Bien-être & corps' },
 ];
 
 function ArticleRow({

@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
@@ -19,6 +20,7 @@ interface MonEspaceProps {
 }
 
 export default function MonEspace({ onBack }: MonEspaceProps) {
+  const router = useRouter();
   const [modeDiscret, setModeDiscret] = React.useState(false);
   const [audioEdu, setAudioEdu] = React.useState(false);
   const [audioCalm, setAudioCalm] = React.useState(false);
@@ -70,7 +72,7 @@ export default function MonEspace({ onBack }: MonEspaceProps) {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Section title="Journal personnel" icon="edit-3" color={C.terracotta}>
             <Text style={styles.bodyText}>{modeDiscret ? "██████ ██████████ ████..." : "Aujourd&apos;hui, je me sens plus à l&apos;écoute de mon corps."}</Text>
-            <Pressable style={styles.primaryAction}>
+            <Pressable onPress={() => router.push('/journal')} style={styles.primaryAction}>
               <Feather name="edit-3" size={14} color={C.beige} />
               <Text style={styles.primaryActionText}>Écrire aujourd&apos;hui</Text>
             </Pressable>
@@ -121,8 +123,8 @@ export default function MonEspace({ onBack }: MonEspaceProps) {
           </Section>
 
           <Section title="Explorer" icon="compass" color={C.copper}>
-            <LinkRow label="Mon orientation santé" sub="Évaluation adaptée" />
-            <LinkRow label="À propos de SaxalWér" sub="Méthodologie et partenaires" />
+            <LinkRow label="Mon orientation santé" sub="Évaluation adaptée" onPress={() => router.push('/orientation')} />
+            <LinkRow label="À propos de SaxalWér" sub="Méthodologie et partenaires" onPress={() => router.push('/about')} />
           </Section>
 
           <View style={styles.footerNote}>
@@ -181,9 +183,9 @@ function ToggleRow({
   );
 }
 
-function LinkRow({ label, sub }: { label: string; sub: string }) {
+function LinkRow({ label, sub, onPress }: { label: string; sub: string; onPress?: () => void }) {
   return (
-    <Pressable style={({ pressed }) => [styles.linkRow, pressed && styles.pressed]}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.linkRow, pressed && styles.pressed]}>
       <View style={{ flex: 1 }}>
         <Text style={styles.linkLabel}>{label}</Text>
         <Text style={styles.linkSub}>{sub}</Text>
