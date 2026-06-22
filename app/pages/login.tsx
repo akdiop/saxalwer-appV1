@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
     letterSpacing: 0.5,
   },
   subtitle: {
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   feedbackInfo: {
     fontSize: 14,
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   feedbackError: {
     fontSize: 13,
@@ -304,6 +304,6 @@ const styles = StyleSheet.create({
   secondaryBtnText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
 });

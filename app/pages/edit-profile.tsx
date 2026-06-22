@@ -61,7 +61,7 @@ const HEALTH_CONDITIONS: HealthCondition[] = [
     fr: 'Troubles thyroidiens',
     wo: 'Jafe thyroide',
     icon: 'pulse',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   { id: 'anemia', fr: 'Anémie', wo: 'Anémie', icon: 'heart-outline', color: '#A65D40' },
 ];
@@ -653,7 +653,7 @@ function EditProfileContent() {
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
                 {hobbies.map((hobby) => (
                   <View key={hobby} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F7F3ED', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                    <Text style={{ color: colors.deepGreen, fontSize: 13 }}>{hobby}</Text>
+                    <Text style={{ color: colors.cocoa, fontSize: 13 }}>{hobby}</Text>
                     <Pressable onPress={() => setHobbies((prev) => prev.filter((h) => h !== hobby))}>
                       <MaterialCommunityIcons name="close" size={14} color={colors.terracotta} style={{ marginLeft: 4 }} />
                     </Pressable>
@@ -749,7 +749,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 22,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '700',
     letterSpacing: 0.2,
   },
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
   sectionTitleText: {
     fontSize: 12,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
     letterSpacing: 0.7,
   },
@@ -914,7 +914,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   selectOptionTextActive: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
   },
   counterRow: {
@@ -938,7 +938,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   counterSymbolPlus: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   counterValueWrap: {
     flex: 1,
@@ -951,7 +951,7 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
   },
   counterValue: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -984,7 +984,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 13,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     marginBottom: 4,
   },
@@ -1012,7 +1012,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   toggleTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 13,
     fontWeight: '600',
   },

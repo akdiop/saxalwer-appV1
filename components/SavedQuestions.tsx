@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   questionCard: {
     flexDirection: 'row',
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   input: {
     borderWidth: 1,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     minHeight: 80,
     marginBottom: 16,
     textAlignVertical: 'top',
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   buttonSecondaryText: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   buttonPrimary: {
     flex: 1,

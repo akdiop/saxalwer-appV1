@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 18,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '800',
     marginBottom: 6,
   },

@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   subtitle: {
     fontSize: 12,

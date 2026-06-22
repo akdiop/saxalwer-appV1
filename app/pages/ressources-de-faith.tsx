@@ -60,7 +60,7 @@ const FAITH_RESOURCES: FaithResource[] = [
       'Islam dafa yamal planification familiale ngir kaarange weru yaay ak ndey. Prophete (PSL) yamal na espacement ci doom yi. Jel Imam wala kenn ku xam Koran ngir gis tey wu la jem.',
     faith: 'islam',
     icon: 'moon',
-    color: '#1A3C34',
+    color: '#4A2F27',
     category: 'Fertilite & Contraception',
   },
   {

@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   icon: {
-    color: '#1A3C34',
+    color: '#4A2F27',
     fontSize: 20,
     fontWeight: '700',
     marginTop: -2,

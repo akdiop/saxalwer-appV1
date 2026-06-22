@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
     letterSpacing: 0.4,
   },
   subtitle: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   cardLabelSelected: {
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   cardDescription: {
     fontSize: 14,

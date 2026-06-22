@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    color: '#1A3C34',
+    color: '#4A2F27',
     fontSize: 32,
     fontWeight: '800',
     lineHeight: 38,

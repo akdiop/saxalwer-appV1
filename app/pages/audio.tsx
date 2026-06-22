@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.4,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
   },
   infoPillTextAccent: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     color: colors.terracotta,
   },
   sectionTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 32,
     lineHeight: 36,
     fontWeight: '600',
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   countPillText: {
     fontSize: 12,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   audioGrid: {
     gap: 16,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   typeTagText: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   statusPillTextReady: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   statusPillTextSoon: {
     color: colors.terracotta,
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   audioTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 23,
     lineHeight: 27,
     fontWeight: '600',
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   listenRowText: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   footerCard: {
     borderRadius: 24,

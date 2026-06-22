@@ -225,6 +225,7 @@ export interface AppContextType extends AppState {
 	toggleDiscreteMode: () => void;
 	toggleOralMode: () => void;
 	completeOnboarding: () => void;
+	resetOnboarding: () => void;
 	completeTutorial: () => void;
 	setConsent: (consented: boolean) => void;
 	setLanguage: (lang: Language) => void;
@@ -795,6 +796,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		});
 	const toggleOralMode = () => setState((prev) => ({ ...prev, oralMode: !prev.oralMode }));
 	const completeOnboarding = () => setState((prev) => ({ ...prev, isOnboarded: true }));
+	const resetOnboarding = () =>
+		setState((prev) => ({
+			...prev,
+			isOnboarded: false,
+			hasCompletedTutorial: false,
+			hasSeenWelcome: false,
+		}));
 	const completeTutorial = () => setState((prev) => ({ ...prev, hasCompletedTutorial: true }));
 	const setConsent = (consented: boolean) => setState((prev) => ({ ...prev, hasConsented: consented }));
 	const setLanguage = (lang: Language) => setState((prev) => ({ ...prev, language: lang }));
@@ -1024,6 +1032,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 			toggleDiscreteMode,
 			toggleOralMode,
 			completeOnboarding,
+			resetOnboarding,
 			completeTutorial,
 			setConsent,
 			setLanguage,

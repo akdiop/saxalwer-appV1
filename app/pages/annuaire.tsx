@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
   },
   infoPillTextAccent: {
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     color: colors.terracotta,
   },
   filterTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 30,
     lineHeight: 34,
     fontWeight: '600',
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   countPillText: {
     fontSize: 12,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   filterGroup: {
     gap: 10,
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 0.7,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
   },
   chipsRow: {
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   preferenceTextActive: {
     color: colors.white,
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     color: colors.terracotta,
   },
   sectionTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 32,
     lineHeight: 36,
     fontWeight: '600',
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 28,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontFamily: Fonts.serif,
   },
   providerMeta: {
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   verificationTextReady: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   verificationTextReview: {
     color: colors.terracotta,
@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
   badgeTagText: {
     fontSize: 10,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
   },
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 22,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontFamily: Fonts.serif,
     textAlign: 'center',
   },

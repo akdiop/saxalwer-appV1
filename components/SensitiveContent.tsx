@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     opacity: 0.82,
   },
   label: {
-    color: '#1A3C34',
+    color: '#4A2F27',
     fontSize: 13,
     fontWeight: '700',
   },

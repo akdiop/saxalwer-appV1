@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 48,
     lineHeight: 52,
-    color: '#0F3D2E',
+    color: '#4A2F27',
     letterSpacing: 1.4,
     textAlign: 'center',
     fontWeight: '700',

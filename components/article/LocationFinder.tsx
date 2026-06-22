@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   city: {
     fontSize: 11,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   statusTextOpen: {
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   statusTextClosed: {
     color: '#A65D40',

@@ -763,7 +763,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 23,
     fontWeight: '700',
     letterSpacing: 0.2,
@@ -846,7 +846,7 @@ const styles = StyleSheet.create({
   filterSectionLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -1056,7 +1056,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   doctorName: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 16,
     fontWeight: '700',
     marginBottom: 4,
@@ -1165,7 +1165,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   locateBtnText: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 14,
     fontWeight: '600',
   },

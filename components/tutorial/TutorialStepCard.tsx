@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 26,
     lineHeight: 32,
     fontWeight: '700',

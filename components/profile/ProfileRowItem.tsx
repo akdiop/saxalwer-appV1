@@ -81,6 +81,6 @@ const styles = StyleSheet.create({
   rightText: {
     fontSize: 12,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
 });

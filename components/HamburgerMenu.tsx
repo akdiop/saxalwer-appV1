@@ -78,6 +78,7 @@ const menuSections = [
   {
     title: 'MON ESPACE',
     items: [
+      { icon: <Feather name="heart" size={22} color={C.copper} />, label: 'Mon Espace', subtitle: 'SamaWér — suivi & préférences', route: '/samawer' },
       { icon: <Feather name="user" size={22} color={C.deepGreen} />, label: 'Mon Parcours', subtitle: 'Profil, favoris & paramètres', route: '/profil' },
       { icon: <Feather name="edit-3" size={22} color={C.cocoa} />, label: 'Journal intime', subtitle: 'Exprime-toi en toute sécurité', route: '/journal' },
       { icon: <Feather name="settings" size={22} color={C.cocoa} />, label: 'Modifier mon profil', subtitle: '', route: '/edit-profile' },

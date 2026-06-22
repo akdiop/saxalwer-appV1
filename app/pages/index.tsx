@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   languageButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
     letterSpacing: 1,
   },
   languageButtonTextActive: {
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: '600',
-    color: '#1A3C34',
+    color: '#4A2F27',
     letterSpacing: 3,
     textAlign: 'center',
   },
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
     lineHeight: 24,
   },
   cardText: {
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 24,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   accountText: {
     fontSize: 14,
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   accountSecondaryButtonText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   valuesSection: {
     gap: 12,
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   primaryButton: {
     marginTop: 4,
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 23,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   aboutText: {
     fontSize: 14,
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
   aboutButtonText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1A3C34',
+    color: '#4A2F27',
   },
   footerText: {
     fontSize: 12,

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   overlay: {
     flex: 1,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   content: {
     gap: 12,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   modeName: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     marginBottom: 4,
   },
   modeDescription: {

@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   preview: {
     maxHeight: 150,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     marginBottom: 4,
   },
   sectionContent: {

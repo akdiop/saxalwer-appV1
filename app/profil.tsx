@@ -56,7 +56,7 @@ function ProfilContent() {
     firstName,
     resetProfileMockState,
   } = useProfileMock();
-  const { resetAppState, appLockEnabled, setAppLockCode, disableAppLock, lockApp } = useApp();
+  const { resetAppState, resetOnboarding, appLockEnabled, setAppLockCode, disableAppLock, lockApp } = useApp();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
@@ -658,7 +658,10 @@ function ProfilContent() {
               <ProfileRowItem
                 icon="refresh-circle-outline"
                 title="Refaire onboarding"
-                onPress={() => closeMenuAndNavigate('/onboarding/age')}
+                onPress={() => {
+                  resetOnboarding();
+                  closeMenuAndNavigate('/onboarding/age');
+                }}
               />
               <ProfileRowItem
                 icon="at-outline"
@@ -862,7 +865,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 22,
     fontWeight: '800',
   },
@@ -1007,7 +1010,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   discreteTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 16,
     fontWeight: '800',
     marginBottom: 2,
@@ -1105,7 +1108,7 @@ const styles = StyleSheet.create({
   },
   favoriteTitle: {
     fontSize: 14,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '700',
     marginBottom: 2,
   },
@@ -1216,7 +1219,7 @@ const styles = StyleSheet.create({
     borderColor: colors.khaki,
     backgroundColor: colors.white,
     paddingHorizontal: 16,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 18,
     fontWeight: '700',
     textAlign: 'center',
@@ -1284,7 +1287,7 @@ const styles = StyleSheet.create({
     opacity: 0.88,
   },
   lockNowButtonText: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 14,
     fontWeight: '800',
   },
@@ -1386,7 +1389,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   legalText: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 12,
     fontWeight: '600',
   },

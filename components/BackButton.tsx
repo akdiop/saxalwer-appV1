@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
   arrow: {
     fontSize: 28,
     lineHeight: 30,
-    color: '#1A3C34',
+    color: '#4A2F27',
     fontWeight: '300',
   },
   label: {
     fontSize: 15,
-    color: '#1A3C34',
+    color: '#4A2F27',
     fontWeight: '500',
     letterSpacing: 0.2,
   },

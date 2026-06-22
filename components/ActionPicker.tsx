@@ -25,7 +25,7 @@ const ACTIONS = [
     labelEn: 'Continue learning',
     description: 'Explorer d\'autres ressources',
     icon: 'book-open-outline',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   {
     id: 'schedule_appointment',
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   actionsList: {
     paddingVertical: 8,
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   actionLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     marginBottom: 2,
   },
   actionDescription: {

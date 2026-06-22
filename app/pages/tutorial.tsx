@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   metaPillText: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   },
   completionTitle: {
     textAlign: 'center',
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 31,
     fontWeight: '800',
     marginBottom: 12,
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   languagePillText: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 12,
     fontWeight: '800',
   },

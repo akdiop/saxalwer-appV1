@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   count: {
     fontSize: 12,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   recommendation: {
     fontSize: 12,

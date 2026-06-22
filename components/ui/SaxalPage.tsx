@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     color: colors.terracotta,
   },
   headerTitle: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontSize: 38,
     lineHeight: 42,
     fontWeight: '600',
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     lineHeight: 39,
   },
   heroTitleLight: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   heroDescription: {
     maxWidth: 760,

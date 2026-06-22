@@ -772,7 +772,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     textTransform: 'uppercase',
   },
   actionIconPill: {
@@ -857,7 +857,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 28,
     lineHeight: 32,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     fontFamily: Fonts.serif,
     textTransform: 'capitalize',
@@ -930,7 +930,7 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   dayTextStrong: {
     fontWeight: '700',
@@ -959,7 +959,7 @@ const styles = StyleSheet.create({
   legendTitle: {
     fontSize: 24,
     lineHeight: 28,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     fontFamily: Fonts.serif,
   },
@@ -1006,7 +1006,7 @@ const styles = StyleSheet.create({
   dayAppointmentsTitle: {
     fontSize: 30,
     lineHeight: 34,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     fontFamily: Fonts.serif,
     textTransform: 'capitalize',
@@ -1038,7 +1038,7 @@ const styles = StyleSheet.create({
   emptyAppointmentsTitle: {
     fontSize: 20,
     lineHeight: 24,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     fontFamily: Fonts.serif,
     textAlign: 'center',
@@ -1085,7 +1085,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   inlineMetaRow: {
     flexDirection: 'row',
@@ -1143,7 +1143,7 @@ const styles = StyleSheet.create({
   emptySelectionTitle: {
     fontSize: 30,
     lineHeight: 34,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     fontFamily: Fonts.serif,
   },
@@ -1187,7 +1187,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 30,
     lineHeight: 34,
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
     fontFamily: Fonts.serif,
   },
@@ -1233,7 +1233,7 @@ const styles = StyleSheet.create({
   typeButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   input: {
     minHeight: 48,
@@ -1244,7 +1244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 14,
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   inputMultiline: {
     minHeight: 104,
@@ -1270,7 +1270,7 @@ const styles = StyleSheet.create({
   reminderLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   toggleTrack: {
     width: 46,
@@ -1309,7 +1309,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 13,
     fontWeight: '700',
-    color: colors.deepGreen,
+    color: colors.cocoa,
   },
   confirmButton: {
     flex: 1.1,

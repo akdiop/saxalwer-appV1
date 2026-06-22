@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(166, 93, 64, 0.2)',
   },
   text: {
-    color: colors.deepGreen,
+    color: colors.cocoa,
     fontWeight: '600',
   },
   textPending: {
